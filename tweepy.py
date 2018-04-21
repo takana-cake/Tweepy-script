@@ -1,10 +1,5 @@
 # _*_ coding: utf-8 _*_
 
-# print str(datetime.datetime.now())
-# print "--------------------"
-# Apr 18 21:12:52 user kernel: [8653289.147897] ieee80211 phy0: rt2800usb_txdone: Warning - Data pending for entry 4 in queue 2
-# ŠÔ ƒGƒ‰[‰ÓŠ: ƒIƒvƒVƒ‡ƒ“: ƒGƒ‰[“à—e\n
-
 
 import tweepy
 import sys
@@ -33,7 +28,7 @@ def limit_handled(h):
 				f.write(str(datetime.datetime.now()) + ": TweepError_1: " + str(err) + "\n")
 			time.sleep(60 * 15)
 
-# ”FØ
+# èªè¨¼
 twitter_conf = {
     'consumer' : {
         'key'    : "",
@@ -55,17 +50,17 @@ api = tweepy.API(auth)
 
 
 my_id = [ '' , '' ]
-# my_id_select = ƒŠƒXƒgmy_id‚æ‚èì‹ÆID‚ğŠi”[‚·‚éˆê•Ï”
-# tmp_id = api.friends_ids‚©‚çmy_friends_ids‚ÖŠi”[‚·‚é‚Æ‚«‚Ìˆê•Ï”
-my_friends_ids = []		#ƒtƒHƒ[‚µ‚Ä‚¢‚éID‚ÆƒXƒNƒŠ[ƒ“–¼
+# my_id_select = ãƒªã‚¹ãƒˆmy_idã‚ˆã‚Šä½œæ¥­IDã‚’æ ¼ç´ã™ã‚‹ä¸€æ™‚å¤‰æ•°
+# tmp_id = api.friends_idsã‹ã‚‰my_friends_idsã¸æ ¼ç´ã™ã‚‹ã¨ãã®ä¸€æ™‚å¤‰æ•°
+my_friends_ids = []		#ãƒ•ã‚©ãƒ­ãƒ¼ã—ã¦ã„ã‚‹IDã¨ã‚¹ã‚¯ãƒªãƒ¼ãƒ³å
 my_friends_list = {}	#
-# i = len(my_friends_ids) , maxidŠi”[‚·‚é‚Æ‚«‚Ìˆê•Ï”
-# tmp_user = ‰½—pH
-# follow_id = ƒtƒHƒ[‚µ‚Ä‚éid
-# follow_screen = ƒtƒHƒ[‚µ‚Ä‚éƒXƒNƒŠ[ƒ“–¼
-# err = ƒGƒ‰[
-# f = ƒtƒ@ƒCƒ‹
-# l = 16*200‚Ì16
+# i = len(my_friends_ids) , maxidæ ¼ç´ã™ã‚‹ã¨ãã®ä¸€æ™‚å¤‰æ•°
+# tmp_user = ä½•ç”¨ï¼Ÿ
+# follow_id = ãƒ•ã‚©ãƒ­ãƒ¼ã—ã¦ã‚‹id
+# follow_screen = ãƒ•ã‚©ãƒ­ãƒ¼ã—ã¦ã‚‹ã‚¹ã‚¯ãƒªãƒ¼ãƒ³å
+# err = ã‚¨ãƒ©ãƒ¼
+# f = ãƒ•ã‚¡ã‚¤ãƒ«
+# l = 16*200ã®16
 # twi = TL
 tmp_count = 0
 tmp_count2 = 0
@@ -78,22 +73,22 @@ for my_id_select in my_id:
 	file_path = os.getcwd() + "/" + my_id_select
 	if os.path.exists(file_path) == False:
 		os.makedirs(file_path)
-	# ƒƒOƒtƒ@ƒCƒ‹ì¬
+	# ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ä½œæˆ
 	with open(file_path + "/_log.txt",'w+') as f:
 		f.write(str(datetime.datetime.now()) + ": start: " + str(my_id_select) + "\n")
 
-	## my_id_select‚ÌƒtƒHƒ[‚µ‚½ID‚ğmy_friends_ids‚Éæ“¾
-	# Cursorg‚¤‚Æ‚·‚×‚Äæ‚Á‚Ä‚«‚Ä‚­‚ê‚é‚ªC”z—ñ‚Å‚Í‚È‚­‚È‚é‚Ì‚Å”z—ñ‚É“ü‚ê‚é
+	## my_id_selectã®ãƒ•ã‚©ãƒ­ãƒ¼ã—ãŸIDã‚’my_friends_idsã«å–å¾—
+	# Cursorä½¿ã†ã¨ã™ã¹ã¦å–ã£ã¦ãã¦ãã‚Œã‚‹ãŒï¼Œé…åˆ—ã§ã¯ãªããªã‚‹ã®ã§é…åˆ—ã«å…¥ã‚Œã‚‹
 	for tmp_id in limit_handled(tweepy.Cursor(api.friends_ids, id=my_id_select).items()):
 		my_friends_ids.append(tmp_id)
-	# 100IDs‚¸‚ÂÚ×‚ğmy_friends_list‚Ö
-	# tmp_count‚ÍƒtƒHƒ[”ƒJƒEƒ“ƒ^[Atmp_count2‚ÍƒGƒ‰[‚Ìiƒ`ƒFƒbƒN
+	# 100IDsãšã¤è©³ç´°ã‚’my_friends_listã¸
+	# tmp_countã¯ãƒ•ã‚©ãƒ­ãƒ¼æ•°ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼ã€tmp_count2ã¯ã‚¨ãƒ©ãƒ¼æ™‚ã®iãƒã‚§ãƒƒã‚¯
 	tmp_count = 0
 	tmp_count2 = 0
 	for i in range(0, len(my_friends_ids), 100):
 		try:
 			for tmp_user in api.lookup_users(user_ids=my_friends_ids[i:i+100]):
-				# tmp_user‚Ì’†g’m‚è‚½‚¢B‚±‚±‚É“ü‚ê‚é—\’è
+				# tmp_userã®ä¸­èº«çŸ¥ã‚ŠãŸã„ã€‚ã“ã“ã«å…¥ã‚Œã‚‹äºˆå®š
 				tmp_count = tmp_count + 1
 				my_friends_list[unicode(tmp_user.screen_name)] = unicode(tmp_user.name)
 			if tmp_count2 == 1:
@@ -127,26 +122,26 @@ for my_id_select in my_id:
 	with open(file_path + "/_log.txt",'a') as f:
 		f.write(str(datetime.datetime.now()) + ": " + str(len(my_friends_ids)) + "/" + str(tmp_count) + "\n")
 
-	## æ“¾ŠJn‚ÌƒcƒC[ƒgID‚ğmaxid‚Ö‚¢‚ê‚é
-	# tmp_count‚ÍAPIƒGƒ‰[‚ÌMAXIDŠm”F—pƒtƒ‰ƒO
-	# ./my_id_select/follow_id/_maxid.txt‚É‘O‰ñÀs‚ÌMAXID‚ğ‹L˜^‚µ‚Ä‚¢‚é
-	# ‚±‚±ˆÈ‰º‚ÌAPI‚ÍŒ®ƒAƒJ‚¾‚Ææ“¾‚Å‚«‚È‚¢‚Ì‚Å‘Îƒ‹[ƒv—p‚Étmp_count‚ğg—p
+	## å–å¾—é–‹å§‹ã®ãƒ„ã‚¤ãƒ¼ãƒˆIDã‚’maxidã¸ã„ã‚Œã‚‹
+	# tmp_countã¯APIã‚¨ãƒ©ãƒ¼æ™‚ã®MAXIDç¢ºèªç”¨ãƒ•ãƒ©ã‚°
+	# ./my_id_select/follow_id/_maxid.txtã«å‰å›å®Ÿè¡Œæ™‚ã®MAXIDã‚’è¨˜éŒ²ã—ã¦ã„ã‚‹
+	# ã“ã“ä»¥ä¸‹ã®APIã¯éµã‚¢ã‚«ã ã¨å–å¾—ã§ããªã„ã®ã§å¯¾ãƒ«ãƒ¼ãƒ—ç”¨ã«tmp_countã‚’ä½¿ç”¨
 	tmp_count = 0
 	for follow_id,follow_screen in my_friends_list.items():
 		print str(datetime.datetime.now()) + ": " + follow_id
-		#follow_idƒfƒBƒŒƒNƒgƒŠ‚ª–³‚¯‚ê‚Îì¬
+		#follow_idãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒç„¡ã‘ã‚Œã°ä½œæˆ
 		if os.path.exists(file_path + "/" + follow_id) == False:
 			os.makedirs(file_path + "/" + follow_id)
-		#_maxid.txtƒtƒ@ƒCƒ‹‚ª–³‚¯‚ê‚Îì¬
+		#_maxid.txtãƒ•ã‚¡ã‚¤ãƒ«ãŒç„¡ã‘ã‚Œã°ä½œæˆ
 		if os.path.exists(file_path + "/" + follow_id + "/_maxid.txt") == False:
 			f = open(file_path + "/" + follow_id + "/_maxid.txt" , 'w+')
 			f.close()
-		#_maxid.txtƒtƒ@ƒCƒ‹‚ª‹ó‚È‚çmaxid‚ğæ“¾
+		#_maxid.txtãƒ•ã‚¡ã‚¤ãƒ«ãŒç©ºãªã‚‰maxidã‚’å–å¾—
 		if os.path.getsize(file_path + "/" + follow_id + "/_maxid.txt") == 0:
 			query = 'max_search'
 			try:
 				maxid = api.user_timeline(follow_id).max_id
-			#API‘Îô
+			#APIå¯¾ç­–
 			except tweepy.RateLimitError, err:
 				print str(datetime.datetime.now())
 				print follow_id
@@ -156,7 +151,7 @@ for my_id_select in my_id:
 					f.write(str(datetime.datetime.now()) + ": " + str(follow_id) + ": RateLimitError_3: " + str(err) + "\n")
 				time.sleep(60 * 15)
 				continue
-			#‚»‚Ì‘¼AŒ®ƒAƒJ‘Îô
+			#ãã®ä»–ã€éµã‚¢ã‚«å¯¾ç­–
 			except tweepy.TweepError, err:
 				print str(datetime.datetime.now())
 				print follow_id
@@ -175,23 +170,23 @@ for my_id_select in my_id:
 			f = open(file_path + "/" + follow_id + "/_maxid.txt" , 'w')
 			f.write(str(maxid))
 			f.close()
-		#‘O‰ñ‚Ì_maxid.txt‚ğmaxid‚Ö“ü‚ê‚ÄŒŸõ
+		#å‰å›ã®_maxid.txtã‚’maxidã¸å…¥ã‚Œã¦æ¤œç´¢
 		else:
 			f = open(file_path + "/" + follow_id + "/_maxid.txt" , 'r')
 			for i in f: maxid = i
 			f.close()
 			query = 'since_search'
 
-		## ‰æ‘œæ“¾
-		# tmp_count‚Í—áŠOŒŸ’m—pAtmp_count2‚Í3‰ñ‚Ü‚ÅÄs‚·‚é—p
+		## ç”»åƒå–å¾—
+		# tmp_countã¯ä¾‹å¤–æ¤œçŸ¥ç”¨ã€tmp_count2ã¯3å›ã¾ã§å†è©¦è¡Œã™ã‚‹ç”¨
 		tmp_count = 0
 		tmp_count2 = 0
 		#01
 		for l in range(16):
 			#02-1
-			#TL‚ğæ“¾_API
+			#TLã‚’å–å¾—_API
 			try:
-				#02‚Ìƒ`ƒFƒbƒNŒã”¼
+				#02ã®ãƒã‚§ãƒƒã‚¯å¾ŒåŠ
 				if tmp_count != 0:
 					print str(datetime.datetime.now())
 					print follow_id
@@ -202,7 +197,7 @@ for my_id_select in my_id:
 				if query == 'max_search':
 					#03-1
 					for twi in api.user_timeline(follow_id, count=200, max_id=maxid):
-						# ‰æ‘œ•Û‘¶
+						# ç”»åƒä¿å­˜
 						if hasattr(twi, "extended_entities"):
 							if twi.extended_entities.has_key("media"):
 								for index,media in enumerate(twi.extended_entities["media"]):
@@ -227,7 +222,7 @@ for my_id_select in my_id:
 										else:
 											tmp_count2 = 0
 									except:
-										# Œ´ˆö•s–¾‚Ì•s‹ï‡”­¶’†
+										# åŸå› ä¸æ˜ã®ä¸å…·åˆç™ºç”Ÿä¸­
 										print str(datetime.datetime.now())
 										print "!!!fail!!!"
 										with open(file_path + "/_log.txt",'a') as f:
@@ -240,11 +235,11 @@ for my_id_select in my_id:
 											tmp_count2 = 0
 									tmp_count2 = 0
 						maxid = twi.id
-					#03-1 I—¹
+					#03-1 çµ‚äº†
 				elif query == 'since_search':
 					#03-2
 					for twi in api.user_timeline(follow_id, count=200, since_id=maxid):
-						# ‰æ‘œ•Û‘¶
+						# ç”»åƒä¿å­˜
 						if hasattr(twi, "extended_entities"):
 							if twi.extended_entities.has_key("media"):
 								for index,media in enumerate(twi.extended_entities["media"]):
@@ -269,7 +264,7 @@ for my_id_select in my_id:
 										else:
 											tmp_count2 = 0
 									except:
-										# Œ´ˆö•s–¾‚Ì•s‹ï‡”­¶’†
+										# åŸå› ä¸æ˜ã®ä¸å…·åˆç™ºç”Ÿä¸­
 										print str(datetime.datetime.now())
 										print "!!!fail!!!"
 										with open(file_path + "/_log.txt",'a') as f:
@@ -282,7 +277,7 @@ for my_id_select in my_id:
 											tmp_count2 = 0
 									tmp_count2 = 0
 						maxid = twi.id
-					#03-2 I—¹
+					#03-2 çµ‚äº†
 					with open(file_path + "/" + follow_id + "/_maxid.txt", 'w+') as f:
 						f.write(str(maxid))
 			#02-2
@@ -314,6 +309,6 @@ for my_id_select in my_id:
 				else:
 					tmp_count2 = 0
 			tmp_count2 = 0
-		#01 I—¹
+		#01 çµ‚äº†
 	my_friends_list.clear()
 	my_friends_ids = []
