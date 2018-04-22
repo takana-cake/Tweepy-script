@@ -117,7 +117,7 @@ for my_id_select in my_id:
 			tmp_count2 = 1
 			time.sleep(60 * 15)
 			continue
-	print str(datetime.datetime.now()) + ": " + len(my_friends_ids) +"/" + tmp_count
+	print str(datetime.datetime.now()) + ": " + str(len(my_friends_ids)) +"/" + tmp_count
 	print "--------------------"
 	with open(file_path + "/_log.txt",'a') as f:
 		f.write(str(datetime.datetime.now()) + ": " + str(len(my_friends_ids)) + "/" + str(tmp_count) + "\n")
