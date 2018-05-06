@@ -88,8 +88,8 @@ for my_id_select in my_id:
 				my_friends_list[unicode(tmp_user.screen_name)] = unicode(tmp_user.name)
 				#unicode処理はpython3では不要
 			if tmp_count2 == 1:
-				print str(datetime.datetime.now()) + ": retry: i=" + str(i) + ": done
-				#print(str(datetime.datetime.now()) + ": retry: i=" + str(i) + ": done)
+				print str(datetime.datetime.now()) + ": retry: i=" + str(i) + ": done"
+				#print(str(datetime.datetime.now()) + ": retry: i=" + str(i) + ": done")
 				with open(file_path + "/_log.txt",'a') as f:
 					f.write(str(datetime.datetime.now()) + ": retry: i=" + str(i) + ": done\n")
 		except tweepy.RateLimitError, err:
