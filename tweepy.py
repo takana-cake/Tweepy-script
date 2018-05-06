@@ -6,25 +6,21 @@ import sys
 import urllib
 import os
 import datetime
-import date
+import time
 
 def limit_handled(h):
 	while True:
 		try:
 			yield h.next()
 		except tweepy.RateLimitError, err:
-			print str(datetime.datetime.now())
-			print "RateLimitError_1"
-			print err
-			print "--------------------"
+			print str(datetime.datetime.now()) + ": RateLimitError_1: " + str(err)
+			#print(str(datetime.datetime.now()) + ": RateLimitError_1: " + str(err))
 			with open(file_path + "/_log.txt",'a') as f:
 				f.write(str(datetime.datetime.now()) + ": RateLimitError_1: " + str(err) + "\n")
 			time.sleep(60 * 15)
 		except tweepy.TweepError, err:
-			print str(datetime.datetime.now())
-			print "TweepError_1"
-			print err
-			print "--------------------"
+			print str(datetime.datetime.now()) + ": TweepError_1: " + str(err)
+			#print(str(datetime.datetime.now()) + ": TweepError_1: " + str(err))
 			with open(file_path + "/_log.txt",'a') as f:
 				f.write(str(datetime.datetime.now()) + ": TweepError_1: " + str(err) + "\n")
 			time.sleep(60 * 15)
@@ -65,12 +61,11 @@ my_friends_list = {}	#
 # twi = TL
 tmp_count = 0
 tmp_count2 = 0
-print "--------------------"
+
 
 for my_id_select in my_id:
-	print str(datetime.datetime.now())
-	print my_id_select
-	print "--------------------"
+	print str(datetime.datetime.now()) + ": " + str(my_id_select)
+	#print(str(datetime.datetime.now()) + ": " + str(my_id_select))
 	file_path = os.getcwd() + "/" + my_id_select
 	if os.path.exists(file_path) == False:
 		os.makedirs(file_path)
@@ -87,39 +82,36 @@ for my_id_select in my_id:
 	tmp_count = 0
 	tmp_count2 = 0
 	for i in range(0, len(my_friends_ids), 100):
-		try:
+		try:	#forと逆に
 			for tmp_user in api.lookup_users(user_ids=my_friends_ids[i:i+100]):
-				# tmp_userの中身知りたい。ここに入れる予定
 				tmp_count = tmp_count + 1
 				my_friends_list[unicode(tmp_user.screen_name)] = unicode(tmp_user.name)
+				#unicode処理はpython3では不要
 			if tmp_count2 == 1:
-				print i
-				print "--------------------"
+				print str(datetime.datetime.now()) + ": retry: i=" + str(i) + ": done
+				#print(str(datetime.datetime.now()) + ": retry: i=" + str(i) + ": done)
 				with open(file_path + "/_log.txt",'a') as f:
 					f.write(str(datetime.datetime.now()) + ": retry: i=" + str(i) + ": done\n")
 		except tweepy.RateLimitError, err:
-			print str(datetime.datetime.now())
-			print "RateLimitError_2"
-			print err
-			print i
-			print tmp_user
+		#except tweepy.RateLimitError as err:
+			print str(datetime.datetime.now()) + ": RateLimitError_2: i=" + str(i) + ": " + str(err)
+			#print(str(datetime.datetime.now()) + ": RateLimitError_2: i=" + str(i) + ": " + str(err))
 			with open(file_path + "/_log.txt",'a') as f:
 				f.write(str(datetime.datetime.now()) + ": RateLimitError_2: i=" + str(i) + ": " + str(err) + "\n")
 			tmp_count2 = 1
 			time.sleep(60 * 15)
 			continue
 		except tweepy.TweepError, err:
-			print str(datetime.datetime.now())
-			print "TweepError_2"
-			print err
-			print i
+		#except tweepy.TweepError as err:
+			print str(datetime.datetime.now()) + ": TweepError_2: i=" + str(i) + ": " + str(err)
+			#print(str(datetime.datetime.now()) + ": TweepError_2: i=" + str(i) + ": " + str(err))
 			with open(file_path + "/_log.txt",'a') as f:
 				f.write(str(datetime.datetime.now()) + ": TweepError_2: i=" + str(i) + ": " + str(err) + "\n")
 			tmp_count2 = 1
 			time.sleep(60 * 15)
 			continue
 	print str(datetime.datetime.now()) + ": " + str(len(my_friends_ids)) +"/" + str(tmp_count)
-	print "--------------------"
+	#print(str(datetime.datetime.now()) + ": " + str(len(my_friends_ids)) +"/" + str(tmp_count))
 	with open(file_path + "/_log.txt",'a') as f:
 		f.write(str(datetime.datetime.now()) + ": " + str(len(my_friends_ids)) + "/" + str(tmp_count) + "\n")
 
@@ -130,6 +122,7 @@ for my_id_select in my_id:
 	tmp_count = 0
 	for follow_id,follow_screen in my_friends_list.items():
 		print str(datetime.datetime.now()) + ": " + follow_id
+		#print(str(datetime.datetime.now()) + ": " + follow_id)
 		#follow_idディレクトリが無ければ作成
 		if os.path.exists(file_path + "/" + follow_id) == False:
 			os.makedirs(file_path + "/" + follow_id)
@@ -144,21 +137,18 @@ for my_id_select in my_id:
 				maxid = api.user_timeline(follow_id).max_id
 			#API対策
 			except tweepy.RateLimitError, err:
-				print str(datetime.datetime.now())
-				print follow_id
-				print "RateLimitError_3"
-				print err
+			#except tweepy.RateLimitError as err:
+				print str(datetime.datetime.now()) + ": " + str(follow_id) + ": RateLimitError_3: " + str(err)
+				#print(str(datetime.datetime.now()) + ": " + str(follow_id) + ": RateLimitError_3: " + str(err))
 				with open(file_path + "/_log.txt",'a') as f:
 					f.write(str(datetime.datetime.now()) + ": " + str(follow_id) + ": RateLimitError_3: " + str(err) + "\n")
 				time.sleep(60 * 15)
 				continue
 			#その他、鍵アカ対策
 			except tweepy.TweepError, err:
-				print str(datetime.datetime.now())
-				print follow_id
-				print "TweepError_3"
-				print err
-				print tmp_count
+			#except tweepy.TweepError as err:
+				print str(datetime.datetime.now()) + ": " + str(follow_id) + ": TweepError_3: " + str(err)
+				#print(str(datetime.datetime.now()) + ": " + str(follow_id) + ": TweepError_3: " + str(err))
 				with open(file_path + "/_log.txt",'a') as f:
 					f.write(str(datetime.datetime.now()) + ": " + str(follow_id) + ": TweepError_3: " + str(err) + "\n")
 				tmp_count = tmp_count +1
@@ -186,12 +176,11 @@ for my_id_select in my_id:
 		for l in range(16):
 			#02-1
 			#TLを取得_API
-			try:
+			try:	#forと逆にする
 				#02のチェック後半
 				if tmp_count != 0:
-					print str(datetime.datetime.now())
-					print follow_id
-					print maxid
+					print str(datetime.datetime.now()) + str(follow_id) + ": 02-1: " + str(maxid) + " TC=" + str(tmp_count)
+					#print(str(datetime.datetime.now()) + str(follow_id) + ": 02-1: " + str(maxid) + " TC=" + str(tmp_count))
 					tmp_count = 0
 					with open(file_path + "/_log.txt",'a') as f:
 						f.write(str(datetime.datetime.now()) + str(follow_id) + ": 02-1: " + str(maxid) + " TC=" + str(tmp_count) + "\n")
@@ -201,6 +190,7 @@ for my_id_select in my_id:
 						# 画像保存
 						if hasattr(twi, "extended_entities"):
 							if twi.extended_entities.has_key("media"):
+							#if 'media' in twi.extended_entities:
 								for index,media in enumerate(twi.extended_entities["media"]):
 									img_url = media["media_url"]
 									url_orig = img_url + ":orig"
@@ -209,11 +199,9 @@ for my_id_select in my_id:
 											img = urllib.urlopen(url_orig).read()
 											f.write(img)
 									except Exception as err:
-										print str(datetime.datetime.now())
-										print follow_id
-										print "img url open fail #03-1"
-										print url_orig
-										print err
+									#except Exception as err:
+										print str(datetime.datetime.now()) + str(follow_id) + ": 03-1: " + str(url_orig) + ": TC=" + str(tmp_count2) + ": " + str(err)
+										#print(str(datetime.datetime.now()) + str(follow_id) + ": 03-1: " + str(url_orig) + ": TC=" + str(tmp_count2) + ": " + str(err))
 										with open(file_path + "/_log.txt",'a') as f:
 											f.write(str(datetime.datetime.now()) + str(follow_id) + ": 03-1: " + str(url_orig) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
 										tmp_count2 = tmp_count2 +1
@@ -223,9 +211,9 @@ for my_id_select in my_id:
 										else:
 											tmp_count2 = 0
 									except:
-										# 原因不明の不具合発生中
-										print str(datetime.datetime.now())
-										print "!!!fail!!!"
+										# 不具合発生中
+										print str(datetime.datetime.now()) + str(follow_id) + ": !!!fail!!!"
+										#print(str(datetime.datetime.now()) + str(follow_id) + ": !!!fail!!!")
 										with open(file_path + "/_log.txt",'a') as f:
 											f.write(str(datetime.datetime.now()) + str(follow_id) + ": 03-1: " + str(url_orig) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
 										tmp_count2 = tmp_count2 +1
@@ -243,6 +231,7 @@ for my_id_select in my_id:
 						# 画像保存
 						if hasattr(twi, "extended_entities"):
 							if twi.extended_entities.has_key("media"):
+							#if 'media' in twi.extended_entities:
 								for index,media in enumerate(twi.extended_entities["media"]):
 									img_url = media["media_url"]
 									url_orig = img_url + ":orig"
@@ -251,11 +240,8 @@ for my_id_select in my_id:
 											img = urllib.urlopen(url_orig).read()
 											f.write(img)
 									except Exception as err:
-										print str(datetime.datetime.now())
-										print follow_id
-										print "img url open fail #03-2"
-										print url_orig
-										print err
+										print str(datetime.datetime.now()) + str(follow_id) + ": 03-2: " + str(url_orig) + ": TC=" + str(tmp_count2) + ": " + str(err)
+										#print(str(datetime.datetime.now()) + str(follow_id) + ": 03-2: " + str(url_orig) + ": TC=" + str(tmp_count2) + ": " + str(err))
 										with open(file_path + "/_log.txt",'a') as f:
 											f.write(str(datetime.datetime.now()) + str(follow_id) + ": 03-2: " + str(url_orig) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
 										tmp_count2 = tmp_count2 +1
@@ -265,9 +251,9 @@ for my_id_select in my_id:
 										else:
 											tmp_count2 = 0
 									except:
-										# 原因不明の不具合発生中
-										print str(datetime.datetime.now())
-										print "!!!fail!!!"
+										# 不具合発生中
+										print str(datetime.datetime.now()) + str(follow_id) + ": !!!fail!!!"
+										#print(str(datetime.datetime.now()) + str(follow_id) + ": !!!fail!!!")
 										with open(file_path + "/_log.txt",'a') as f:
 											f.write(str(datetime.datetime.now()) + str(follow_id) + ": 03-2: " + str(url_orig) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
 										tmp_count2 = tmp_count2 +1
@@ -283,11 +269,9 @@ for my_id_select in my_id:
 						f.write(str(maxid))
 			#02-2
 			except tweepy.RateLimitError, err:
-				print str(datetime.datetime.now())
-				print follow_id
-				print "RateLimitError_4"
-				print err
-				print maxid
+			#except tweepy.RateLimitError as err:
+				print str(datetime.datetime.now()) + str(follow_id) + ": RateLimitError_4: " + str(maxid) + ": TC=" + str(tmp_count2) + ": " + str(err)
+				#print(str(datetime.datetime.now()) + str(follow_id) + ": RateLimitError_4: " + str(maxid) + ": TC=" + str(tmp_count2) + ": " + str(err))
 				tmp_count = 1
 				with open(file_path + "/_log.txt",'a') as f:
 					f.write(str(datetime.datetime.now()) + str(follow_id) + ": RateLimitError_4: " + str(maxid) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
@@ -295,11 +279,9 @@ for my_id_select in my_id:
 				continue
 			#02-3
 			except tweepy.TweepError, err:
-				print str(datetime.datetime.now())
-				print follow_id
-				print "TweepError_4"
-				print err
-				print maxid
+			#except tweepy.TweepError as err:
+				print str(datetime.datetime.now()) + str(follow_id) + ": TweepError_4: " + str(maxid) + ": TC=" + str(tmp_count2) + ": " + str(err)
+				#print(str(datetime.datetime.now()) + str(follow_id) + ": TweepError_4: " + str(maxid) + ": TC=" + str(tmp_count2) + ": " + str(err))
 				with open(file_path + "/_log.txt",'a') as f:
 					f.write(str(datetime.datetime.now()) + str(follow_id) + ": TweepError_4: " + str(maxid) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
 				tmp_count = 1
