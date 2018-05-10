@@ -4,6 +4,7 @@
 import tweepy
 import sys
 import urllib
+#import urllib.request
 import os
 import datetime
 import time
@@ -13,12 +14,14 @@ def limit_handled(h):
 		try:
 			yield h.next()
 		except tweepy.RateLimitError, err:
+		#except tweepy.RateLimitError as err:
 			print str(datetime.datetime.now()) + ": RateLimitError_1: " + str(err)
 			#print(str(datetime.datetime.now()) + ": RateLimitError_1: " + str(err))
 			with open(file_path + "/_log.txt",'a') as f:
 				f.write(str(datetime.datetime.now()) + ": RateLimitError_1: " + str(err) + "\n")
 			time.sleep(60 * 15)
 		except tweepy.TweepError, err:
+		#except tweepy.TweepError as err:
 			print str(datetime.datetime.now()) + ": TweepError_1: " + str(err)
 			#print(str(datetime.datetime.now()) + ": TweepError_1: " + str(err))
 			with open(file_path + "/_log.txt",'a') as f:
@@ -176,7 +179,7 @@ for my_id_select in my_id:
 		for l in range(16):
 			#02-1
 			#TLを取得_API
-			try:	#forと逆にする
+			try:
 				#02のチェック後半
 				if tmp_count != 0:
 					print str(datetime.datetime.now()) + str(follow_id) + ": 02-1: " + str(maxid) + " TC=" + str(tmp_count)
@@ -186,83 +189,104 @@ for my_id_select in my_id:
 						f.write(str(datetime.datetime.now()) + str(follow_id) + ": 02-1: " + str(maxid) + " TC=" + str(tmp_count) + "\n")
 				if query == 'max_search':
 					#03-1
-					for twi in api.user_timeline(follow_id, count=200, max_id=maxid):
-						# 画像保存
-						if hasattr(twi, "extended_entities"):
-							if twi.extended_entities.has_key("media"):
-							#if 'media' in twi.extended_entities:
-								for index,media in enumerate(twi.extended_entities["media"]):
-									img_url = media["media_url"]
-									url_orig = img_url + ":orig"
-									try:
-										with open(file_path + "/" + follow_id + "/" + os.path.basename(img_url), 'wb') as f:
-											img = urllib.urlopen(url_orig).read()
-											f.write(img)
-									except Exception as err:
-									#except Exception as err:
-										print str(datetime.datetime.now()) + str(follow_id) + ": 03-1: " + str(url_orig) + ": TC=" + str(tmp_count2) + ": " + str(err)
-										#print(str(datetime.datetime.now()) + str(follow_id) + ": 03-1: " + str(url_orig) + ": TC=" + str(tmp_count2) + ": " + str(err))
-										with open(file_path + "/_log.txt",'a') as f:
-											f.write(str(datetime.datetime.now()) + str(follow_id) + ": 03-1: " + str(url_orig) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
-										tmp_count2 = tmp_count2 +1
-										if tmp_count2 < 3:
-											time.sleep(60)
-											continue
-										else:
-											tmp_count2 = 0
-									except:
-										# 不具合発生中
-										print str(datetime.datetime.now()) + str(follow_id) + ": !!!fail!!!"
-										#print(str(datetime.datetime.now()) + str(follow_id) + ": !!!fail!!!")
-										with open(file_path + "/_log.txt",'a') as f:
-											f.write(str(datetime.datetime.now()) + str(follow_id) + ": 03-1: " + str(url_orig) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
-										tmp_count2 = tmp_count2 +1
-										if tmp_count2 < 3:
-											time.sleep(60)
-											continue
-										else:
-											tmp_count2 = 0
-									tmp_count2 = 0
+					for twi in api.user_timeline(follow_id, count=500, max_id=maxid):
+						#リツイート判断
+						if hasattr(twi, 'retweeted_status') is False:
+							# 画像保存
+							if hasattr(twi, "extended_entities"):
+								if twi.extended_entities.has_key("media"):
+								#if 'media' in twi.extended_entities:
+									for media in twi.extended_entities["media"]:
+										if media["type"] == 'photo':
+											dl_filename = media["media_url"]
+											dl_media = dl_filename + ":orig"
+										if media["type"] == 'animated_gif':
+											dl_media = media["video_info"]["variants"][0]["url"]
+											dl_filename = dl_media
+										if media["type"] == 'video':
+											dl_media = media["video_info"]["variants"][0]["url"]
+											dl_filename = dl_media
+										try:
+											with open(file_path + "/" + follow_id + "/" + os.path.basename(dl_filename), 'wb') as f:
+												dl_file = urllib.urlopen(dl_media).read()
+												#dl_file = urllib.request.urlopen(dl_media).read()
+												f.write(dl_file)
+										except Exception as err:
+										#except Exception as err:
+											print str(datetime.datetime.now()) + str(follow_id) + ": 03-1: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err)
+											#print(str(datetime.datetime.now()) + str(follow_id) + ": 03-1: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err))
+											with open(file_path + "/_log.txt",'a') as f:
+												f.write(str(datetime.datetime.now()) + str(follow_id) + ": 03-1: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
+											tmp_count2 = tmp_count2 +1
+											if tmp_count2 < 3:
+												time.sleep(60)
+												continue
+											else:
+												tmp_count2 = 0
+										except:
+											# 不具合発生中
+											print str(datetime.datetime.now()) + str(follow_id) + ": !!!fail!!!"
+											#print(str(datetime.datetime.now()) + str(follow_id) + ": !!!fail!!!")
+											with open(file_path + "/_log.txt",'a') as f:
+												f.write(str(datetime.datetime.now()) + str(follow_id) + ": 03-1: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
+											tmp_count2 = tmp_count2 +1
+											if tmp_count2 < 3:
+												time.sleep(60)
+												continue
+											else:
+												tmp_count2 = 0
+										tmp_count2 = 0
 						maxid = twi.id
 					#03-1 終了
 				elif query == 'since_search':
 					#03-2
-					for twi in api.user_timeline(follow_id, count=200, since_id=maxid):
-						# 画像保存
-						if hasattr(twi, "extended_entities"):
-							if twi.extended_entities.has_key("media"):
-							#if 'media' in twi.extended_entities:
-								for index,media in enumerate(twi.extended_entities["media"]):
-									img_url = media["media_url"]
-									url_orig = img_url + ":orig"
-									try:
-										with open(file_path + "/" + follow_id + "/" + os.path.basename(img_url), 'wb') as f:
-											img = urllib.urlopen(url_orig).read()
-											f.write(img)
-									except Exception as err:
-										print str(datetime.datetime.now()) + str(follow_id) + ": 03-2: " + str(url_orig) + ": TC=" + str(tmp_count2) + ": " + str(err)
-										#print(str(datetime.datetime.now()) + str(follow_id) + ": 03-2: " + str(url_orig) + ": TC=" + str(tmp_count2) + ": " + str(err))
-										with open(file_path + "/_log.txt",'a') as f:
-											f.write(str(datetime.datetime.now()) + str(follow_id) + ": 03-2: " + str(url_orig) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
-										tmp_count2 = tmp_count2 +1
-										if tmp_count2 < 3:
-											time.sleep(60)
-											continue
-										else:
-											tmp_count2 = 0
-									except:
-										# 不具合発生中
-										print str(datetime.datetime.now()) + str(follow_id) + ": !!!fail!!!"
-										#print(str(datetime.datetime.now()) + str(follow_id) + ": !!!fail!!!")
-										with open(file_path + "/_log.txt",'a') as f:
-											f.write(str(datetime.datetime.now()) + str(follow_id) + ": 03-2: " + str(url_orig) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
-										tmp_count2 = tmp_count2 +1
-										if tmp_count2 < 3:
-											time.sleep(60)
-											continue
-										else:
-											tmp_count2 = 0
-									tmp_count2 = 0
+					for twi in api.user_timeline(follow_id, count=500, since_id=maxid):
+						#リツイート判断
+						if hasattr(twi, 'retweeted_status') is False:
+							# 画像保存
+							if hasattr(twi, "extended_entities"):
+								if twi.extended_entities.has_key("media"):
+								#if 'media' in twi.extended_entities:
+									for media in twi.extended_entities["media"]:
+										if media["type"] == 'photo':
+											dl_filename = media["media_url"]
+											dl_media = dl_filename + ":orig"
+										if media["type"] == 'animated_gif':
+											dl_media = media["video_info"]["variants"][0]["url"]
+											dl_filename = dl_media
+										if media["type"] == 'video':
+											dl_media = media["video_info"]["variants"][0]["url"]
+											dl_filename = dl_media
+										try:
+											with open(file_path + "/" + follow_id + "/" + os.path.basename(dl_filename), 'wb') as f:
+												dl_file = urllib.urlopen(dl_media).read()
+												#dl_file = urllib.request.urlopen(dl_media).read()
+												f.write(dl_file)
+										except Exception as err:
+										#except Exception as err:
+											print str(datetime.datetime.now()) + str(follow_id) + ": 03-2: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err)
+											#print(str(datetime.datetime.now()) + str(follow_id) + ": 03-2: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err))
+											with open(file_path + "/_log.txt",'a') as f:
+												f.write(str(datetime.datetime.now()) + str(follow_id) + ": 03-2: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
+											tmp_count2 = tmp_count2 +1
+											if tmp_count2 < 3:
+												time.sleep(60)
+												continue
+											else:
+												tmp_count2 = 0
+										except:
+											# 不具合発生中
+											print str(datetime.datetime.now()) + str(follow_id) + ": !!!fail!!!"
+											#print(str(datetime.datetime.now()) + str(follow_id) + ": !!!fail!!!")
+											with open(file_path + "/_log.txt",'a') as f:
+												f.write(str(datetime.datetime.now()) + str(follow_id) + ": 03-2: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
+											tmp_count2 = tmp_count2 +1
+											if tmp_count2 < 3:
+												time.sleep(60)
+												continue
+											else:
+												tmp_count2 = 0
+										tmp_count2 = 0
 						maxid = twi.id
 					#03-2 終了
 					with open(file_path + "/" + follow_id + "/_maxid.txt", 'w+') as f:
@@ -286,7 +310,7 @@ for my_id_select in my_id:
 					f.write(str(datetime.datetime.now()) + str(follow_id) + ": TweepError_4: " + str(maxid) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
 				tmp_count = 1
 				tmp_count2 = tmp_count2 +1
-				if tmp_count2 < 3:
+				if tmp_count2 < 3:k
 					time.sleep(60 * 5)
 					continue
 				else:
