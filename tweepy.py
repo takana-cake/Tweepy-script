@@ -131,13 +131,13 @@ def media_get(query_def, follow_id_def, maxid_def, directory_def):
 	tmp_count = 0
 	tmp_count2 = 0
 
-	for l in range(16):
+	for l in range(50):
 		#02-1 TLを取得_API
 		try:
 			#02のチェック後半
 			if query_def == 'max_search':
 				#03-1
-				for twi in api.user_timeline(follow_id_def, count=500, max_id=maxid_def):
+				for twi in api.user_timeline(follow_id_def, count=100, max_id=maxid_def):
 					# リツイート判断
 					if hasattr(twi, 'retweeted_status') is False:
 						# 画像保存
@@ -187,7 +187,7 @@ def media_get(query_def, follow_id_def, maxid_def, directory_def):
 				#03-1 終了
 			elif query_def == 'since_search':
 				#03-2
-				for twi in api.user_timeline(follow_id_def, count=500, since_id=maxid_def):
+				for twi in api.user_timeline(follow_id_def, count=100, since_id=maxid_def):
 					#リツイート判断
 					if hasattr(twi, 'retweeted_status') is False:
 						# 画像保存
