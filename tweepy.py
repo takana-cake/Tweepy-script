@@ -35,6 +35,7 @@ my_id = [ '' , '' ]
 # tmp_id = api.friends_idsからmy_friends_idsへ格納するときの一時変数
 my_friends_ids = []		#フォローしているIDとスクリーン名
 my_friends_list = {}	#
+my_friends_list_json = {}	#
 # i = len(my_friends_ids) , maxid格納するときの一時変数
 # tmp_user = 何用？
 # follow_id = フォローしてるid
