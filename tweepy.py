@@ -138,13 +138,13 @@ def tweet_id_get(query_def, follow_id_def, maxid_def):
 				#03-1 新規サーチ
 				for twi in api.user_timeline(follow_id_def, count=100, max_id=maxid_def):
 					# media_getへ
-					media_get(twi, follow_id_def)
+					media_get()
 					maxid_def = twi.id
 			elif query_def == 'since_search':
 				#03-2 既存サーチ
 				for twi in api.user_timeline(follow_id_def, count=100, since_id=maxid_def):
 					# media_getへ
-					media_get(twi, follow_id_def)
+					media_get()
 					maxid_def = twi.id
 				with open(working_directory + "/" + follow_id_def + "/_maxid.txt", 'w+') as f:
 					f.write(str(maxid_def))
@@ -166,46 +166,46 @@ def tweet_id_get(query_def, follow_id_def, maxid_def):
 			else:
 				tmp_count_def = 0
 		tmp_count_def = 0
-
-
-def media_get(twi_get_media, follow_id_def2):
-	# 画像取得
-	# tmp_countは3回まで再試行する用
-	tmp_count_def = 0
-	# リツイート判断
-	if hasattr(twi_get_media, 'retweeted_status') is False:
-		# 画像保存
-		if hasattr(twi_get_media, "extended_entities"):
-			if 'media' in twi_get_media.extended_entities:
-				for media in twi_get_media.extended_entities["media"]:
-					if media["type"] == 'photo':
-						dl_filename = media["media_url"]
-						dl_media = dl_filename + ":orig"
-					if media["type"] == 'animated_gif':
-						dl_media = media["video_info"]["variants"][0]["url"]
-						dl_filename = dl_media
-					if media["type"] == 'video':
-						dl_media = media["video_info"]["variants"][0]["url"]
-						if '.m3u8' in dl_media:
-							dl_media = media["video_info"]["variants"][1]["url"]
-						if '?tag=3' in dl_media:
-							dl_media = dl_media.replace("?tag=3", "")
-						dl_filename = dl_media
-					try:
-						with open(working_directory + "/" + follow_id_def2 + "/" + os.path.basename(dl_filename), 'wb') as f:
-							dl_file = urllib.request.urlopen(dl_media).read()
-							f.write(dl_file)
-					except Exception as err:
-						print(str(datetime.datetime.now()) + str(follow_id_def2) + ": 03: " + str(dl_media) + ": TC=" + str(tmp_count_def) + ": " + str(err))
-						with open(working_directory + "/_log.txt",'a') as f:
-							f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def2) + ": 03: " + str(dl_media) + ": TC=" + str(tmp_count_def) + ": " + str(err) + "\n")
-						tmp_count_def = tmp_count_def +1
-						if tmp_count_def < 3:
-							time.sleep(60)
-							continue
-						else:
-							tmp_count_def = 0
-					tmp_count_def = 0
+		
+		
+	def media_get():
+		# 画像取得
+		# tmp_countは3回まで再試行する用
+		tmp_count_def = 0
+		# リツイート判断
+		if hasattr(twi, 'retweeted_status') is False:
+			# 画像保存
+			if hasattr(twi, "extended_entities"):
+				if 'media' in twi.extended_entities:
+					for media in twi.extended_entities["media"]:
+						if media["type"] == 'photo':
+							dl_filename = media["media_url"]
+							dl_media = dl_filename + ":orig"
+						if media["type"] == 'animated_gif':
+							dl_media = media["video_info"]["variants"][0]["url"]
+							dl_filename = dl_media
+						if media["type"] == 'video':
+							dl_media = media["video_info"]["variants"][0]["url"]
+							if '.m3u8' in dl_media:
+								dl_media = media["video_info"]["variants"][1]["url"]
+							if '?tag=3' in dl_media:
+								dl_media = dl_media.replace("?tag=3", "")
+							dl_filename = dl_media
+						try:
+							with open(working_directory + "/" + follow_id_def + "/" + os.path.basename(dl_filename), 'wb') as f:
+								dl_file = urllib.request.urlopen(dl_media).read()
+								f.write(dl_file)
+						except Exception as err:
+							print(str(datetime.datetime.now()) + str(follow_id_def) + ": 03: " + str(dl_media) + ": TC=" + str(tmp_count_def) + ": " + str(err))
+							with open(working_directory + "/_log.txt",'a') as f:
+								f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": 03: " + str(dl_media) + ": TC=" + str(tmp_count_def) + ": " + str(err) + "\n")
+							tmp_count_def = tmp_count_def +1
+							if tmp_count_def < 3:
+								time.sleep(60)
+								continue
+							else:
+								tmp_count_def = 0
+						tmp_count_def = 0
 
 
 
