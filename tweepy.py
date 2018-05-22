@@ -1,3 +1,4 @@
+
 # _*_ coding: utf-8 _*_
 
 import tweepy
@@ -31,6 +32,7 @@ api = tweepy.API(auth)
 
 
 my_id = [ '' , '' ]
+# working_directory = グローバル。
 # my_id_select = リストmy_idより作業IDを格納する一時変数
 # tmp_id = api.friends_idsからmy_friends_idsへ格納するときの一時変数
 my_friends_ids = []		#フォローしているIDとスクリーン名
@@ -64,47 +66,47 @@ def limit_handled(h):
 			time.sleep(60 * 15)
 
 
-def new_follow_ids_json(my_friends_list_def, directory):
-	# 新規フォロー用初期化
-	json_file = open(directory + "/_my_friends_list.json",'r')
+def new_follow_ids_json():
+	# 新規フォロー初期化用
+	json_file = open(working_directory + "/_my_friends_list.json",'r')
 	my_friends_list_json = json.load(json_file)
 	json_file.close()
-	for follow_id_new,follow_screen_new in my_friends_list_def.items():
-		if os.path.exists(directory + "/" + follow_id_new) == False:
-			os.makedirs(directory + "/" + follow_id_new)
-			f = open(directory + "/" + follow_id_new + "/_maxid.txt" , 'w+')
+	for follow_id_new,follow_screen_new in my_friends_list.items():
+		if os.path.exists(working_directory + "/" + follow_id_new) == False:
+			os.makedirs(working_directory + "/" + follow_id_new)
+			f = open(working_directory + "/" + follow_id_new + "/_maxid.txt" , 'w+')
 			f.close()
 			my_friends_list_json[follow_id_new] = follow_screen_new
-	json_file = open(directory + "/_my_friends_list.json",'w')
+	json_file = open(working_directory + "/_my_friends_list.json",'w')
 	json.dump(my_friends_list_json,json_file)
 	json_file.close()
 
 
-def tweet_id_get(directory):
+def first_tweet_id_set():
 	# 取得開始のツイートIDをmaxidへいれる
 	# tmp_countはAPIエラー時のMAXID確認用フラグ
 	# ./my_id_select/follow_id/_maxid.txtに前回実行時のMAXIDを記録している
 	# ここ以下のAPIは鍵アカだと取得できないので対ループ用にtmp_countを使用
 	tmp_count = 0
-	json_file = open(directory + "/_my_friends_list.json",'r')
+	json_file = open(working_directory + "/_my_friends_list.json",'r')
 	my_friends_list_json = json.load(json_file)
 	json_file.close()
 	
 	for follow_id_get,follow_screen_get in my_friends_list_json.items():
 		# 新規 ->maxidを取得し_maxid.txtファイルへ。クエリはmax_search
-		if os.path.getsize(directory + "/" + follow_id_get + "/_maxid.txt") == 0:
+		if os.path.getsize(working_directory + "/" + follow_id_get + "/_maxid.txt") == 0:
 			query = 'max_search'
 			try:
 				maxid = api.user_timeline(follow_id_get).max_id
 			# API対策
 			except tweepy.RateLimitError as err:
-				with open(directory + "/_log.txt",'a') as f:
+				with open(working_directory + "/_log.txt",'a') as f:
 					f.write(str(datetime.datetime.now()) + ": " + str(follow_id_get) + ": RateLimitError_3: " + str(err) + "\n")
 				time.sleep(60 * 15)
 				continue
 			# その他、鍵アカ対策
 			except tweepy.TweepError as err:
-				with open(directory + "/_log.txt",'a') as f:
+				with open(working_directory + "/_log.txt",'a') as f:
 					f.write(str(datetime.datetime.now()) + ": " + str(follow_id_get) + ": TweepError_3: " + str(err) + "\n")
 				tmp_count = tmp_count +1
 				if tmp_count < 3:
@@ -113,141 +115,50 @@ def tweet_id_get(directory):
 				else:
 					tmp_count = 0
 			tmp_count = 0
-			f = open(directory + "/" + follow_id_get + "/_maxid.txt" , 'w')
+			f = open(working_directory + "/" + follow_id_get + "/_maxid.txt" , 'w')
 			f.write(str(maxid))
 			f.close()
 		# 既存 ->maxidに_maxid.txt、クエリはsince_search
 		else:
-			f = open(directory + "/" + follow_id_get + "/_maxid.txt" , 'r')
+			query = 'since_search'
+			f = open(working_directory + "/" + follow_id_get + "/_maxid.txt" , 'r')
 			for i in f: maxid = i
 			f.close()
-			query = 'since_search'
-		media_get(query, follow_id_get, maxid, directory)
+		tweet_id_get(query, follow_id_get, maxid)
 
 
-
-def media_get(query_def, follow_id_def, maxid_def, directory_def):
-	# 画像取得
+def tweet_id_get(query_def, follow_id_def, maxid_def):
+	# ツイートIDを取得
 	# tmp_count2は3回まで再試行する用
 	tmp_count = 0
 	tmp_count2 = 0
-
 	for l in range(50):
 		#02-1 TLを取得_API
 		try:
-			#02のチェック後半
 			if query_def == 'max_search':
-				#03-1
+				#03-1 新規サーチ
 				for twi in api.user_timeline(follow_id_def, count=100, max_id=maxid_def):
-					# リツイート判断
-					if hasattr(twi, 'retweeted_status') is False:
-						# 画像保存
-						if hasattr(twi, "extended_entities"):
-							if 'media' in twi.extended_entities:
-								for media in twi.extended_entities["media"]:
-									if media["type"] == 'photo':
-										dl_filename = media["media_url"]
-										dl_media = dl_filename + ":orig"
-									if media["type"] == 'animated_gif':
-										dl_media = media["video_info"]["variants"][0]["url"]
-										dl_filename = dl_media
-									if media["type"] == 'video':
-										dl_media = media["video_info"]["variants"][0]["url"]
-										if '.m3u8' in dl_media:
-											dl_media = media["video_info"]["variants"][1]["url"]
-										if '?tag=3' in dl_media:
-											dl_media = dl_media.replace("?tag=3", "")
-										dl_filename = dl_media
-									try:
-										with open(directory_def + "/" + follow_id_def + "/" + os.path.basename(dl_filename), 'wb') as f:
-											dl_file = urllib.request.urlopen(dl_media).read()
-											f.write(dl_file)
-									except Exception as err:
-										print(str(datetime.datetime.now()) + str(follow_id_def) + ": 03-1: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err))
-										with open(directory_def + "/_log.txt",'a') as f:
-											f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": 03-1: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
-										tmp_count2 = tmp_count2 +1
-										if tmp_count2 < 3:
-											time.sleep(60)
-											continue
-										else:
-											tmp_count2 = 0
-									except:
-										# 不具合発生中
-										print(str(datetime.datetime.now()) + str(follow_id_def) + ": !!!fail!!!")
-										with open(directory_def + "/_log.txt",'a') as f:
-											f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": 03-1: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
-										tmp_count2 = tmp_count2 +1
-										if tmp_count2 < 3:
-											time.sleep(60)
-											continue
-										else:
-											tmp_count2 = 0
-									tmp_count2 = 0
+					# media_getへ
+					media_get(twi, follow_id_def)
 					maxid_def = twi.id
-				#03-1 終了
 			elif query_def == 'since_search':
-				#03-2
+				#03-2 既存サーチ
 				for twi in api.user_timeline(follow_id_def, count=100, since_id=maxid_def):
-					#リツイート判断
-					if hasattr(twi, 'retweeted_status') is False:
-						# 画像保存
-						if hasattr(twi, "extended_entities"):
-							if 'media' in twi.extended_entities:
-								for media in twi.extended_entities["media"]:
-									if media["type"] == 'photo':
-										dl_filename = media["media_url"]
-										dl_media = dl_filename + ":orig"
-									if media["type"] == 'animated_gif':
-										dl_media = media["video_info"]["variants"][0]["url"]
-										dl_filename = dl_media
-									if media["type"] == 'video':
-										dl_media = media["video_info"]["variants"][0]["url"]
-										if '.m3u8' in dl_media:
-											dl_media = media["video_info"]["variants"][1]["url"]
-										if '?tag=3' in dl_media:
-											dl_media = dl_media.replace("?tag=3", "")
-										dl_filename = dl_media
-									try:
-										with open(directory_def + "/" + follow_id_def + "/" + os.path.basename(dl_filename), 'wb') as f:
-											dl_file = urllib.request.urlopen(dl_media).read()
-											f.write(dl_file)
-									except Exception as err:
-										print(str(datetime.datetime.now()) + str(follow_id_def) + ": 03-2: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err))
-										with open(directory_def + "/_log.txt",'a') as f:
-											f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": 03-2: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
-										tmp_count2 = tmp_count2 +1
-										if tmp_count2 < 3:
-											time.sleep(60)
-											continue
-										else:
-											tmp_count2 = 0
-									except:
-										# 不具合発生中
-										print(str(datetime.datetime.now()) + str(follow_id_def) + ": !!!fail!!!")
-										with open(directory_def + "/_log.txt",'a') as f:
-											f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": 03-2: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
-										tmp_count2 = tmp_count2 +1
-										if tmp_count2 < 3:
-											time.sleep(60)
-											continue
-										else:
-											tmp_count2 = 0
-									tmp_count2 = 0
+					# media_getへ
+					media_get(twi, follow_id_def)
 					maxid_def = twi.id
-				#03-2 終了
-				with open(directory_def + "/" + follow_id_def + "/_maxid.txt", 'w+') as f:
+				with open(working_directory + "/" + follow_id_def + "/_maxid.txt", 'w+') as f:
 					f.write(str(maxid_def))
 		#02-2
 		except tweepy.RateLimitError as err:
-			with open(directory_def + "/_log.txt",'a') as f:
+			with open(working_directory + "/_log.txt",'a') as f:
 				f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": RateLimitError_4: " + str(maxid_def) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
 			time.sleep(60 * 15)
 			continue
 		#02-3
 		except tweepy.TweepError as err:
 			print(str(datetime.datetime.now()) + str(follow_id_def) + ": TweepError_4: " + str(maxid_def) + ": TC=" + str(tmp_count2) + ": " + str(err))
-			with open(directory_def + "/_log.txt",'a') as f:
+			with open(working_directory + "/_log.txt",'a') as f:
 				f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": TweepError_4: " + str(maxid_def) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
 			tmp_count2 = tmp_count2 +1
 			if tmp_count2 < 3:
@@ -256,6 +167,47 @@ def media_get(query_def, follow_id_def, maxid_def, directory_def):
 			else:
 				tmp_count2 = 0
 		tmp_count2 = 0
+
+
+def media_get(twi_get_media, follow_id_def2):
+	# 画像取得
+	# tmp_count2は3回まで再試行する用
+	tmp_count = 0
+	tmp_count2 = 0
+	# リツイート判断
+	if hasattr(twi_get_media, 'retweeted_status') is False:
+		# 画像保存
+		if hasattr(twi_get_media, "extended_entities"):
+			if 'media' in twi_get_media.extended_entities:
+				for media in twi_get_media.extended_entities["media"]:
+					if media["type"] == 'photo':
+						dl_filename = media["media_url"]
+						dl_media = dl_filename + ":orig"
+					if media["type"] == 'animated_gif':
+						dl_media = media["video_info"]["variants"][0]["url"]
+						dl_filename = dl_media
+					if media["type"] == 'video':
+						dl_media = media["video_info"]["variants"][0]["url"]
+						if '.m3u8' in dl_media:
+							dl_media = media["video_info"]["variants"][1]["url"]
+						if '?tag=3' in dl_media:
+							dl_media = dl_media.replace("?tag=3", "")
+						dl_filename = dl_media
+					try:
+						with open(working_directory + "/" + follow_id_def2 + "/" + os.path.basename(dl_filename), 'wb') as f:
+							dl_file = urllib.request.urlopen(dl_media).read()
+							f.write(dl_file)
+					except Exception as err:
+						print(str(datetime.datetime.now()) + str(follow_id_def2) + ": 03: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err))
+						with open(working_directory + "/_log.txt",'a') as f:
+							f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def2) + ": 03: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
+						tmp_count2 = tmp_count2 +1
+						if tmp_count2 < 3:
+							time.sleep(60)
+							continue
+						else:
+							tmp_count2 = 0
+					tmp_count2 = 0
 
 
 
@@ -312,13 +264,11 @@ for my_id_select in my_id:
 		f.close()
 
 	# 新規フォローIDをjsonに保存
-	new_follow_ids_json(my_friends_list, working_directory)
+	new_follow_ids_json()
 
 	# ツイートIDの取得
-	tweet_id_get(working_directory)
+	first_tweet_id_set()
 
 	my_friends_list.clear()
 	my_friends_list_json.clear()
 	my_friends_ids = []
-
-
