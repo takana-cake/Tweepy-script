@@ -165,7 +165,7 @@ def media_get(query_def, follow_id_def, maxid_def, directory_def):
 									except Exception as err:
 										print(str(datetime.datetime.now()) + str(follow_id_def) + ": 03-1: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err))
 										with open(directory_def + "/_log.txt",'a') as f:
-											f.write(str(datetime.datetime.now()) + str(follow_id_def) + ": 03-1: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
+											f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": 03-1: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
 										tmp_count2 = tmp_count2 +1
 										if tmp_count2 < 3:
 											time.sleep(60)
@@ -176,7 +176,7 @@ def media_get(query_def, follow_id_def, maxid_def, directory_def):
 										# 不具合発生中
 										print(str(datetime.datetime.now()) + str(follow_id_def) + ": !!!fail!!!")
 										with open(directory_def + "/_log.txt",'a') as f:
-											f.write(str(datetime.datetime.now()) + str(follow_id_def) + ": 03-1: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
+											f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": 03-1: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
 										tmp_count2 = tmp_count2 +1
 										if tmp_count2 < 3:
 											time.sleep(60)
@@ -215,7 +215,7 @@ def media_get(query_def, follow_id_def, maxid_def, directory_def):
 									except Exception as err:
 										print(str(datetime.datetime.now()) + str(follow_id_def) + ": 03-2: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err))
 										with open(directory_def + "/_log.txt",'a') as f:
-											f.write(str(datetime.datetime.now()) + str(follow_id_def) + ": 03-2: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
+											f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": 03-2: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
 										tmp_count2 = tmp_count2 +1
 										if tmp_count2 < 3:
 											time.sleep(60)
@@ -226,7 +226,7 @@ def media_get(query_def, follow_id_def, maxid_def, directory_def):
 										# 不具合発生中
 										print(str(datetime.datetime.now()) + str(follow_id_def) + ": !!!fail!!!")
 										with open(directory_def + "/_log.txt",'a') as f:
-											f.write(str(datetime.datetime.now()) + str(follow_id_def) + ": 03-2: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
+											f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": 03-2: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
 										tmp_count2 = tmp_count2 +1
 										if tmp_count2 < 3:
 											time.sleep(60)
@@ -241,14 +241,14 @@ def media_get(query_def, follow_id_def, maxid_def, directory_def):
 		#02-2
 		except tweepy.RateLimitError as err:
 			with open(directory_def + "/_log.txt",'a') as f:
-				f.write(str(datetime.datetime.now()) + str(follow_id_def) + ": RateLimitError_4: " + str(maxid_def) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
+				f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": RateLimitError_4: " + str(maxid_def) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
 			time.sleep(60 * 15)
 			continue
 		#02-3
 		except tweepy.TweepError as err:
 			print(str(datetime.datetime.now()) + str(follow_id_def) + ": TweepError_4: " + str(maxid_def) + ": TC=" + str(tmp_count2) + ": " + str(err))
 			with open(directory_def + "/_log.txt",'a') as f:
-				f.write(str(datetime.datetime.now()) + str(follow_id_def) + ": TweepError_4: " + str(maxid_def) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
+				f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": TweepError_4: " + str(maxid_def) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
 			tmp_count2 = tmp_count2 +1
 			if tmp_count2 < 3:
 				time.sleep(60 * 5)
