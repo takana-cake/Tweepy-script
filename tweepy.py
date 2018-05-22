@@ -87,7 +87,7 @@ def first_tweet_id_set():
 	# tmp_countはAPIエラー時のMAXID確認用フラグ
 	# ./my_id_select/follow_id/_maxid.txtに前回実行時のMAXIDを記録している
 	# ここ以下のAPIは鍵アカだと取得できないので対ループ用にtmp_countを使用
-	tmp_count = 0
+	tmp_count_def = 0
 	json_file = open(working_directory + "/_my_friends_list.json",'r')
 	my_friends_list_json = json.load(json_file)
 	json_file.close()
@@ -108,13 +108,13 @@ def first_tweet_id_set():
 			except tweepy.TweepError as err:
 				with open(working_directory + "/_log.txt",'a') as f:
 					f.write(str(datetime.datetime.now()) + ": " + str(follow_id_get) + ": TweepError_3: " + str(err) + "\n")
-				tmp_count = tmp_count +1
-				if tmp_count < 3:
+				tmp_count_def = tmp_count_def +1
+				if tmp_count_def < 3:
 					time.sleep(60 * 5)
 					continue
 				else:
-					tmp_count = 0
-			tmp_count = 0
+					tmp_count_def = 0
+			tmp_count_def = 0
 			f = open(working_directory + "/" + follow_id_get + "/_maxid.txt" , 'w')
 			f.write(str(maxid))
 			f.close()
@@ -129,9 +129,8 @@ def first_tweet_id_set():
 
 def tweet_id_get(query_def, follow_id_def, maxid_def):
 	# ツイートIDを取得
-	# tmp_count2は3回まで再試行する用
-	tmp_count = 0
-	tmp_count2 = 0
+	# tmp_countは3回まで再試行する用
+	tmp_count_def = 0
 	for l in range(50):
 		#02-1 TLを取得_API
 		try:
@@ -152,28 +151,27 @@ def tweet_id_get(query_def, follow_id_def, maxid_def):
 		#02-2
 		except tweepy.RateLimitError as err:
 			with open(working_directory + "/_log.txt",'a') as f:
-				f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": RateLimitError_4: " + str(maxid_def) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
+				f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": RateLimitError_4: " + str(maxid_def) + ": TC=" + str(tmp_count) + ": " + str(err) + "\n")
 			time.sleep(60 * 15)
 			continue
 		#02-3
 		except tweepy.TweepError as err:
-			print(str(datetime.datetime.now()) + str(follow_id_def) + ": TweepError_4: " + str(maxid_def) + ": TC=" + str(tmp_count2) + ": " + str(err))
+			print(str(datetime.datetime.now()) + str(follow_id_def) + ": TweepError_4: " + str(maxid_def) + ": TC=" + str(tmp_count_def) + ": " + str(err))
 			with open(working_directory + "/_log.txt",'a') as f:
-				f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": TweepError_4: " + str(maxid_def) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
-			tmp_count2 = tmp_count2 +1
-			if tmp_count2 < 3:
+				f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": TweepError_4: " + str(maxid_def) + ": TC=" + str(tmp_count_def) + ": " + str(err) + "\n")
+			tmp_count_def = tmp_count_def +1
+			if tmp_count_def < 3:
 				time.sleep(60 * 5)
 				continue
 			else:
-				tmp_count2 = 0
-		tmp_count2 = 0
+				tmp_count_def = 0
+		tmp_count_def = 0
 
 
 def media_get(twi_get_media, follow_id_def2):
 	# 画像取得
-	# tmp_count2は3回まで再試行する用
-	tmp_count = 0
-	tmp_count2 = 0
+	# tmp_countは3回まで再試行する用
+	tmp_count_def = 0
 	# リツイート判断
 	if hasattr(twi_get_media, 'retweeted_status') is False:
 		# 画像保存
@@ -198,16 +196,16 @@ def media_get(twi_get_media, follow_id_def2):
 							dl_file = urllib.request.urlopen(dl_media).read()
 							f.write(dl_file)
 					except Exception as err:
-						print(str(datetime.datetime.now()) + str(follow_id_def2) + ": 03: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err))
+						print(str(datetime.datetime.now()) + str(follow_id_def2) + ": 03: " + str(dl_media) + ": TC=" + str(tmp_count_def) + ": " + str(err))
 						with open(working_directory + "/_log.txt",'a') as f:
-							f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def2) + ": 03: " + str(dl_media) + ": TC=" + str(tmp_count2) + ": " + str(err) + "\n")
-						tmp_count2 = tmp_count2 +1
-						if tmp_count2 < 3:
+							f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def2) + ": 03: " + str(dl_media) + ": TC=" + str(tmp_count_def) + ": " + str(err) + "\n")
+						tmp_count_def = tmp_count_def +1
+						if tmp_count_def < 3:
 							time.sleep(60)
 							continue
 						else:
-							tmp_count2 = 0
-					tmp_count2 = 0
+							tmp_count_def = 0
+					tmp_count_def = 0
 
 
 
@@ -233,9 +231,8 @@ for my_id_select in my_id:
 	for tmp_id in limit_handled(tweepy.Cursor(api.friends_ids, id=my_id_select).items()):
 		my_friends_ids.append(tmp_id)
 	# 100IDsずつ詳細をmy_friends_listへ
-	# tmp_countはフォロー数カウンター、tmp_count2はエラー時のiチェック
+	# tmp_countはフォロー数カウンター
 	tmp_count = 0
-	tmp_count2 = 0
 	for i in range(0, len(my_friends_ids), 100):
 		try:
 			for tmp_user in api.lookup_users(user_ids=my_friends_ids[i:i+100]):
