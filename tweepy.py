@@ -1,4 +1,3 @@
-
 # _*_ coding: utf-8 _*_
 
 import tweepy
@@ -35,8 +34,6 @@ my_id = [ '' , '' ]
 my_friends_ids = []		#フォローしているIDとスクリーン名
 my_friends_list = {}		#
 my_friends_list_json = {}	#
-tmp_count = 0
-tmp_count2 = 0
 
 
 def limit_handled(h):
@@ -83,10 +80,10 @@ def new_follow_ids_json():
 # follow_screen_get	:first_tweet_id_set()用スクリーン名格納
 # query			:first_tweet_id_set()用検索クエリ。tweet_id_get()に渡す
 # maxid			:first_tweet_id_set()用検索開始ツイートID。tweet_id_get()に渡す
+# idget_fault_count			:first_tweet_id_set()用api失敗カウンタ
 def first_tweet_id_set():
 	# 取得開始のツイートIDをmaxidへいれる
 	# ./my_id_select/follow_id/_maxid.txtに前回実行時のMAXIDを記録している
-	# ここ以下のAPIは鍵アカだと取得できないので対ループ用にtmp_countを使用
 	idget_fault_count = 0
 	json_file = open(working_directory + "/_my_friends_list.json",'r')
 	my_friends_list_json = json.load(json_file)
@@ -128,14 +125,14 @@ def first_tweet_id_set():
 
 
 # tweetidget_fault_count	:tweet_id_get()用3回まで再試行する用
-# l				:tweet_id_get()用50×count100=5000ツイート
+# l					:tweet_id_get()用50×count100=5000ツイート
 # query_def			:tweet_id_get()用first_tweet_id_set()から受け取った検索クエリ
-# follow_id_def			:tweet_id_get()用first_tweet_id_set()から受け取った_my_friends_listからのフォローID
+# follow_id			:tweet_id_get()用first_tweet_id_set()から受け取った_my_friends_listからのフォローID
 # maxid_def			:tweet_id_get()用処理中ツイートID。初期値はfirst_tweet_id_set()から受け取った検索開始ID
 # twi				:tweet_id_get()用フォローIDのタイムライン
 # maxid_def			:tweet_id_get()用first_tweet_id_set()から受け取った検索クエリ
 # maxid_def			:tweet_id_get()用first_tweet_id_set()から受け取った検索クエリ
-def tweet_id_get(query_def, follow_id_def, maxid_def):
+def tweet_id_get(query_def, follow_id, maxid_def):
 	# ツイートIDを取得
 	tweetidget_fault_count = 0
 	for l in range(50):
@@ -143,29 +140,29 @@ def tweet_id_get(query_def, follow_id_def, maxid_def):
 		try:
 			if query_def == 'max_search':
 				#03-1 新規サーチ
-				for twi in api.user_timeline(follow_id_def, count=100, max_id=maxid_def):
+				for twi in api.user_timeline(follow_id, count=100, max_id=maxid_def):
 					# media_getへ
-					media_get(twi)
+					media_get(twi, follow_id)
 					maxid_def = twi.id
 			elif query_def == 'since_search':
 				#03-2 既存サーチ
-				for twi in api.user_timeline(follow_id_def, count=100, since_id=maxid_def):
+				for twi in api.user_timeline(follow_id, count=100, since_id=maxid_def):
 					# media_getへ
-					media_get(twi)
+					media_get(twi, follow_id)
 					maxid_def = twi.id
-				with open(working_directory + "/" + follow_id_def + "/_maxid.txt", 'w+') as f:
+				with open(working_directory + "/" + follow_id + "/_maxid.txt", 'w+') as f:
 					f.write(str(maxid_def))
 		#02-2
 		except tweepy.RateLimitError as err:
 			with open(working_directory + "/_log.txt",'a') as f:
-				f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": RateLimitError_4: " + str(maxid_def) + ": TC=" + str(tmp_count) + ": " + str(err) + "\n")
+				f.write(str(datetime.datetime.now()) + ": " + str(follow_id) + ": RateLimitError_4: " + str(maxid_def) + ": TC=" + str(tweetidget_fault_count) + ": " + str(err) + "\n")
 			time.sleep(60 * 15)
 			continue
 		#02-3
 		except tweepy.TweepError as err:
-			print(str(datetime.datetime.now()) + str(follow_id_def) + ": TweepError_4: " + str(maxid_def) + ": TC=" + str(tmp_count_def) + ": " + str(err))
+			print(str(datetime.datetime.now()) + str(follow_id) + ": TweepError_4: " + str(maxid_def) + ": TC=" + str(tweetidget_fault_count) + ": " + str(err))
 			with open(working_directory + "/_log.txt",'a') as f:
-				f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": TweepError_4: " + str(maxid_def) + ": TC=" + str(tmp_count_def) + ": " + str(err) + "\n")
+				f.write(str(datetime.datetime.now()) + ": " + str(follow_id) + ": TweepError_4: " + str(maxid_def) + ": TC=" + str(tweetidget_fault_count) + ": " + str(err) + "\n")
 			tweetidget_fault_count = tweetidget_fault_count +1
 			if tweetidget_fault_count < 3:
 				time.sleep(60 * 5)
@@ -178,7 +175,7 @@ def tweet_id_get(query_def, follow_id_def, maxid_def):
 		
 # mediaget_fault_count		:media_get()用3回まで再試行する用
 # twi_def			:media_get()用tweet_id_get()から受け取ったツイート詳細
-def media_get(twi_def):
+def media_get(twi_def, follow_id_def):
 	# 画像取得
 	mediaget_fault_count = 0
 	# リツイート判断
@@ -205,9 +202,9 @@ def media_get(twi_def):
 							dl_file = urllib.request.urlopen(dl_media).read()
 							f.write(dl_file)
 					except Exception as err:
-						print(str(datetime.datetime.now()) + str(follow_id_def) + ": 03: " + str(dl_media) + ": TC=" + str(tmp_count_def) + ": " + str(err))
+						print(str(datetime.datetime.now()) + str(follow_id_def) + ": 03: " + str(dl_media) + ": TC=" + str(mediaget_fault_count) + ": " + str(err))
 						with open(working_directory + "/_log.txt",'a') as f:
-							f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": 03: " + str(dl_media) + ": TC=" + str(tmp_count_def) + ": " + str(err) + "\n")
+							f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": 03: " + str(dl_media) + ": TC=" + str(mediaget_fault_count) + ": " + str(err) + "\n")
 						mediaget_fault_count = mediaget_fault_count +1
 						if mediaget_fault_count < 3:
 							time.sleep(60)
