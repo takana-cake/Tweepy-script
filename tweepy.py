@@ -80,7 +80,7 @@ def new_follow_ids_json():
 # follow_screen_get	:first_tweet_id_set()用スクリーン名格納
 # query			:first_tweet_id_set()用検索クエリ。tweet_id_get()に渡す
 # maxid			:first_tweet_id_set()用検索開始ツイートID。tweet_id_get()に渡す
-# idget_fault_count			:first_tweet_id_set()用api失敗カウンタ
+# idget_fault_count	:first_tweet_id_set()用api失敗カウンタ
 def first_tweet_id_set():
 	# 取得開始のツイートIDをmaxidへいれる
 	# ./my_id_select/follow_id/_maxid.txtに前回実行時のMAXIDを記録している
@@ -125,7 +125,7 @@ def first_tweet_id_set():
 
 
 # tweetidget_fault_count	:tweet_id_get()用3回まで再試行する用
-# l					:tweet_id_get()用50×count100=5000ツイート
+# l				:tweet_id_get()用50×count100=5000ツイート
 # query_def			:tweet_id_get()用first_tweet_id_set()から受け取った検索クエリ
 # follow_id			:tweet_id_get()用first_tweet_id_set()から受け取った_my_friends_listからのフォローID
 # maxid_def			:tweet_id_get()用処理中ツイートID。初期値はfirst_tweet_id_set()から受け取った検索開始ID
