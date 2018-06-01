@@ -194,8 +194,9 @@ def media_get(twi_def, follow_id_def):
 						dl_media = media["video_info"]["variants"][0]["url"]
 						if '.m3u8' in dl_media:
 							dl_media = media["video_info"]["variants"][1]["url"]
-						if '?tag=3' in dl_media:
-							dl_media = dl_media.replace("?tag=3", "")
+						if '?tag=' in dl_media:
+							dl_media = dl_media[:-6]
+							#dl_media = dl_media.replace("?tag=3", "")
 						dl_filename = dl_media
 					try:
 						with open(working_directory + "/" + follow_id_def + "/" + os.path.basename(dl_filename), 'wb') as f:
