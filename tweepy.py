@@ -211,6 +211,9 @@ def media_get(twi_def, follow_id_def):
 							time.sleep(60)
 							continue
 						else:
+							with open(working_directory + "/" + follow_id_def + "/" + os.path.basename(dl_filename), 'wb') as f:
+								dl_file = urllib.request.urlopen(dl_filename).read()
+								f.write(dl_file)
 							mediaget_fault_count = 0
 					mediaget_fault_count = 0
 
