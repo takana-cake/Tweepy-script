@@ -83,7 +83,8 @@ def tweet_search():
 		if tweet_id:
 			search_query = 'since_search'
 		else:
-			tweet_id = api.search(q=hash_tag,count=1)[0].id
+			tweet_id = api.search(q=hash_tag,count=1)
+			tweet_id = tweet_id[0].id
 		for l in range(50):
 			try:
 				if search_query == 'since_search':
