@@ -48,7 +48,7 @@ def init_start():
 		f.close()
 	if os.path.getsize(working_directory + "/_hashtag_add.txt"):
 		f = open(working_directory + "/_hashtag_add.txt")
-		hashtag_add = f.readlines()
+		hashtag_add = f.read()
 		f.close()
 		if os.path.getsize(working_directory + "/_hashtag_list.json"):
 			f = open(working_directory + "/_hashtag_list.json",'r')
@@ -83,6 +83,7 @@ def tweet_search():
 		if tweet_id:
 			search_query = 'since_search'
 		else:
+			search_query = 'max_search'
 			tweet_id = api.search(q=hash_tag,count=1)
 			tweet_id = tweet_id[0].id
 		for l in range(50):
