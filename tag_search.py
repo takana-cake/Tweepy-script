@@ -48,7 +48,7 @@ def init_start():
 		f.close()
 	if os.path.getsize(working_directory + "/_hashtag_add.txt"):
 		f = open(working_directory + "/_hashtag_add.txt")
-		hashtag_add = f.read()
+		hashtag_add = f.read().split('\n')
 		f.close()
 		if os.path.getsize(working_directory + "/_hashtag_list.json"):
 			f = open(working_directory + "/_hashtag_list.json",'r')
@@ -84,7 +84,7 @@ def tweet_search():
 			search_query = 'since_search'
 		else:
 			search_query = 'max_search'
-			tweet_id = api.search(q=hash_tag,count=1)
+			tweet_id = api.search(q=hash_tag)
 			tweet_id = tweet_id[0].id
 		for l in range(50):
 			try:
@@ -101,8 +101,10 @@ def tweet_search():
 				if retry_count < 3:
 					time.sleep(60)
 					continue
+				else:
+					retry_count = 0
+			retry_count = 0
 		hashtag_json[hash_tag] = tweet_id
-		retry_count = 0
 	f = open(working_directory + "/_hashtag_list.json",'w')
 	json.dump(hashtag_json,f)
 	f.close()
