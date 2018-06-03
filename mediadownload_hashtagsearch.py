@@ -29,13 +29,13 @@ auth.set_access_token(
 api = tweepy.API(auth)
 
 
-# _hashtag_list.json    	{'hash_tag':'tweet_id', ...}
-# _hashtag_add.txt		検索ワード追加用。1行ずつ読み込む
+# _hashtag_list.json    :{'hash_tag':'tweet_id', ...}
+# _hashtag_add.txt	:検索ワード追加用。1行ずつ読み込む
 
 
-# hashtag_add			ハッシュタグ追加用
-# hashtag_json			json読み込み用
-# hashtag			追加用一時変数
+# hashtag_add		:ハッシュタグ追加用
+# hashtag_json		:json読み込み用
+# hashtag		:追加用一時変数
 def init_start():
 	hashtag_json = {}
 	if os.path.exists(working_directory) == False:
@@ -67,10 +67,10 @@ def init_start():
 		f.close()
 
 
-# hashtag_json			json読み込み用
-# hash_tag			jsonからハッシュタグ取得
-# tweet_id			
-# twi
+# hashtag_json		:json読み込み用
+# hash_tag		:jsonからハッシュタグ取得
+# tweet_id		:検索開始ツイートID
+# twi			:Status格納用
 def tweet_search():
 	if not os.path.getsize(working_directory + "/_hashtag_list.json"):
 		sys.exit()
@@ -117,8 +117,8 @@ def tweet_search():
 	f.close()
 
 
-# mediaget_fault_count	  :media_get()用3回まで再試行する用
-# twi_def		       :media_get()用tweet_id_get()から受け取ったツイート詳細
+# mediaget_fault_count	:media_get()用3回まで再試行する用
+# twi_def		:media_get()用tweet_id_get()から受け取ったツイート詳細
 def media_get(twi_def):
 	# 画像取得
 	mediaget_fault_count = 0
