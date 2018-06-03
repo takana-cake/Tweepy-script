@@ -1,4 +1,3 @@
-t tag_search.py
 # _*_ coding: utf-8 _*_
 
 import tweepy
