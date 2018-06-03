@@ -29,13 +29,13 @@ auth.set_access_token(
 api = tweepy.API(auth)
 
 
-# _hashtag_list.json    {'hash_tag':'tweet_id', }
-# _hashtag_add.txt	      1行ずつ検索ワード記載
+# _hashtag_list.json    	{'hash_tag':'tweet_id', ...}
+# _hashtag_add.txt		検索ワード追加用。1行ずつ読み込む
 
 
-# hashtag_add		   ハッシュタグ追加用
-# hashtag_json		  json読み込み用
-# hashtag			       追加用一時変数
+# hashtag_add			ハッシュタグ追加用
+# hashtag_json			json読み込み用
+# hashtag			追加用一時変数
 def init_start():
 	hashtag_json = {}
 	if os.path.exists(working_directory) == False:
@@ -67,9 +67,9 @@ def init_start():
 		f.close()
 
 
-# hashtag_json
-# hash_tag
-# tweet_id
+# hashtag_json			json読み込み用
+# hash_tag			jsonからハッシュタグ取得
+# tweet_id			
 # twi
 def tweet_search():
 	if not os.path.getsize(working_directory + "/_hashtag_list.json"):
