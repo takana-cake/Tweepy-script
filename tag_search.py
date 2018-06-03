@@ -96,6 +96,13 @@ def tweet_search():
 					for twi in api.search(q=hash_tag, count=100, max_id=tweet_id):
 						media_get(twi)
 						tweet_id = twi.id
+			except tweepy.RateLimitError as err:
+				retry_count = retry_count +1
+				if retry_count < 3:
+					time.sleep(60 * 5)
+					continue
+				else:
+					retry_count = 0
 			except:
 				retry_count = retry_count +1
 				if retry_count < 3:
@@ -138,6 +145,13 @@ def media_get(twi_def):
 						with open(working_directory + "/" + os.path.basename(dl_filename), 'wb') as f:
 							dl_file = urllib.request.urlopen(dl_media).read()
 							f.write(dl_file)
+					except tweepy.RateLimitError as err:
+						mediaget_fault_count = mediaget_fault_count +1
+						if mediaget_fault_count < 3:
+							time.sleep(60 * 5)
+							continue
+						else:
+							mediaget_fault_count = 0
 					except Exception as err:
 						mediaget_fault_count = mediaget_fault_count +1
 						if mediaget_fault_count < 3:
