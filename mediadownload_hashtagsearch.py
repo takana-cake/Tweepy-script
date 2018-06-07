@@ -29,13 +29,14 @@ auth.set_access_token(
 api = tweepy.API(auth)
 
 
-# _hashtag_list.json    :{'hash_tag':'tweet_id', ...}
-# _hashtag_add.txt	:検索ワード追加用。1行ずつ読み込む
+
+# _hashtag_list.json    {'hash_tag':'tweet_id', }
+# _hashtag_add.txt	    1行ずつ検索ワード記載
 
 
-# hashtag_add		:ハッシュタグ追加用
-# hashtag_json		:json読み込み用
-# hashtag		:追加用一時変数
+# hashtag_add	      ハッシュタグ追加用
+# hashtag_json	    json読み込み用
+# hashtag			      追加用一時変数
 def init_start():
 	hashtag_json = {}
 	if os.path.exists(working_directory) == False:
@@ -67,13 +68,13 @@ def init_start():
 		f.close()
 
 
-# hashtag_json		:json読み込み用
-# hash_tag		:jsonからハッシュタグ取得
-# tweet_id		:検索開始ツイートID
-# twi			:Status格納用
+# hashtag_json
+# hash_tag
+# tweet_id
+# twi
 def tweet_search():
 	if not os.path.getsize(working_directory + "/_hashtag_list.json"):
-		sys.exit()
+		return
 	hashtag_json = {}
 	retry_count = 0
 	f = open(working_directory + "/_hashtag_list.json",'r')
@@ -106,7 +107,7 @@ def tweet_search():
 			except:
 				retry_count = retry_count +1
 				if retry_count < 3:
-					time.sleep(60)
+					time.sleep(10)
 					continue
 				else:
 					retry_count = 0
@@ -117,49 +118,64 @@ def tweet_search():
 	f.close()
 
 
-# mediaget_fault_count	:media_get()用3回まで再試行する用
-# twi_def		:media_get()用tweet_id_get()から受け取ったツイート詳細
+# mediaget_fault_count    :media_get()用3回まで再試行する用
+# twi_def		      :media_get()用tweet_id_get()から受け取ったツイート詳細
+# getmedia_type		:動画あり
 def media_get(twi_def):
 	# 画像取得
 	mediaget_fault_count = 0
 	# リツイート判断
 	if hasattr(twi_def, 'retweeted_status') is False:
-		# 画像保存
+		# メディア判断
 		if hasattr(twi_def, "extended_entities"):
 			if 'media' in twi_def.extended_entities:
 				for media in twi_def.extended_entities["media"]:
 					if media["type"] == 'photo':
 						dl_filename = media["media_url"]
 						dl_media = dl_filename + ":orig"
-					if media["type"] == 'animated_gif':
+					if media["type"] == 'animated_gif' and getmedia_type is "video":
 						dl_media = media["video_info"]["variants"][0]["url"]
 						dl_filename = dl_media
-					if media["type"] == 'video':
+					if media["type"] == 'video' and getmedia_type is "video":
 						dl_media = media["video_info"]["variants"][0]["url"]
 						if '.m3u8' in dl_media:
 							dl_media = media["video_info"]["variants"][1]["url"]
 						if '?tag=' in dl_media:
 							dl_media = dl_media[:-6]
 						dl_filename = dl_media
-					try:
-						with open(working_directory + "/" + os.path.basename(dl_filename), 'wb') as f:
-							dl_file = urllib.request.urlopen(dl_media).read()
-							f.write(dl_file)
-					except Exception as err:
-						mediaget_fault_count = mediaget_fault_count +1
-						if mediaget_fault_count < 3:
-							time.sleep(60)
-							continue
-						else:
-							mediaget_fault_count = 0
+					if os.path.exists(working_directory + "/" + os.path.basename(dl_filename)) == False:
+						try:
+							with open(working_directory + "/" + os.path.basename(dl_filename), 'wb') as f:
+								dl_file = urllib.request.urlopen(dl_media).read()
+								f.write(dl_file)
+						except tweepy.RateLimitError as err:
+							mediaget_fault_count = mediaget_fault_count +1
+							if mediaget_fault_count < 3:
+								time.sleep(60 * 5)
+								continue
+							else:
+								mediaget_fault_count = 0
+						except Exception as err:
+							mediaget_fault_count = mediaget_fault_count +1
+							if mediaget_fault_count < 3:
+								time.sleep(60)
+								continue
+							else:
+								mediaget_fault_count = 0
 					mediaget_fault_count = 0
 
 
 #
 # main
 #
-file_path = os.getcwd()
-working_directory = file_path + "/hashtag"
 
+file_path = os.getcwd()
+
+working_directory = file_path + "/foo"
+getmedia_type = "photo"
+init_start()
+tweet_search()
+working_directory = file_path + "/bar"
+getmedia_type = "video"
 init_start()
 tweet_search()
