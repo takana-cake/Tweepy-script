@@ -89,6 +89,11 @@ def first_tweet_id_set():
 	my_friends_list_json = json.load(json_file)
 	json_file.close()
 	for follow_id_get,follow_screen_get in my_friends_list_json.items():
+		# 鍵垢はスキップ
+		if api.get_user(follow_id_get).protected == True:
+			with open(working_directory + "/_log.txt",'a') as f:
+				f.write(str(datetime.datetime.now()) + ": " + str(follow_id_get) + ": Protected Account\n")
+			continue
 		# 新規 ->maxidを取得し_maxid.txtファイルへ。クエリはmax_search
 		if os.path.getsize(working_directory + "/" + follow_id_get + "/_maxid.txt") == 0:
 			query = 'max_search'
