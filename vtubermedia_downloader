@@ -12,7 +12,7 @@ file_path/
 　├ user2/
 
 1. ユーザごとにハッシュタグを保持。とりあえずjsonで管理
-	vtuber{user1:{tag1:date, tag2:date}, user2:{tag1:date, tag2:date}}
+	vtuber{user1:{TL用:date, tag1:date, tag2:date}, user2:{TL用:date, tag1:date, tag2:date}}
 2. プロフィールとTLのハッシュタグを監視
 	user_description_check()　プロフ
 	TL検索時についでにチェック
@@ -28,8 +28,8 @@ file_path/
 ---------------
 Flow
 ---------------
-jsonチェック
-user or hash追加
+init jsonチェック
+user or hash追加チェック
 ユーザプロフチェック
 TLチェック
 ハッシュタグチェック
@@ -46,25 +46,27 @@ import datetime
 import time
 import json
 
-# 認証
-twitter_conf = {
-    'consumer' : {
-        'key'    : "",
-        'secret' : ""
-    },
-    'access'   : {
-        'key'    : "",
-        'secret' : ""
-    }
-}
-auth = tweepy.OAuthHandler(
-    twitter_conf['consumer']['key'],
-    twitter_conf['consumer']['secret'])
-auth.set_access_token(
-    twitter_conf['access']['key'],
-    twitter_conf['access']['secret'])
 
-api = tweepy.API(auth)
+
+def tweepy_api():
+	twitter_conf = {
+	    'consumer' : {
+	        'key'    : "",
+	        'secret' : ""
+	    },
+	    'access'   : {
+	        'key'    : "",
+	        'secret' : ""
+	    }
+	}
+	auth = tweepy.OAuthHandler(
+	    twitter_conf['consumer']['key'],
+	    twitter_conf['consumer']['secret'])
+	auth.set_access_token(
+	    twitter_conf['access']['key'],
+	    twitter_conf['access']['secret'])
+	tweepy_auth = tweepy.API(auth)
+	return(tweepy_auth)
 
 def init_script():
 	print('please run "python3 vtubermedia_downloader.py user_add user1 user2..."')
@@ -73,6 +75,9 @@ def init_script():
 def user_add(users):
 	del users[0:2]
 	for i in users:
+		list1 = ["dummy"]
+		list1 = list1.insert.user_description_check(i)
+		vtuber[i] = ""
 		vtuber[i] = user_description_check(i)
 	json_file = open(file_path + "/user_list.json",'w')
 	json.dump(vtuber,json_file)
@@ -163,6 +168,8 @@ elif os.path.exists(file_path + "user_list.json") == False:
 json_file = open(file_path + "user_list.json",'r')
 chech_list = json.load(json_file)
 json_file.close()
+
+api = tweepy_api()
 for user,tags in chech_list.items():
 	user_description_check_result = user_description_check(user)
 	for i in user_description_check_result:
