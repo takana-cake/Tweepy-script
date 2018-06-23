@@ -73,19 +73,24 @@ def init_script():
 	sys.exit()
 
 def user_add(users):
+	user_list_useradd = user_list_json
 	del users[0:2]
 	for i in users:
 		if hasattr(user_list_json, i) is False:
 			user_dict = {k:"" for k in user_description_check(i)}
 			user_dict.update({"dummy",""})
-			user_list_add[i] = user_dict
+			user_list_useradd[i] = user_dict
 		if os.path.exists(file_path + "/" + i) == False:
 			os.makedirs(file_path + "/" + i)
 	return(user_list_useradd)
 
 def hashtag_add(tags):
+	user_list_tagadd = user_list_json
 	key = tags[2]
 	del tags[0:3]
+	for i in tags:
+		if hasattr(user_list_json, i) is False:
+			user_list_tagadd[key].update({i, ""})
 	return(user_list_tagadd)
 
 def user_description_check(check_userid):
@@ -129,12 +134,36 @@ def search_hashtags(s_hashtags):
 				else:
 					retry_count = 0
 			retry_count = 0
-		hashtag_json[hash_tag] = tweet_id
-	f = open(working_directory + "/_hashtag_list.json",'w')
-	json.dump(hashtag_json,f)
-	f.close()
+		# リターンさせる
 
 def search_user_tl(s_user,s_date):
+	if s_date:
+		search_query = 'since_search'
+	else:
+		search_query = 'until_search'
+		s_date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
+	for l in range(50):
+		try:
+			if search_query == 'until_search':
+				for twi in api.user_timeline(s_user, count=100, until=date):
+					date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
+					media_get(twi)
+			else:
+				for twi in api.user_timeline(s_user, count=100, since=date):
+					date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
+					media_get(twi)
+		except tweepy.RateLimitError as err:
+			time.sleep(60 * 15)
+			continue
+		except tweepy.TweepError as err:
+			tweetidget_fault_count = tweetidget_fault_count +1
+			if tweetidget_fault_count < 3:
+				time.sleep(60 * 5)
+				continue
+			else:
+				tweetidget_fault_count = 0
+		tweetidget_fault_count = 0
+	###
 	for twi in api.search(q="#testing", count=10, until=s_date, tweet_mode = 'extended'):
 		print(twi.full_text)
 	tweet_hashtags = []
@@ -210,6 +239,7 @@ json_file.close()
 
 api = tweepy_api()
 for user,tags in user_list_new.items():
+	working_directory = file_path + "/" + user
 	for i in user_description_check(user):
 		if i not in tags:
 			tags.update({i, ""})
