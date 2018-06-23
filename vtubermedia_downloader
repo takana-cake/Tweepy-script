@@ -101,16 +101,50 @@ def user_description_check(check_userid):
 	description_hashtags = [x for x in description_split if '#' in x]
 	return(description_hashtags)
 
-def search_hashtags():
+def search_hashtags(s_hashtags):
+	# since = 2016-08-26_00:00:00_JST
+	# until = 2016-08-26_23:59:59_JST
+	retry_count = 0
+	for hashtag,date in s_hashtags.items():
+		if date:
+			search_query = 'since_search'
+		else:
+			search_query = 'max_search'
+			date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
+		for l in range(50):
+			try:
+				if search_query == 'since_search':
+					for twi in api.search(q=hashtag, count=100, since=date):
+						date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
+						media_get(twi)
+				else:
+					for twi in api.search(q=hashtag, count=100, until=date):
+						date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
+						media_get(twi)
+			except tweepy.RateLimitError as err:
+				retry_count = retry_count +1
+				if retry_count < 3:
+					time.sleep(60 * 5)
+					continue
+				else:
+					retry_count = 0
+			except:
+				retry_count = retry_count +1
+				if retry_count < 3:
+					time.sleep(10)
+					continue
+				else:
+					retry_count = 0
+			retry_count = 0
+		hashtag_json[hash_tag] = tweet_id
+	f = open(working_directory + "/_hashtag_list.json",'w')
+	json.dump(hashtag_json,f)
+	f.close()
 
-def search_user_tl():
+def search_user_tl(s_user,s_date):
 
 def media_get(twi_def, follow_id_def):
-	# 画像取得
 	mediaget_fault_count = 0
-	# リツイート判断
-	if hasattr(twi_def, 'retweeted_status') is False:
-		# 画像保存
 		if hasattr(twi_def, "extended_entities"):
 			if 'media' in twi_def.extended_entities:
 				for media in twi_def.extended_entities["media"]:
@@ -126,7 +160,6 @@ def media_get(twi_def, follow_id_def):
 							dl_media = media["video_info"]["variants"][1]["url"]
 						if '?tag=' in dl_media:
 							dl_media = dl_media[:-6]
-							#dl_media = dl_media.replace("?tag=3", "")
 						dl_filename = dl_media
 					try:
 						with open(working_directory + "/" + follow_id_def + "/" + os.path.basename(dl_filename), 'wb') as f:
@@ -174,9 +207,9 @@ json_file.close()
 
 api = tweepy_api()
 for user,tags in chech_list.items():
-	user_description_check_result = user_description_check(user)
-	for i in user_description_check_result:
-		if tags has user_description_check_result:
-	search_user_tl(user)
+	for i in user_description_check(user):
+		if i not in tags:
+			tags.update({i, ""})
+	search_user_tl(user,tags["dummy"])
 	search_hashtags(tags)
 
