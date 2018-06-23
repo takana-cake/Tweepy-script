@@ -63,7 +63,7 @@ auth.set_access_token(
 api = tweepy.API(auth)
 
 def init_script():
-	print('please run "user_add user1 user2..."')
+	print('please run "python3 vtubermedia_downloader.py user_add user1 user2..."')
 	sys.exit()
 
 def user_add(users):
