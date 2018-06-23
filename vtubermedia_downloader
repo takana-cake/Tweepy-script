@@ -1,6 +1,7 @@
 '''
 
-やりたいこと
+Description
+---------------
 1. ユーザごとにハッシュタグを保持。とりあえずjsonで管理
 	vtuber{
 		user1:
@@ -19,6 +20,33 @@
 	search_user_tl()
 
 とりあえずダブり画像は考えないものとする
-他ユーザのタグが入っていた場合の処理はどうするか
+
+
 
 '''
+
+
+
+
+
+def user_description_check():
+	description = api.get_user(my_id).description
+	description = re.sub(r'#', " #", description)
+	pattern = re.compile(r'[\s\[\]\(\)\<\>\（\）\＜\＞\"\']')
+	description_split = re.split(pattern, description)
+	description_hashtags = [x for x in description_split if '#' in x]
+
+
+
+def hashtag_add():
+# 引数あり(ユーザ、タグ1、タグ2・・・)
+
+
+
+def search_hashtags():
+
+
+
+def search_user_tl():
+
+
