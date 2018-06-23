@@ -25,9 +25,49 @@ Description
 
 '''
 
+# _*_ coding: utf-8 _*_
+
+import tweepy
+import sys
+import urllib.request
+import os
+import datetime
+import time
+import json
+
+# 認証
+twitter_conf = {
+    'consumer' : {
+        'key'    : "",
+        'secret' : ""
+    },
+    'access'   : {
+        'key'    : "",
+        'secret' : ""
+    }
+}
+auth = tweepy.OAuthHandler(
+    twitter_conf['consumer']['key'],
+    twitter_conf['consumer']['secret'])
+auth.set_access_token(
+    twitter_conf['access']['key'],
+    twitter_conf['access']['secret'])
+
+api = tweepy.API(auth)
 
 
+def init_userlist(users):
+	for i in users:
+		vtuber[i] = ""
+	json_file = open(working_directory + "/user_list.json",'w')
+	json.dump(vtuber,json_file)
+	json_file.close()
 
+def hashtag_add():
+	# 引数あり(ユーザ、タグ1、タグ2・・・)
+	json_file = open(working_directory + "user_list.json",'r')
+	user_list_json = json.load(json_file)
+	json_file.close()
 
 def user_description_check():
 	description = api.get_user(my_id).description
@@ -36,17 +76,10 @@ def user_description_check():
 	description_split = re.split(pattern, description)
 	description_hashtags = [x for x in description_split if '#' in x]
 
-
-
-def hashtag_add():
-# 引数あり(ユーザ、タグ1、タグ2・・・)
-
-
-
 def search_hashtags():
 
-
-
 def search_user_tl():
+
+
 
 
