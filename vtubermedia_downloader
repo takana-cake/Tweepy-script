@@ -74,13 +74,16 @@ def init_script():
 
 def user_add(users):
 	del users[0:2]
+	json_file = open(file_path + "/user_list.json",'r')
+	user_list_json = json.load(json_file)
+	json_file.close()
 	for i in users:
-		if ユーザがjsonになかったら:
+		if hasattr(user_list_json, i) is False:
 			user_dict = {k:"" for k in user_description_check(i)}
 			user_dict.update({"dummy",""})
-			vtuber[i] = user_dict
+			user_list_json[i] = user_dict
 	json_file = open(file_path + "/user_list.json",'w')
-	json.dump(vtuber,json_file)
+	json.dump(user_list_json,json_file)
 	json_file.close()
 
 def hashtag_add(tags):
