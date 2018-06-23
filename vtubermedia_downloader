@@ -68,14 +68,17 @@ def init_script():
 
 def user_add(users):
 	# 引数あり(user_add、ユーザ1、ユーザ2・・・)
+	del users[0:2]
 	for i in users:
 		vtuber[i] = ""
 	json_file = open(file_path + "/user_list.json",'w')
 	json.dump(vtuber,json_file)
 	json_file.close()
 
-def hashtag_add():
+def hashtag_add(tags):
 	# 引数あり(hashtag_add、ユーザ、タグ1、タグ2・・・)
+	key = tags[2]
+	del tags[0:2]
 	json_file = open(file_path + "user_list.json",'r')
 	user_list_json = json.load(json_file)
 	json_file.close()
@@ -96,6 +99,8 @@ def search_user_tl():
 
 file_path = os.getcwd()
 #working_directory
+
+args = sys.argv
 
 if args[1] is 'user_add':
 	user_add(args)
