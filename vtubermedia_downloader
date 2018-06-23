@@ -79,6 +79,8 @@ def user_add(users):
 			user_dict = {k:"" for k in user_description_check(i)}
 			user_dict.update({"dummy",""})
 			user_list_add[i] = user_dict
+		if os.path.exists(file_path + "/" + i) == False:
+			os.makedirs(file_path + "/" + i)
 	return(user_list_useradd)
 
 def hashtag_add(tags):
@@ -95,8 +97,6 @@ def user_description_check(check_userid):
 	return(description_hashtags)
 
 def search_hashtags(s_hashtags):
-	# since = 2016-08-26_00:00:00_JST
-	# until = 2016-08-26_23:59:59_JST
 	retry_count = 0
 	for hashtag,date in s_hashtags.items():
 		if date:
