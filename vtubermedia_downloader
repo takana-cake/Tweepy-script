@@ -143,7 +143,7 @@ def search_hashtags(s_hashtags):
 
 def search_user_tl(s_user,s_date):
 
-def media_get(twi_def, follow_id_def):
+def media_get(twi_def):
 	mediaget_fault_count = 0
 		if hasattr(twi_def, "extended_entities"):
 			if 'media' in twi_def.extended_entities:
@@ -161,23 +161,25 @@ def media_get(twi_def, follow_id_def):
 						if '?tag=' in dl_media:
 							dl_media = dl_media[:-6]
 						dl_filename = dl_media
-					try:
-						with open(working_directory + "/" + follow_id_def + "/" + os.path.basename(dl_filename), 'wb') as f:
-							dl_file = urllib.request.urlopen(dl_media).read()
-							f.write(dl_file)
-					except Exception as err:
-						print(str(datetime.datetime.now()) + str(follow_id_def) + ": 03: " + str(dl_media) + ": TC=" + str(mediaget_fault_count) + ": " + str(err))
-						with open(working_directory + "/_log.txt",'a') as f:
-							f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": 03: " + str(dl_media) + ": TC=" + str(mediaget_fault_count) + ": " + str(err) + "\n")
-						mediaget_fault_count = mediaget_fault_count +1
-						if mediaget_fault_count < 3:
-							time.sleep(60)
-							continue
-						else:
-							with open(working_directory + "/" + follow_id_def + "/" + os.path.basename(dl_filename), 'wb') as f:
-								dl_file = urllib.request.urlopen(dl_filename).read()
+					if os.path.exists(working_directory + "/" + os.path.basename(dl_filename)) == False:
+						try:
+							with open(working_directory + "/" + os.path.basename(dl_filename), 'wb') as f:
+								dl_file = urllib.request.urlopen(dl_media).read()
 								f.write(dl_file)
-							mediaget_fault_count = 0
+						except tweepy.RateLimitError as err:
+							mediaget_fault_count = mediaget_fault_count +1
+							if mediaget_fault_count < 3:
+								time.sleep(60 * 5)
+								continue
+							else:
+								mediaget_fault_count = 0
+						except Exception as err:
+							mediaget_fault_count = mediaget_fault_count +1
+							if mediaget_fault_count < 3:
+								time.sleep(60)
+								continue
+							else:
+								mediaget_fault_count = 0
 					mediaget_fault_count = 0
 
 
