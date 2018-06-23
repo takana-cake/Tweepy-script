@@ -142,6 +142,8 @@ def search_hashtags(s_hashtags):
 	f.close()
 
 def search_user_tl(s_user,s_date):
+	for twi in api.search(q="#testing", count=10, until=s_date, tweet_mode = 'extended'):
+		print(twi.full_text)
 
 def media_get(twi_def):
 	mediaget_fault_count = 0
