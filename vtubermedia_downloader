@@ -12,7 +12,7 @@ file_path/
 　├ user2/
 
 1. ユーザごとにハッシュタグを保持。とりあえずjsonで管理
-	vtuber{user1:{TL用:date, tag1:date, tag2:date}, user2:{TL用:date, tag1:date, tag2:date}}
+	vtuber{user1:{dummy:date, tag1:date, tag2:date}, user2:{dummy:date, tag1:date, tag2:date}}
 2. プロフィールとTLのハッシュタグを監視
 	user_description_check()　プロフ
 	TL検索時についでにチェック
@@ -137,6 +137,9 @@ def search_hashtags(s_hashtags):
 def search_user_tl(s_user,s_date):
 	for twi in api.search(q="#testing", count=10, until=s_date, tweet_mode = 'extended'):
 		print(twi.full_text)
+	tweet_hashtags = []
+	for i in api.get_status(1010433527404347393).entities['hashtags']:
+		#tweet_hashtags.append("#" + i['text'])
 
 def media_get(twi_def):
 	mediaget_fault_count = 0
