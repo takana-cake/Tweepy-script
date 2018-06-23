@@ -2,6 +2,13 @@
 
 Description
 ---------------
+file_path/
+　├ vtubermedia_downloader.py
+　├ user_list.json
+　├ user1/
+　│　└ <dl media>
+　├ user2/
+
 1. ユーザごとにハッシュタグを保持。とりあえずjsonで管理
 	vtuber{
 		user1:
@@ -55,17 +62,21 @@ auth.set_access_token(
 
 api = tweepy.API(auth)
 
+def init_script():
+	print('please run "user_add user1 user2..."')
+	sys.exit()
 
-def init_userlist(users):
+def user_add(users):
+	# 引数あり(user_add、ユーザ1、ユーザ2・・・)
 	for i in users:
 		vtuber[i] = ""
-	json_file = open(working_directory + "/user_list.json",'w')
+	json_file = open(file_path + "/user_list.json",'w')
 	json.dump(vtuber,json_file)
 	json_file.close()
 
 def hashtag_add():
-	# 引数あり(ユーザ、タグ1、タグ2・・・)
-	json_file = open(working_directory + "user_list.json",'r')
+	# 引数あり(hashtag_add、ユーザ、タグ1、タグ2・・・)
+	json_file = open(file_path + "user_list.json",'r')
 	user_list_json = json.load(json_file)
 	json_file.close()
 
@@ -81,5 +92,18 @@ def search_hashtags():
 def search_user_tl():
 
 
+# main
 
+file_path = os.getcwd()
+#working_directory
+
+if args[1] is 'user_add':
+	user_add(args)
+elif args[1] is 'hashtag_add':
+	hashtag_add(args)
+elif args[1]:
+	print("please chech again: " + args)
+	sys.exit()
+elif os.path.exists(file_path + "user_list.json") == False:
+	init_script()
 
