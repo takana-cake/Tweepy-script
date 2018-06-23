@@ -74,24 +74,17 @@ def init_script():
 
 def user_add(users):
 	del users[0:2]
-	json_file = open(file_path + "/user_list.json",'r')
-	user_list_json = json.load(json_file)
-	json_file.close()
 	for i in users:
 		if hasattr(user_list_json, i) is False:
 			user_dict = {k:"" for k in user_description_check(i)}
 			user_dict.update({"dummy",""})
-			user_list_json[i] = user_dict
-	json_file = open(file_path + "/user_list.json",'w')
-	json.dump(user_list_json,json_file)
-	json_file.close()
+			user_list_add[i] = user_dict
+	return(user_list_useradd)
 
 def hashtag_add(tags):
 	key = tags[2]
 	del tags[0:3]
-	json_file = open(file_path + "user_list.json",'r')
-	user_list_json = json.load(json_file)
-	json_file.close()
+	return(user_list_tagadd)
 
 def user_description_check(check_userid):
 	description = api.get_user(check_userid).description
@@ -109,7 +102,7 @@ def search_hashtags(s_hashtags):
 		if date:
 			search_query = 'since_search'
 		else:
-			search_query = 'max_search'
+			search_query = 'until_search'
 			date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
 		for l in range(50):
 			try:
@@ -189,31 +182,38 @@ def media_get(twi_def):
 # main
 
 file_path = os.getcwd()
-#working_directory
+if os.path.exists(file_path + "/user_list.json") == True:
+	json_file = open(file_path + "/user_list.json",'r')
+	user_list_json = json.load(json_file)
+	json_file.close()
 
 args = sys.argv
 if len(args) != 1:
 	if args[1] is 'user_add':
-		user_add(args)
-	elif os.path.exists(file_path + "user_list.json") == False:
+		user_list_new = user_add(args)
+	elif os.path.exists(file_path + "/user_list.json") == False:
 		init_script()
 	elif args[1] is 'hashtag_add':
-		hashtag_add(args)
+		user_list_new = hashtag_add(args)
 	else:
 		print("please chech again: " + args)
 		sys.exit()
-elif os.path.exists(file_path + "user_list.json") == False:
+elif os.path.exists(file_path + "/user_list.json") == False:
 	init_script()
 
-json_file = open(file_path + "user_list.json",'r')
-chech_list = json.load(json_file)
+json_file = open(file_path + "/user_list.json",'w')
+json.dump(user_list_new,json_file)
 json_file.close()
 
 api = tweepy_api()
-for user,tags in chech_list.items():
+for user,tags in user_list_new.items():
 	for i in user_description_check(user):
 		if i not in tags:
 			tags.update({i, ""})
 	search_user_tl(user,tags["dummy"])
 	search_hashtags(tags)
+	user_list_new[user] = tags
 
+json_file = open(file_path + "/user_list.json",'w')
+json.dump(user_list_new,json_file)
+json_file.close()
