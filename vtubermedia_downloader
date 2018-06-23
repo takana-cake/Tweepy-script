@@ -11,14 +11,7 @@ file_path/
 　├ user2/
 
 1. ユーザごとにハッシュタグを保持。とりあえずjsonで管理
-	vtuber{
-		user1:
-			{
-			},
-		user2:
-			{
-			}
-	}
+	vtuber{user1:{tag1:date, tag2:date}, user2:{tag1:date, tag2:date}}
 2. プロフィールとTLのハッシュタグを監視
 	user_description_check()　プロフ
 	TL検索時についでにチェック
@@ -70,32 +63,32 @@ def init_script():
 	sys.exit()
 
 def user_add(users):
-	# 引数あり(user_add、ユーザ1、ユーザ2・・・)
 	del users[0:2]
 	for i in users:
-		vtuber[i] = ""
+		vtuber[i] = user_description_check(i)
 	json_file = open(file_path + "/user_list.json",'w')
 	json.dump(vtuber,json_file)
 	json_file.close()
 
 def hashtag_add(tags):
-	# 引数あり(hashtag_add、ユーザ、タグ1、タグ2・・・)
 	key = tags[2]
 	del tags[0:3]
 	json_file = open(file_path + "user_list.json",'r')
 	user_list_json = json.load(json_file)
 	json_file.close()
 
-def user_description_check():
-	description = api.get_user(my_id).description
+def user_description_check(check_userid):
+	description = api.get_user(check_userid).description
 	description = re.sub(r'#', " #", description)
 	pattern = re.compile(r'[\s\[\]\(\)\<\>\（\）\＜\＞\"\']')
 	description_split = re.split(pattern, description)
 	description_hashtags = [x for x in description_split if '#' in x]
+	return(description_hashtags)
 
 def search_hashtags():
 
 def search_user_tl():
+
 
 
 # main
@@ -104,14 +97,26 @@ file_path = os.getcwd()
 #working_directory
 
 args = sys.argv
-
-if args[1] is 'user_add':
-	user_add(args)
-elif args[1] is 'hashtag_add':
-	hashtag_add(args)
-elif args[1]:
-	print("please chech again: " + args)
-	sys.exit()
+if len(args) != 1:
+	if args[1] is 'user_add':
+		user_add(args)
+	elif os.path.exists(file_path + "user_list.json") == False:
+		init_script()
+	elif args[1] is 'hashtag_add':
+		hashtag_add(args)
+	else:
+		print("please chech again: " + args)
+		sys.exit()
 elif os.path.exists(file_path + "user_list.json") == False:
 	init_script()
+
+json_file = open(file_path + "user_list.json",'r')
+chech_list = json.load(json_file)
+json_file.close()
+for user,tags in chech_list.items():
+	user_description_check_result = user_description_check(user)
+	for i in user_description_check_result:
+		if tags has user_description_check_result:
+	search_user_tl(user)
+	search_hashtags(tags)
 
