@@ -172,42 +172,42 @@ def search_user_tl(s_user,s_date):
 
 def media_get(twi_def):
 	mediaget_fault_count = 0
-		if hasattr(twi_def, "extended_entities"):
-			if 'media' in twi_def.extended_entities:
-				for media in twi_def.extended_entities["media"]:
-					if media["type"] == 'photo':
-						dl_filename = media["media_url"]
-						dl_media = dl_filename + ":orig"
-					if media["type"] == 'animated_gif':
-						dl_media = media["video_info"]["variants"][0]["url"]
-						dl_filename = dl_media
-					if media["type"] == 'video':
-						dl_media = media["video_info"]["variants"][0]["url"]
-						if '.m3u8' in dl_media:
-							dl_media = media["video_info"]["variants"][1]["url"]
-						if '?tag=' in dl_media:
-							dl_media = dl_media[:-6]
-						dl_filename = dl_media
-					if os.path.exists(working_directory + "/" + os.path.basename(dl_filename)) == False:
-						try:
-							with open(working_directory + "/" + os.path.basename(dl_filename), 'wb') as f:
-								dl_file = urllib.request.urlopen(dl_media).read()
-								f.write(dl_file)
-						except tweepy.RateLimitError as err:
-							mediaget_fault_count = mediaget_fault_count +1
-							if mediaget_fault_count < 3:
-								time.sleep(60 * 5)
-								continue
-							else:
-								mediaget_fault_count = 0
-						except Exception as err:
-							mediaget_fault_count = mediaget_fault_count +1
-							if mediaget_fault_count < 3:
-								time.sleep(60)
-								continue
-							else:
-								mediaget_fault_count = 0
-					mediaget_fault_count = 0
+	if hasattr(twi_def, "extended_entities"):
+		if 'media' in twi_def.extended_entities:
+			for media in twi_def.extended_entities["media"]:
+				if media["type"] == 'photo':
+					dl_filename = media["media_url"]
+					dl_media = dl_filename + ":orig"
+				if media["type"] == 'animated_gif':
+					dl_media = media["video_info"]["variants"][0]["url"]
+					dl_filename = dl_media
+				if media["type"] == 'video':
+					dl_media = media["video_info"]["variants"][0]["url"]
+					if '.m3u8' in dl_media:
+						dl_media = media["video_info"]["variants"][1]["url"]
+					if '?tag=' in dl_media:
+						dl_media = dl_media[:-6]
+					dl_filename = dl_media
+				if os.path.exists(working_directory + "/" + os.path.basename(dl_filename)) == False:
+					try:
+						with open(working_directory + "/" + os.path.basename(dl_filename), 'wb') as f:
+							dl_file = urllib.request.urlopen(dl_media).read()
+							f.write(dl_file)
+					except tweepy.RateLimitError as err:
+						mediaget_fault_count = mediaget_fault_count +1
+						if mediaget_fault_count < 3:
+							time.sleep(60 * 5)
+							continue
+						else:
+							mediaget_fault_count = 0
+					except Exception as err:
+						mediaget_fault_count = mediaget_fault_count +1
+						if mediaget_fault_count < 3:
+							time.sleep(60)
+							continue
+						else:
+							mediaget_fault_count = 0
+				mediaget_fault_count = 0
 
 
 
