@@ -5,6 +5,7 @@ Description
 file_path/
 　├ vtubermedia_downloader.py
 　├ user_list.json
+　├ tag_list.txt
 　├ user1/
 　│　└ <dl media>
 　├ user2/
@@ -14,7 +15,9 @@ file_path/
 		user1:
 			{
 			},
-		user2:{}
+		user2:
+			{
+			}
 	}
 2. プロフィールとTLのハッシュタグを監視
 	user_description_check()　プロフ
