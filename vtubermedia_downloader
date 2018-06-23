@@ -75,10 +75,10 @@ def init_script():
 def user_add(users):
 	del users[0:2]
 	for i in users:
-		list1 = ["dummy"]
-		list1 = list1.insert.user_description_check(i)
-		vtuber[i] = ""
-		vtuber[i] = user_description_check(i)
+		if ユーザがjsonになかったら:
+			user_dict = {k:"" for k in user_description_check(i)}
+			user_dict.update({"dummy",""})
+			vtuber[i] = user_dict
 	json_file = open(file_path + "/user_list.json",'w')
 	json.dump(vtuber,json_file)
 	json_file.close()
