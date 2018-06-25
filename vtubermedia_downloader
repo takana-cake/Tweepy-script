@@ -3,7 +3,7 @@
 ---------------
 Description
 ---------------
-file_path/
+g_file_path/
 　├ vtubermedia_downloader.py
 　├ user_list.json
 　├ tag_list.txt
@@ -73,28 +73,28 @@ def init_script():
 	sys.exit()
 
 def user_add(users):
-	user_list_useradd = user_list_json
+	user_list_useradd = g_user_list_json
 	del users[0:2]
 	for i in users:
-		if hasattr(user_list_json, i) is False:
+		if hasattr(g_user_list_json, i) is False:
 			user_dict = {k:"" for k in user_description_check(i)}
 			user_dict.update({"dummy",""})
 			user_list_useradd[i] = user_dict
-		if os.path.exists(file_path + "/" + i) == False:
-			os.makedirs(file_path + "/" + i)
+		if os.path.exists(g_file_path + "/" + i) == False:
+			os.makedirs(g_file_path + "/" + i)
 	return(user_list_useradd)
 
 def hashtag_add(tags):
-	user_list_tagadd = user_list_json
+	user_list_tagadd = g_user_list_json
 	key = tags[2]
 	del tags[0:3]
 	for i in tags:
-		if hasattr(user_list_json, i) is False:
+		if hasattr(g_user_list_json, i) is False:
 			user_list_tagadd[key].update({i, ""})
 	return(user_list_tagadd)
 
 def user_description_check(check_userid):
-	description = api.get_user(check_userid).description
+	description = g_api.get_user(check_userid).description
 	description = re.sub(r'#', " #", description)
 	pattern = re.compile(r'[\s\[\]\(\)\<\>\（\）\＜\＞\"\']')
 	description_split = re.split(pattern, description)
@@ -112,11 +112,11 @@ def search_hashtags(s_hashtags):
 		for l in range(50):
 			try:
 				if search_query == 'since_search':
-					for twi in api.search(q=hashtag, count=100, since=date):
+					for twi in g_api.search(q=hashtag, count=100, since=date):
 						date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
 						media_get(twi)
 				else:
-					for twi in api.search(q=hashtag, count=100, until=date):
+					for twi in g_api.search(q=hashtag, count=100, until=date):
 						date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
 						media_get(twi)
 			except tweepy.RateLimitError as err:
@@ -145,11 +145,11 @@ def search_user_tl(s_user,s_date):
 	for l in range(50):
 		try:
 			if search_query == 'until_search':
-				for twi in api.user_timeline(s_user, count=100, until=date):
+				for twi in g_api.user_timeline(s_user, count=100, until=date):
 					date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
 					media_get(twi)
 			else:
-				for twi in api.user_timeline(s_user, count=100, since=date):
+				for twi in g_api.user_timeline(s_user, count=100, since=date):
 					date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
 					media_get(twi)
 		except tweepy.RateLimitError as err:
@@ -164,10 +164,10 @@ def search_user_tl(s_user,s_date):
 				tweetidget_fault_count = 0
 		tweetidget_fault_count = 0
 	###
-	for twi in api.search(q="#testing", count=10, until=s_date, tweet_mode = 'extended'):
+	for twi in g_api.search(q="#testing", count=10, until=s_date, tweet_mode = 'extended'):
 		print(twi.full_text)
 	tweet_hashtags = []
-	for i in api.get_status(1010433527404347393).entities['hashtags']:
+	for i in g_api.get_status(1010433527404347393).entities['hashtags']:
 		#tweet_hashtags.append("#" + i['text'])
 
 def media_get(twi_def):
@@ -213,40 +213,45 @@ def media_get(twi_def):
 
 # main
 
-file_path = os.getcwd()
-if os.path.exists(file_path + "/user_list.json") == True:
-	json_file = open(file_path + "/user_list.json",'r')
-	user_list_json = json.load(json_file)
+g_file_path = os.getcwd()
+if os.path.exists(g_file_path + "/user_list.json") == False:
+	os.makedirs(g_file_path + "/user_list.json")
+	init_script()
+else:
+	json_file = open(g_file_path + "/user_list.json",'r')
+	g_user_list_json = json.load(json_file)
 	json_file.close()
-
-args = sys.argv
-if len(args) != 1:
-	if args[1] is 'user_add':
-		user_list_new = user_add(args)
-	elif os.path.exists(file_path + "/user_list.json") == False:
+	if len(g_user_list_json) == 0:
 		init_script()
-	elif args[1] is 'hashtag_add':
-		user_list_new = hashtag_add(args)
+
+g_args = sys.argv
+if len(g_args) != 1:
+	if g_args[1] is 'user_add':
+		g_user_list_new = user_add(g_args)
+	elif os.path.exists(g_file_path + "/user_list.json") == False:
+		init_script()
+	elif g_args[1] is 'hashtag_add':
+		g_user_list_new = hashtag_add(g_args)
 	else:
-		print("please chech again: " + args)
+		print("please chech parameter: " + g_args)
 		sys.exit()
-elif os.path.exists(file_path + "/user_list.json") == False:
+elif os.path.exists(g_file_path + "/user_list.json") == False:
 	init_script()
 
-json_file = open(file_path + "/user_list.json",'w')
-json.dump(user_list_new,json_file)
-json_file.close()
+#json_file = open(g_file_path + "/user_list.json",'w')
+#json.dump(g_user_list_new,json_file)
+#json_file.close()
 
-api = tweepy_api()
-for user,tags in user_list_new.items():
-	working_directory = file_path + "/" + user
-	for i in user_description_check(user):
-		if i not in tags:
-			tags.update({i, ""})
-	search_user_tl(user,tags["dummy"])
-	search_hashtags(tags)
-	user_list_new[user] = tags
+g_api = tweepy_api()
+for g_user,g_tags in g_user_list_new.items():
+	g_working_directory = g_file_path + "/" + user
+	for i in user_description_check(g_user):
+		if i not in g_tags:
+			g_tags.update({i, ""})
+	search_user_tl(g_user,g_tags["dummy"])
+	search_hashtags(g_tags)
+	g_user_list_new[g_user] = g_tags
 
-json_file = open(file_path + "/user_list.json",'w')
-json.dump(user_list_new,json_file)
-json_file.close()
+g_json_file = open(g_file_path + "/user_list.json",'w')
+json.dump(g_user_list_new,g_json_file)
+g_json_file.close()
