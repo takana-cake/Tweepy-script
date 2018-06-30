@@ -182,46 +182,47 @@ def tweet_id_get(query_def, follow_id, maxid_def):
 		
 # mediaget_fault_count		:media_get()用3回まで再試行する用
 # twi_def			:media_get()用tweet_id_get()から受け取ったツイート詳細
-def media_get(twi_def, follow_id_def):
+def media_get(twi_def):
 	# 画像取得
 	mediaget_fault_count = 0
 	# リツイート判断
 	if hasattr(twi_def, 'retweeted_status') is False:
-		# 画像保存
+		# メディア判断
 		if hasattr(twi_def, "extended_entities"):
 			if 'media' in twi_def.extended_entities:
 				for media in twi_def.extended_entities["media"]:
 					if media["type"] == 'photo':
 						dl_filename = media["media_url"]
 						dl_media = dl_filename + ":orig"
-					if media["type"] == 'animated_gif':
+					if media["type"] == 'animated_gif' and getmedia_type is "video":
 						dl_media = media["video_info"]["variants"][0]["url"]
 						dl_filename = dl_media
-					if media["type"] == 'video':
+					if media["type"] == 'video' and getmedia_type is "video":
 						dl_media = media["video_info"]["variants"][0]["url"]
 						if '.m3u8' in dl_media:
 							dl_media = media["video_info"]["variants"][1]["url"]
 						if '?tag=' in dl_media:
 							dl_media = dl_media[:-6]
-							#dl_media = dl_media.replace("?tag=3", "")
 						dl_filename = dl_media
-					try:
-						with open(working_directory + "/" + follow_id_def + "/" + os.path.basename(dl_filename), 'wb') as f:
-							dl_file = urllib.request.urlopen(dl_media).read()
-							f.write(dl_file)
-					except Exception as err:
-						print(str(datetime.datetime.now()) + str(follow_id_def) + ": 03: " + str(dl_media) + ": TC=" + str(mediaget_fault_count) + ": " + str(err))
-						with open(working_directory + "/_log.txt",'a') as f:
-							f.write(str(datetime.datetime.now()) + ": " + str(follow_id_def) + ": 03: " + str(dl_media) + ": TC=" + str(mediaget_fault_count) + ": " + str(err) + "\n")
-						mediaget_fault_count = mediaget_fault_count +1
-						if mediaget_fault_count < 3:
-							time.sleep(60)
-							continue
-						else:
-							with open(working_directory + "/" + follow_id_def + "/" + os.path.basename(dl_filename), 'wb') as f:
-								dl_file = urllib.request.urlopen(dl_filename).read()
+					if os.path.exists(working_directory + "/" + os.path.basename(dl_filename)) == False:
+						try:
+							with open(working_directory + "/" + os.path.basename(dl_filename), 'wb') as f:
+								dl_file = urllib.request.urlopen(dl_media).read()
 								f.write(dl_file)
-							mediaget_fault_count = 0
+						except tweepy.RateLimitError as err:
+							mediaget_fault_count = mediaget_fault_count +1
+							if mediaget_fault_count < 3:
+								time.sleep(60 * 5)
+								continue
+							else:
+								mediaget_fault_count = 0
+						except Exception as err:
+							mediaget_fault_count = mediaget_fault_count +1
+							if mediaget_fault_count < 3:
+								time.sleep(60)
+								continue
+							else:
+								mediaget_fault_count = 0
 					mediaget_fault_count = 0
 
 
