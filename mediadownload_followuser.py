@@ -10,24 +10,26 @@ import json
 
 
 # 認証
-twitter_conf = {
-    'consumer' : {
-        'key'    : "",
-        'secret' : ""
-    },
-    'access'   : {
-        'key'    : "",
-        'secret' : ""
-    }
-}
-auth = tweepy.OAuthHandler(
-    twitter_conf['consumer']['key'],
-    twitter_conf['consumer']['secret'])
-auth.set_access_token(
-    twitter_conf['access']['key'],
-    twitter_conf['access']['secret'])
+def tweepy_api():
+	twitter_conf = {
+	    'consumer' : {
+	        'key'    : "",
+	        'secret' : ""
+	    },
+	    'access'   : {
+	        'key'    : "",
+	        'secret' : ""
+	    }
+	}
+	auth = tweepy.OAuthHandler(
+	    twitter_conf['consumer']['key'],
+	    twitter_conf['consumer']['secret'])
+	auth.set_access_token(
+	    twitter_conf['access']['key'],
+	    twitter_conf['access']['secret'])
+	tweepy_auth = tweepy.API(auth)
+	return(tweepy_auth)
 
-api = tweepy.API(auth)
 
 
 my_id = [ '' , '' ]
@@ -234,6 +236,7 @@ def media_get(twi_def, follow_id_def):
 # follow_counter	:フォロー数カウンター
 
 file_path = os.getcwd()
+api = tweepy_api()
 
 for my_id_select in my_id:
 	working_directory = file_path + "/" + my_id_select
