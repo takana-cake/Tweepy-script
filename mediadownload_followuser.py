@@ -98,11 +98,11 @@ def first_search_date_set():
 		for l in range(50):
 			try:
 				if search_query == 'since_search':
-					for twi in api.user_timeline(<id>, count=100, since=date):
+					for twi in api.user_timeline(follow_id_get, count=100, since=date):
 						date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
 						media_get(twi)
 				else:
-					for twi in api.user_timeline(<id>, count=100, until=date):
+					for twi in api.user_timeline(follow_id_get, count=100, until=date):
 						date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
 						media_get(twi)
 			except tweepy.RateLimitError as err:
@@ -248,11 +248,11 @@ if os.path.exists(working_directory) == False:
 	os.makedirs(working_directory)
 # ログファイル作成
 with open(working_directory + "/_log.txt",'w+') as f:
-	f.write(str(datetime.datetime.now()) + ": start: " + str(my_id_select) + "\n")
+	f.write(str(datetime.datetime.now()) + ": start: " + str(my_id) + "\n")
 
 # my_id_selectのフォローしたIDをmy_friends_idsに取得
 # Cursor使うとすべて取ってきてくれるが，配列ではなくなるので配列に入れる
-for tmp_id in limit_handled(tweepy.Cursor(api.friends_ids, id=my_id_select).items()):
+for tmp_id in limit_handled(tweepy.Cursor(api.friends_ids, id=my_id).items()):
 	my_friends_ids.append(tmp_id)
 # 100IDsずつ詳細をmy_friends_listへ
 follow_counter = 0
