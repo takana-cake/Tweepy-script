@@ -32,7 +32,8 @@ def tweepy_api():
 
 
 
-my_id = [ '' , '' ]
+#my_id = [ '' , '' ]
+my_id = ""
 my_friends_ids = []		#フォローしているIDとスクリーン名
 my_friends_list = {}		#
 my_friends_list_json = {}	#
@@ -66,8 +67,6 @@ def new_follow_ids_json():
 	for follow_id_new,follow_screen_new in my_friends_list_json.items():
 		if os.path.exists(working_directory + "/" + follow_id_new) == False:
 			os.makedirs(working_directory + "/" + follow_id_new)
-			f = open(working_directory + "/" + follow_id_new + "/_maxid.txt" , 'w+')
-			f.close()
 			my_friends_list_json[follow_id_new] = follow_screen_new
 	json_file = open(working_directory + "/_my_friends_list.json",'w')
 	json.dump(my_friends_list_json,json_file)
@@ -83,52 +82,53 @@ def new_follow_ids_json():
 # query			:first_tweet_id_set()用検索クエリ。tweet_id_get()に渡す
 # maxid			:first_tweet_id_set()用検索開始ツイートID。tweet_id_get()に渡す
 # idget_fault_count	:first_tweet_id_set()用api失敗カウンタ
-def first_tweet_id_set():
-	# 取得開始のツイートIDをmaxidへいれる
-	# ./my_id_select/follow_id/_maxid.txtに前回実行時のMAXIDを記録している
+def first_search_date_set():
+	# 取得開始のdateを
 	idget_fault_count = 0
 	json_file = open(working_directory + "/_my_friends_list.json",'r')
 	my_friends_list_json = json.load(json_file)
 	json_file.close()
-	for follow_id_get,follow_screen_get in my_friends_list_json.items():
-		# 鍵垢はスキップ
-		if api.get_user(follow_id_get).protected == True:
-			with open(working_directory + "/_log.txt",'a') as f:
-				f.write(str(datetime.datetime.now()) + ": " + str(follow_id_get) + ": Protected Account\n")
-			continue
-		# 新規 ->maxidを取得し_maxid.txtファイルへ。クエリはmax_search
-		if os.path.getsize(working_directory + "/" + follow_id_get + "/_maxid.txt") == 0:
-			query = 'max_search'
+	for follow_id_get,follow_screen_and_date_get in my_friends_list_json.items():
+		if follow_screen_and_date_get["last_search_date"]:
+			search_query = 'since_search'
+			date = follow_screen_and_date_get["last_search_date"]
+		else:
+			search_query = 'until_search'
+			date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
+		for l in range(50):
 			try:
-				maxid = api.user_timeline(follow_id_get).max_id
-			# API対策
+				if search_query == 'since_search':
+					for twi in api.user_timeline(<id>, count=100, since=date):
+						date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
+						media_get(twi)
+				else:
+					for twi in api.user_timeline(<id>, count=100, until=date):
+						date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
+						media_get(twi)
 			except tweepy.RateLimitError as err:
 				with open(working_directory + "/_log.txt",'a') as f:
 					f.write(str(datetime.datetime.now()) + ": " + str(follow_id_get) + ": RateLimitError_3: " + str(err) + "\n")
-				time.sleep(60 * 15)
-				continue
-			# その他、鍵アカ対策
-			except tweepy.TweepError as err:
-				with open(working_directory + "/_log.txt",'a') as f:
-					f.write(str(datetime.datetime.now()) + ": " + str(follow_id_get) + ": TweepError_3: " + str(err) + "\n")
-				maxidget_fault_count = maxidget_fault_count +1
-				if maxidget_fault_count < 3:
+				idget_fault_count = idget_fault_count +1
+				if idget_fault_count < 3:
 					time.sleep(60 * 5)
 					continue
 				else:
-					maxidget_fault_count = 0
-			maxidget_fault_count = 0
-			f = open(working_directory + "/" + follow_id_get + "/_maxid.txt" , 'w')
-			f.write(str(maxid))
-			f.close()
-		# 既存 ->maxidに_maxid.txt、クエリはsince_search
-		else:
-			query = 'since_search'
-			f = open(working_directory + "/" + follow_id_get + "/_maxid.txt" , 'r')
-			for i in f: maxid = i
-			f.close()
-		tweet_id_get(query, follow_id_get, maxid)
-
+					idget_fault_count = 0
+			except Exception as err:
+				with open(working_directory + "/_log.txt",'a') as f:
+					f.write(str(datetime.datetime.now()) + ": " + str(follow_id_get) + ": Exception_3: " + str(err) + "\n")
+				idget_fault_count = idget_fault_count +1
+				if idget_fault_count < 3:
+					time.sleep(10)
+					continue
+				else:
+					idget_fault_count = 0
+			idget_fault_count = 0
+		my_friends_list_json[follow_id_get]["last_search_date"] = date
+		#tweet_id_get(query, follow_id_get, maxid)
+	json_file = open(working_directory + "/_my_friends_list.json",'w')
+	json.dump(my_friends_list_json,json_file)
+	json_file.close()
 
 
 # tweetidget_fault_count	:tweet_id_get()用3回まで再試行する用
@@ -239,54 +239,56 @@ def media_get(twi_def):
 file_path = os.getcwd()
 api = tweepy_api()
 
-for my_id_select in my_id:
-	working_directory = file_path + "/" + my_id_select
-	# ユーザディレクトリチェック
-	if os.path.exists(working_directory) == False:
-		os.makedirs(working_directory)
-	# ログファイル作成
-	with open(working_directory + "/_log.txt",'w+') as f:
-		f.write(str(datetime.datetime.now()) + ": start: " + str(my_id_select) + "\n")
-	
-	# my_id_selectのフォローしたIDをmy_friends_idsに取得
-	# Cursor使うとすべて取ってきてくれるが，配列ではなくなるので配列に入れる
-	for tmp_id in limit_handled(tweepy.Cursor(api.friends_ids, id=my_id_select).items()):
-		my_friends_ids.append(tmp_id)
-	# 100IDsずつ詳細をmy_friends_listへ
-	follow_counter = 0
-	for i in range(0, len(my_friends_ids), 100):
-		try:
-			for tmp_user in api.lookup_users(user_ids=my_friends_ids[i:i+100]):
-				follow_counter = follow_counter + 1
-				my_friends_list[tmp_user.screen_name] = tmp_user.name
-		except tweepy.RateLimitError as err:
-			print(str(datetime.datetime.now()) + ": RateLimitError_2: " + str(err))
-			with open(working_directory + "/_log.txt",'a') as f:
-				f.write(str(datetime.datetime.now()) + ": RateLimitError_2: " + str(err) + "\n")
-			time.sleep(60 * 15)
-			continue
-		except tweepy.TweepError as err:
-			print(str(datetime.datetime.now()) + ": TweepError_2: " + str(err))
-			with open(working_directory + "/_log.txt",'a') as f:
-				f.write(str(datetime.datetime.now()) + ": TweepError_2: " + str(err) + "\n")
-			time.sleep(60 * 15)
-			continue
-	print(str(datetime.datetime.now()) + ": " + str(len(my_friends_ids)) + "/" + str(follow_counter))
-	with open(working_directory + "/_log.txt",'a') as f:
-		f.write(str(datetime.datetime.now()) + ": " + str(len(my_friends_ids)) + "/" + str(follow_counter) + "\n")
+#for my_id_select in my_id:
+#	working_directory = file_path + "/" + my_id_select
 
-	# _my_friends_list.jsonが無ければ作成
-	if os.path.exists(working_directory + "/_my_friends_list.json") == False:
-		f = open(working_directory + "/_my_friends_list.json",'w+')
-		json.dump(my_friends_list,f)
-		f.close()
+working_directory = file_path
+# ユーザディレクトリチェック
+if os.path.exists(working_directory) == False:
+	os.makedirs(working_directory)
+# ログファイル作成
+with open(working_directory + "/_log.txt",'w+') as f:
+	f.write(str(datetime.datetime.now()) + ": start: " + str(my_id_select) + "\n")
 
-	# 新規フォローIDをjsonに保存
-	new_follow_ids_json()
+# my_id_selectのフォローしたIDをmy_friends_idsに取得
+# Cursor使うとすべて取ってきてくれるが，配列ではなくなるので配列に入れる
+for tmp_id in limit_handled(tweepy.Cursor(api.friends_ids, id=my_id_select).items()):
+	my_friends_ids.append(tmp_id)
+# 100IDsずつ詳細をmy_friends_listへ
+follow_counter = 0
+for i in range(0, len(my_friends_ids), 100):
+	try:
+		for tmp_user in api.lookup_users(user_ids=my_friends_ids[i:i+100]):
+			follow_counter = follow_counter + 1
+			my_friends_list[tmp_user.screen_name] = {"name":tmp_user.name, "last_search_date":""}
+	except tweepy.RateLimitError as err:
+		print(str(datetime.datetime.now()) + ": RateLimitError_2: " + str(err))
+		with open(working_directory + "/_log.txt",'a') as f:
+			f.write(str(datetime.datetime.now()) + ": RateLimitError_2: " + str(err) + "\n")
+		time.sleep(60 * 15)
+		continue
+	except tweepy.TweepError as err:
+		print(str(datetime.datetime.now()) + ": TweepError_2: " + str(err))
+		with open(working_directory + "/_log.txt",'a') as f:
+			f.write(str(datetime.datetime.now()) + ": TweepError_2: " + str(err) + "\n")
+		time.sleep(60 * 15)
+		continue
+print(str(datetime.datetime.now()) + ": " + str(len(my_friends_ids)) + "/" + str(follow_counter))
+with open(working_directory + "/_log.txt",'a') as f:
+	f.write(str(datetime.datetime.now()) + ": " + str(len(my_friends_ids)) + "/" + str(follow_counter) + "\n")
 
-	# ツイートIDの取得
-	first_tweet_id_set()
+# _my_friends_list.jsonが無ければ作成
+if os.path.exists(working_directory + "/_my_friends_list.json") == False:
+	f = open(working_directory + "/_my_friends_list.json",'w+')
+	json.dump(my_friends_list,f)
+	f.close()
 
-	my_friends_list.clear()
-	my_friends_list_json.clear()
-	my_friends_ids = []
+# 新規フォローIDをjsonに保存
+new_follow_ids_json()
+
+# ツイートIDの取得
+first_search_date_set()
+
+my_friends_list.clear()
+my_friends_list_json.clear()
+my_friends_ids = []
