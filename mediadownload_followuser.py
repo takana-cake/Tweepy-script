@@ -204,9 +204,9 @@ def media_get(twi_def):
 						if '?tag=' in dl_media:
 							dl_media = dl_media[:-6]
 						dl_filename = dl_media
-					if os.path.exists(working_directory + "/" + os.path.basename(dl_filename)) == False:
+					if os.path.exists(working_directory + "/" + twi_def["screen_name"] + "/" + os.path.basename(dl_filename)) == False:
 						try:
-							with open(working_directory + "/" + os.path.basename(dl_filename), 'wb') as f:
+							with open(working_directory + "/" + twi_def["screen_name"] + "/" + os.path.basename(dl_filename), 'wb') as f:
 								dl_file = urllib.request.urlopen(dl_media).read()
 								f.write(dl_file)
 						except tweepy.RateLimitError as err:
