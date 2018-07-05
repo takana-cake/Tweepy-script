@@ -55,59 +55,59 @@ def limit_handled(h):
 			time.sleep(60 * 15)
 
 
-# json_file		:new_follow_ids_json()用_my_friends_listをオープン
-# my_friends_list_json	:new_follow_ids_json()用_my_friends_listを格納
-# follow_id_new		:new_follow_ids_json()用ID格納
-# follow_screen_new	:new_follow_ids_json()用スクリーン名格納
+### 新規フォロー初期化用
+# json_file		:_my_friends_listをオープン
+# my_friends_list_json	:_my_friends_listを格納
+# new_follow_screen	:スクリーン名格納
+# new_follow_detail	:nameと最終取得日(ブランク)格納
 def new_follow_ids_json():
-	# 新規フォロー初期化用
 	json_file = open(working_directory + "/_my_friends_list.json",'r')
 	my_friends_list_json = json.load(json_file)
 	json_file.close()
-	for follow_id_new,follow_screen_new in my_friends_list_json.items():
-		if os.path.exists(working_directory + "/" + follow_id_new) == False:
-			os.makedirs(working_directory + "/" + follow_id_new)
-			my_friends_list_json[follow_id_new] = follow_screen_new
+	for new_follow_screen,new_follow_detail in my_friends_list_json.items():
+		if os.path.exists(working_directory + "/" + new_follow_screen) == False:
+			os.makedirs(working_directory + "/" + new_follow_screen)
+			my_friends_list_json[new_follow_screen] = new_follow_detail
 	json_file = open(working_directory + "/_my_friends_list.json",'w')
 	json.dump(my_friends_list_json,json_file)
 	json_file.close()
 
 
 
-# maxidget_fault_count	:first_tweet_id_set()用APIエラー時のMAXID確認用フラグ
-# json_file		:first_tweet_id_set()用_my_friends_listをオープン
-# my_friends_list_json	:first_tweet_id_set()用_my_friends_listを格納
-# follow_id_get		:first_tweet_id_set()用ID格納。tweet_id_get()に渡す
-# follow_screen_get	:first_tweet_id_set()用スクリーン名格納
-# query			:first_tweet_id_set()用検索クエリ。tweet_id_get()に渡す
-# maxid			:first_tweet_id_set()用検索開始ツイートID。tweet_id_get()に渡す
-# idget_fault_count	:first_tweet_id_set()用api失敗カウンタ
+# idget_fault_count	:APIエラー時の確認用フラグ
+# json_file		:_my_friends_listをオープン
+# my_friends_list_json	:_my_friends_listを格納
+# follow_id_get		:ID格納。tweet_id_get()に渡す
+# follow_screen_get	:スクリーン名格納
+# query			:検索クエリ。tweet_id_get()に渡す
+# maxid			:検索開始ツイートID。tweet_id_get()に渡す
+# idget_fault_count	:api失敗カウンタ
 def first_search_date_set():
 	# 取得開始のdateを
 	idget_fault_count = 0
 	json_file = open(working_directory + "/_my_friends_list.json",'r')
 	my_friends_list_json = json.load(json_file)
 	json_file.close()
-	for follow_id_get,follow_screen_and_date_get in my_friends_list_json.items():
-		if follow_screen_and_date_get["last_search_date"]:
+	for follow_screen_get,follow_detail_get in my_friends_list_json.items():
+		if follow_detail_get["last_search_date"]:
 			search_query = 'since_search'
-			date = follow_screen_and_date_get["last_search_date"]
+			date = follow_detail_get["last_search_date"]
 		else:
 			search_query = 'until_search'
 			date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
 		for l in range(50):
 			try:
 				if search_query == 'since_search':
-					for twi in api.user_timeline(follow_id_get, count=100, since=date):
+					for twi in api.user_timeline(follow_screen_get, count=100, since=date):
 						date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
 						media_get(twi)
 				else:
-					for twi in api.user_timeline(follow_id_get, count=100, until=date):
+					for twi in api.user_timeline(follow_screen_get, count=100, until=date):
 						date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
 						media_get(twi)
 			except tweepy.RateLimitError as err:
 				with open(working_directory + "/_log.txt",'a') as f:
-					f.write(str(datetime.datetime.now()) + ": " + str(follow_id_get) + ": RateLimitError_3: " + str(err) + "\n")
+					f.write(str(datetime.datetime.now()) + ": " + str(follow_screen_get) + ": RateLimitError_3: " + str(err) + "\n")
 				idget_fault_count = idget_fault_count +1
 				if idget_fault_count < 3:
 					time.sleep(60 * 5)
@@ -116,7 +116,7 @@ def first_search_date_set():
 					idget_fault_count = 0
 			except Exception as err:
 				with open(working_directory + "/_log.txt",'a') as f:
-					f.write(str(datetime.datetime.now()) + ": " + str(follow_id_get) + ": Exception_3: " + str(err) + "\n")
+					f.write(str(datetime.datetime.now()) + ": " + str(follow_screen_get) + ": Exception_3: " + str(err) + "\n")
 				idget_fault_count = idget_fault_count +1
 				if idget_fault_count < 3:
 					time.sleep(10)
@@ -124,7 +124,7 @@ def first_search_date_set():
 				else:
 					idget_fault_count = 0
 			idget_fault_count = 0
-		my_friends_list_json[follow_id_get]["last_search_date"] = date
+		my_friends_list_json[follow_screen_get]["last_search_date"] = date
 		#tweet_id_get(query, follow_id_get, maxid)
 	json_file = open(working_directory + "/_my_friends_list.json",'w')
 	json.dump(my_friends_list_json,json_file)
@@ -267,11 +267,11 @@ for i in range(0, len(my_friends_ids), 100):
 			f.write(str(datetime.datetime.now()) + ": RateLimitError_2: " + str(err) + "\n")
 		time.sleep(60 * 15)
 		continue
-	except tweepy.TweepError as err:
-		print(str(datetime.datetime.now()) + ": TweepError_2: " + str(err))
+	except Exception as err:
+		print(str(datetime.datetime.now()) + ": " + str(err))
 		with open(working_directory + "/_log.txt",'a') as f:
 			f.write(str(datetime.datetime.now()) + ": TweepError_2: " + str(err) + "\n")
-		time.sleep(60 * 15)
+		time.sleep(60 * 3)
 		continue
 print(str(datetime.datetime.now()) + ": " + str(len(my_friends_ids)) + "/" + str(follow_counter))
 with open(working_directory + "/_log.txt",'a') as f:
