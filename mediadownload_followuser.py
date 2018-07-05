@@ -32,7 +32,6 @@ def tweepy_api():
 
 
 
-#my_id = [ '' , '' ]
 my_id = ""
 my_friends_ids = []		#フォローしているIDとスクリーン名
 my_friends_list = {}		#
@@ -55,80 +54,76 @@ def limit_handled(h):
 			time.sleep(60 * 15)
 
 
-### 新規フォロー初期化用
-# json_file		:_my_friends_listをオープン
-# my_friends_list_json	:_my_friends_listを格納
-# new_follow_screen	:スクリーン名格納
-# new_follow_detail	:nameと最終取得日(ブランク)格納
+# json_file		:new_follow_ids_json()用_my_friends_listをオープン
+# my_friends_list_json	:new_follow_ids_json()用_my_friends_listを格納
+# follow_id_new		:new_follow_ids_json()用ID格納
+# follow_screen_new	:new_follow_ids_json()用スクリーン名格納
 def new_follow_ids_json():
+	# 新規フォロー初期化用
 	json_file = open(working_directory + "/_my_friends_list.json",'r')
 	my_friends_list_json = json.load(json_file)
 	json_file.close()
-	for new_follow_screen,new_follow_detail in my_friends_list_json.items():
-		if os.path.exists(working_directory + "/" + new_follow_screen) == False:
-			os.makedirs(working_directory + "/" + new_follow_screen)
-			my_friends_list_json[new_follow_screen] = new_follow_detail
+	for new_followuser_screen,new_followuser_detail in my_friends_list_json.items():
+		if os.path.exists(working_directory + "/" + new_followuser_screen) == False:
+			os.makedirs(working_directory + "/" + new_followuser_screen)
+			f = open(working_directory + "/" + new_followuser_screen + "/_maxid.txt" , 'w+')
+			f.close()
+			my_friends_list_json[new_followuser_screen] = new_followuser_detail
 	json_file = open(working_directory + "/_my_friends_list.json",'w')
 	json.dump(my_friends_list_json,json_file)
 	json_file.close()
 
 
 
-# idget_fault_count	:APIエラー時の確認用フラグ
-# json_file		:_my_friends_listをオープン
-# my_friends_list_json	:_my_friends_listを格納
-# follow_id_get		:ID格納。tweet_id_get()に渡す
-# follow_screen_get	:スクリーン名格納
-# query			:検索クエリ。tweet_id_get()に渡す
-# maxid			:検索開始ツイートID。tweet_id_get()に渡す
-# idget_fault_count	:api失敗カウンタ
-def first_search_date_set():
-	# 取得開始のdateを
+# maxidget_fault_count	:first_tweet_id_set()用APIエラー時のMAXID確認用フラグ
+# json_file		:first_tweet_id_set()用_my_friends_listをオープン
+# my_friends_list_json	:first_tweet_id_set()用_my_friends_listを格納
+# follow_id_get		:first_tweet_id_set()用ID格納。tweet_id_get()に渡す
+# follow_screen_get	:first_tweet_id_set()用スクリーン名格納
+# query			:first_tweet_id_set()用検索クエリ。tweet_id_get()に渡す
+# maxid			:first_tweet_id_set()用検索開始ツイートID。tweet_id_get()に渡す
+# idget_fault_count	:first_tweet_id_set()用api失敗カウンタ
+def first_tweet_id_set():
+	# 取得開始のツイートIDをmaxidへいれる
+	# ./my_id/follow_id/_maxid.txtに前回実行時のMAXIDを記録している
 	idget_fault_count = 0
 	json_file = open(working_directory + "/_my_friends_list.json",'r')
 	my_friends_list_json = json.load(json_file)
 	json_file.close()
-	for follow_screen_get,follow_detail_get in my_friends_list_json.items():
-		if follow_detail_get["last_search_date"]:
-			search_query = 'since_search'
-			date = follow_detail_get["last_search_date"]
-		else:
-			search_query = 'until_search'
-			date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
-		for l in range(50):
+	for follow_screen_get,follow_name_get in my_friends_list_json.items():
+		# 新規 ->maxidを取得し_maxid.txtファイルへ。クエリはmax_search
+		if os.path.getsize(working_directory + "/" + follow_screen_get + "/_maxid.txt") == 0:
+			query = 'max_search'
 			try:
-				if search_query == 'since_search':
-					for twi in api.user_timeline(follow_screen_get, count=100, since=date):
-						date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
-						media_get(twi)
-				else:
-					for twi in api.user_timeline(follow_screen_get, count=100, until=date):
-						date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
-						media_get(twi)
+				maxid = api.user_timeline(follow_screen_get).max_id
+			# API対策
 			except tweepy.RateLimitError as err:
 				with open(working_directory + "/_log.txt",'a') as f:
 					f.write(str(datetime.datetime.now()) + ": " + str(follow_screen_get) + ": RateLimitError_3: " + str(err) + "\n")
-				idget_fault_count = idget_fault_count +1
-				if idget_fault_count < 3:
-					time.sleep(60 * 5)
-					continue
-				else:
-					idget_fault_count = 0
+				time.sleep(60 * 15)
+				continue
+			# その他
 			except Exception as err:
 				with open(working_directory + "/_log.txt",'a') as f:
 					f.write(str(datetime.datetime.now()) + ": " + str(follow_screen_get) + ": Exception_3: " + str(err) + "\n")
-				idget_fault_count = idget_fault_count +1
-				if idget_fault_count < 3:
-					time.sleep(10)
+				maxidget_fault_count = maxidget_fault_count +1
+				if maxidget_fault_count < 3:
+					time.sleep(60 * 3)
 					continue
 				else:
-					idget_fault_count = 0
-			idget_fault_count = 0
-		my_friends_list_json[follow_screen_get]["last_search_date"] = date
-		#tweet_id_get(query, follow_id_get, maxid)
-	json_file = open(working_directory + "/_my_friends_list.json",'w')
-	json.dump(my_friends_list_json,json_file)
-	json_file.close()
+					maxidget_fault_count = 0
+			maxidget_fault_count = 0
+			f = open(working_directory + "/" + follow_screen_get + "/_maxid.txt" , 'w')
+			f.write(str(maxid))
+			f.close()
+		# 既存 ->maxidに_maxid.txt、クエリはsince_search
+		else:
+			query = 'since_search'
+			f = open(working_directory + "/" + follow_screen_get + "/_maxid.txt" , 'r')
+			for i in f: maxid = i
+			f.close()
+		tweet_id_get(query, follow_screen_get, maxid)
+
 
 
 # tweetidget_fault_count	:tweet_id_get()用3回まで再試行する用
@@ -194,19 +189,19 @@ def media_get(twi_def):
 					if media["type"] == 'photo':
 						dl_filename = media["media_url"]
 						dl_media = dl_filename + ":orig"
-					if media["type"] == 'animated_gif'
+					if media["type"] == 'animated_gif':
 						dl_media = media["video_info"]["variants"][0]["url"]
 						dl_filename = dl_media
-					if media["type"] == 'video'
+					if media["type"] == 'video':
 						dl_media = media["video_info"]["variants"][0]["url"]
 						if '.m3u8' in dl_media:
 							dl_media = media["video_info"]["variants"][1]["url"]
 						if '?tag=' in dl_media:
 							dl_media = dl_media[:-6]
 						dl_filename = dl_media
-					if os.path.exists(working_directory + "/" + twi_def["screen_name"] + "/" + os.path.basename(dl_filename)) == False:
+					if os.path.exists(working_directory + "/" + os.path.basename(dl_filename)) == False:
 						try:
-							with open(working_directory + "/" + twi_def["screen_name"] + "/" + os.path.basename(dl_filename), 'wb') as f:
+							with open(working_directory + "/" + os.path.basename(dl_filename), 'wb') as f:
 								dl_file = urllib.request.urlopen(dl_media).read()
 								f.write(dl_file)
 						except tweepy.RateLimitError as err:
@@ -230,7 +225,6 @@ def media_get(twi_def):
 ### main
 
 # file_path		:プログラムを実行しているパスを取得
-# my_id_select		:my_idから作業対象のIDを取得
 # working_directory	:作業しているフォルダ
 # my_friends_ids	:リスト型でフォローIDを抽出
 # my_friends_list	:辞書型にスクリーン名とIDを格納
@@ -239,18 +233,12 @@ def media_get(twi_def):
 file_path = os.getcwd()
 api = tweepy_api()
 
-#for my_id_select in my_id:
-#	working_directory = file_path + "/" + my_id_select
-
 working_directory = file_path
-# ユーザディレクトリチェック
-if os.path.exists(working_directory) == False:
-	os.makedirs(working_directory)
 # ログファイル作成
 with open(working_directory + "/_log.txt",'w+') as f:
-	f.write(str(datetime.datetime.now()) + ": start: " + str(my_id) + "\n")
+	f.write(str(datetime.datetime.now()) + ": start\n")
 
-# my_id_selectのフォローしたIDをmy_friends_idsに取得
+# my_idのフォローしたIDをmy_friends_idsに取得
 # Cursor使うとすべて取ってきてくれるが，配列ではなくなるので配列に入れる
 for tmp_id in limit_handled(tweepy.Cursor(api.friends_ids, id=my_id).items()):
 	my_friends_ids.append(tmp_id)
@@ -260,7 +248,8 @@ for i in range(0, len(my_friends_ids), 100):
 	try:
 		for tmp_user in api.lookup_users(user_ids=my_friends_ids[i:i+100]):
 			follow_counter = follow_counter + 1
-			my_friends_list[tmp_user.screen_name] = {"name":tmp_user.name, "last_search_date":""}
+			my_friends_list[tmp_user.screen_name] = tmp_user.name
+			#my_friends_list[tmp_user.screen_name] = {"name":tmp_user.name, "maxid":""}
 	except tweepy.RateLimitError as err:
 		print(str(datetime.datetime.now()) + ": RateLimitError_2: " + str(err))
 		with open(working_directory + "/_log.txt",'a') as f:
@@ -268,7 +257,7 @@ for i in range(0, len(my_friends_ids), 100):
 		time.sleep(60 * 15)
 		continue
 	except Exception as err:
-		print(str(datetime.datetime.now()) + ": " + str(err))
+		print(str(datetime.datetime.now()) + ": Exception_2: " + str(err))
 		with open(working_directory + "/_log.txt",'a') as f:
 			f.write(str(datetime.datetime.now()) + ": TweepError_2: " + str(err) + "\n")
 		time.sleep(60 * 3)
@@ -287,7 +276,7 @@ if os.path.exists(working_directory + "/_my_friends_list.json") == False:
 new_follow_ids_json()
 
 # ツイートIDの取得
-first_search_date_set()
+first_tweet_id_set()
 
 my_friends_list.clear()
 my_friends_list_json.clear()
