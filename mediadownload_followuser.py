@@ -194,10 +194,10 @@ def media_get(twi_def):
 					if media["type"] == 'photo':
 						dl_filename = media["media_url"]
 						dl_media = dl_filename + ":orig"
-					if media["type"] == 'animated_gif' and getmedia_type is "video":
+					if media["type"] == 'animated_gif'
 						dl_media = media["video_info"]["variants"][0]["url"]
 						dl_filename = dl_media
-					if media["type"] == 'video' and getmedia_type is "video":
+					if media["type"] == 'video'
 						dl_media = media["video_info"]["variants"][0]["url"]
 						if '.m3u8' in dl_media:
 							dl_media = media["video_info"]["variants"][1]["url"]
