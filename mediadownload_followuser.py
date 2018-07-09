@@ -137,6 +137,7 @@ def first_tweet_id_set():
 def tweet_id_get(query_def, follow_id, maxid_def):
 	# ツイートIDを取得
 	tweetidget_fault_count = 0
+	print(str(datetime.datetime.now()) + follow_id)
 	for l in range(50):
 		#02-1 TLを取得_API
 		try:
@@ -152,8 +153,8 @@ def tweet_id_get(query_def, follow_id, maxid_def):
 					# media_getへ
 					media_get(twi, follow_id)
 					maxid_def = twi.id
-				with open(working_directory + "/" + follow_id + "/_maxid.txt", 'w+') as f:
-					f.write(str(maxid_def))
+				#with open(working_directory + "/" + follow_id + "/_maxid.txt", 'w+') as f:
+				#	f.write(str(maxid_def))
 		#02-2
 		except tweepy.RateLimitError as err:
 			with open(working_directory + "/_log.txt",'a') as f:
@@ -172,12 +173,14 @@ def tweet_id_get(query_def, follow_id, maxid_def):
 			else:
 				tweetidget_fault_count = 0
 		tweetidget_fault_count = 0
+	with open(working_directory + "/" + follow_id + "/_maxid.txt", 'w+') as f:
+		f.write(str(maxid_def))
 
 
 		
 # mediaget_fault_count		:media_get()用3回まで再試行する用
 # twi_def			:media_get()用tweet_id_get()から受け取ったツイート詳細
-def media_get(twi_def):
+def media_get(twi_def, follow_id_def):
 	# 画像取得
 	mediaget_fault_count = 0
 	# リツイート判断
@@ -199,9 +202,9 @@ def media_get(twi_def):
 						if '?tag=' in dl_media:
 							dl_media = dl_media[:-6]
 						dl_filename = dl_media
-					if os.path.exists(working_directory + "/" + os.path.basename(dl_filename)) == False:
+					if os.path.exists(working_directory + "/" + follow_id_def + "/" + os.path.basename(dl_filename)) == False:
 						try:
-							with open(working_directory + "/" + os.path.basename(dl_filename), 'wb') as f:
+							with open(working_directory + "/" + follow_id_def + "/" + os.path.basename(dl_filename), 'wb') as f:
 								dl_file = urllib.request.urlopen(dl_media).read()
 								f.write(dl_file)
 						except tweepy.RateLimitError as err:
