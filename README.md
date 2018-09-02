@@ -6,6 +6,7 @@ Twitterアカウントの「設定」メニューの「モバイル」を開き�
 認証後は電話番号を削除すれば他アカウントにも使える（たぶん）
 
 下記ＵＲＬからTwitterアプリを作成
+
 https://apps.twitter.com/
 
 「Key and Access Tokens」の「Create my access token」をクリック
