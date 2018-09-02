@@ -1,13 +1,15 @@
 # TLDownloader
 twitter TLimg Downloader
 
-## APIキー、アクセストークンの取得(なんか厳しくなったのか認証通らない)
+## APIキー、アクセストークンの取得
 Twitterアカウントの「設定」メニューの「モバイル」を開き電話番号を入力し認証。</br>
 認証後は電話番号を削除すれば他アカウントにも使える（たぶん）
 
 下記ＵＲＬからTwitterアプリを作成
 
 https://apps.twitter.com/
+
+※作成の際に作成理由？みたいなのを300時ぐらい入れなきゃならない。適当に打ってもダメっぽい？
 
 「Key and Access Tokens」の「Create my access token」をクリック
 
