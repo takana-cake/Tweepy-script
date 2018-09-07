@@ -13,20 +13,21 @@ g_file_path/
 
 1. ユーザごとにハッシュタグを保持。とりあえずjsonで管理
 	vtuber{ user1:{dummy:date, tag1:date, tag2:date}, 
-            user2:{dummy:date, tag1:date, tag2:date}}
+		user2:{dummy:date, tag1:date, tag2:date}}
 2. プロフィールを監視
 	user_description_check()　プロフ
-    profile_image_url_https
-    profile_banner_url
-    profile_background_image_url_https
+	profile_image_url_https
+	profile_banner_url
+	profile_background_image_url_https
 3. ハッシュタグで検索。最終検索時刻保持、画像有
 	search_hashtags()
-    画像ファボリツ
+	画像ファボリツ
+	create_favorite(user_id)
 4. ユーザのTLを検索。最終検索時刻保持
 	search_user_tl()
-    短縮URLの展開。配信とアーカイブのURL採集とリツ
-    時間収集。テキスト形成しツイ＆トップに
-    ハッシュタグ収集
+	短縮URLの展開。配信とアーカイブのURL採集とリツ
+	時間収集。テキスト形成しツイ＆トップに
+	ハッシュタグ収集
 
 とりあえずダブり画像は考えないものとする
 
