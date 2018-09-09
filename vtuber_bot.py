@@ -1,5 +1,20 @@
 '''
 
+アイコン取得
+img = api.get_user(screen_name)
+return img.profile_image_url_https, img.screen_name
+アイコンの変化を確認
+ImageMagick　compare
+キャプチャ
+https://qiita.com/sy_125/items/5152c730040bf9dfcb4c
+wkhtmltoimage
+CutyCapt
+Xulrunner
+切り取り
+ImageMagick　convert
+投稿
+twippy
+
 ---------------
 Description
 ---------------
