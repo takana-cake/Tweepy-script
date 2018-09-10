@@ -1,42 +1,24 @@
 '''
 
-アイコン取得
-img = api.get_user(screen_name)
-return img.profile_image_url_https, img.screen_name
-アイコンの変化を確認
-ImageMagick　compare
-キャプチャ
-https://qiita.com/sy_125/items/5152c730040bf9dfcb4c
-wkhtmltoimage
-CutyCapt
-Xulrunner
-切り取り
-ImageMagick　convert
-投稿
-twippy
-
 ---------------
 Description
 ---------------
 g_file_path/
 　├ vtubermedia_downloader.py
 　├ user_list.json
-　├ tag_list.txt
 　├ user1/
 　│　└ <dl media>
 　├ user2/
 
 1. ユーザごとにハッシュタグを保持。とりあえずjsonで管理
+	user_list.json
 	vtuber{ user1:{dummy:date, tag1:date, tag2:date}, 
 		user2:{dummy:date, tag1:date, tag2:date}}
 2. プロフィールを監視
-	user_description_check()　プロフ
-	profile_image_url_https
-	profile_banner_url
-	profile_background_image_url_https
+	アイコン、ヘッダ、プロフ
 3. ハッシュタグで検索。最終検索時刻保持、画像有
 	search_hashtags()
-	画像ファボリツ
+	画像有の場合ファボリツ＆保存
 	create_favorite(user_id)
 4. ユーザのTLを検索。最終検索時刻保持
 	search_user_tl()
