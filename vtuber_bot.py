@@ -1,260 +1,133 @@
-'''
 
----------------
-Description
----------------
-g_file_path/
-　├ vtubermedia_downloader.py
-　├ user_list.json
-　├ user1/
-　│　└ <dl media>
-　├ user2/
-
-1. ユーザごとにハッシュタグを保持。とりあえずjsonで管理
-	user_list.json
-	vtuber{ user1:{dummy:date, tag1:date, tag2:date}, 
-		user2:{dummy:date, tag1:date, tag2:date}}
-2. プロフィールを監視
-	アイコン、ヘッダ、プロフ
-3. ハッシュタグで検索。最終検索時刻保持、画像有
-	search_hashtags()
-	画像有の場合ファボリツ＆保存
-	create_favorite(user_id)
-4. ユーザのTLを検索。最終検索時刻保持
-	search_user_tl()
-	短縮URLの展開。配信とアーカイブのURL採集とリツ
-	時間収集。テキスト形成しツイ＆トップに
-	ハッシュタグ収集
-
-とりあえずダブり画像は考えないものとする
-
----------------
-Flow
----------------
-init jsonチェック
-user or hash追加チェック
-ユーザプロフチェック
-TLチェック
-ハッシュタグチェック
-
-'''
-
+#!/usr/bin python3
 # _*_ coding: utf-8 _*_
 
 import tweepy
-import sys
-import urllib.request
+import requests
 import os
 import datetime
-import time
-import json
+import subprocess
+import glob
+import shutil
+import filecmp
 
 
-
+# 認証
 def tweepy_api():
 	twitter_conf = {
-	    'consumer' : {
-	        'key'    : "",
-	        'secret' : ""
-	    },
-	    'access'   : {
-	        'key'    : "",
-	        'secret' : ""
-	    }
+		'consumer' : {
+			'key'   : "",
+			'secret' : ""
+		},
+		'access'   : {
+			'key'   : "",
+			'secret' : ""
+		}
 	}
 	auth = tweepy.OAuthHandler(
-	    twitter_conf['consumer']['key'],
-	    twitter_conf['consumer']['secret'])
+		twitter_conf['consumer']['key'],
+		twitter_conf['consumer']['secret'])
 	auth.set_access_token(
-	    twitter_conf['access']['key'],
-	    twitter_conf['access']['secret'])
+		twitter_conf['access']['key'],
+		twitter_conf['access']['secret'])
 	tweepy_auth = tweepy.API(auth)
 	return(tweepy_auth)
 
-def init_script():
-	print('please run "python3 vtubermedia_downloader.py user_add user1 user2..."')
-	sys.exit()
 
-def user_add(users):
-	user_list_useradd = g_user_list_json
-	del users[0:2]
-	for i in users:
-		if hasattr(g_user_list_json, i) is False:
-			user_dict = {k:"" for k in user_description_check(i)}
-			user_dict.update({"dummy",""})
-			user_list_useradd[i] = user_dict
-		if os.path.exists(g_file_path + "/" + i) == False:
-			os.makedirs(g_file_path + "/" + i)
-	return(user_list_useradd)
+def get_url(screen_name):
+	try:
+		img = api.get_user(screen_name)
+		return img.profile_image_url_https, img.profile_banner_url
+	except Exception as err:
+		return None
 
-def hashtag_add(tags):
-	user_list_tagadd = g_user_list_json
-	key = tags[2]
-	del tags[0:3]
-	for i in tags:
-		if hasattr(g_user_list_json, i) is False:
-			user_list_tagadd[key].update({i, ""})
-	return(user_list_tagadd)
+def get_img(url, file_name):
+	res = requests.get(url=url)
+	if res.status_code == 200:
+		f = open(file_name, 'wb')
+		f.write(res.content)
+		f.close()
 
-def user_description_check(check_userid):
-	description = g_api.get_user(check_userid).description
-	description = re.sub(r'#', " #", description)
-	pattern = re.compile(r'[\s\[\]\(\)\<\>\（\）\＜\＞\"\']')
-	description_split = re.split(pattern, description)
-	description_hashtags = [x for x in description_split if '#' in x]
-	return(description_hashtags)
+def get_capture_icon(screen_name):
+	url_user = "https://twitter.com/" + screen_name
+	capture_icon_file = file_path_cap + screen_name + "_capture_icon_" + date + ".jpg"
+	cmd_capture_icon = "wkhtmltoimage --crop-h 255 --crop-w 255 --crop-x 50 --crop-y 185 " + url_user + " " + capture_icon_file
+	subprocess.call(cmd_capture_icon.split(), shell=False)
 
-def search_hashtags(s_hashtags):
-	retry_count = 0
-	for hashtag,date in s_hashtags.items():
-		if date:
-			search_query = 'since_search'
-		else:
-			search_query = 'until_search'
-			date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
-		for l in range(50):
-			try:
-				if search_query == 'since_search':
-					for twi in g_api.search(q=hashtag, count=100, since=date):
-						date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
-						media_get(twi)
-				else:
-					for twi in g_api.search(q=hashtag, count=100, until=date):
-						date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
-						media_get(twi)
-			except tweepy.RateLimitError as err:
-				retry_count = retry_count +1
-				if retry_count < 3:
-					time.sleep(60 * 5)
-					continue
-				else:
-					retry_count = 0
-			except:
-				retry_count = retry_count +1
-				if retry_count < 3:
-					time.sleep(10)
-					continue
-				else:
-					retry_count = 0
-			retry_count = 0
-		# リターンさせる
+def get_capture_banner(screen_name):
+	url_user = "https://twitter.com/" + screen_name
+	capture_banner_file = file_path_cap + screen_name + "_capture_banner_" + date + ".jpg"
+	cmd_capture_banner = "wkhtmltoimage --crop-h 380 --crop-w 1023 --crop-x 1 --crop-y 40 " + url_user + " " + capture_banner_file
+	subprocess.call(cmd_capture_banner.split(), shell=False)
 
-def search_user_tl(s_user,s_date):
-	if s_date:
-		search_query = 'since_search'
-	else:
-		search_query = 'until_search'
-		s_date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
-	for l in range(50):
-		try:
-			if search_query == 'until_search':
-				for twi in g_api.user_timeline(s_user, count=100, until=date):
-					date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
-					media_get(twi)
-			else:
-				for twi in g_api.user_timeline(s_user, count=100, since=date):
-					date = datetime.datetime.today().strftime("%Y-%m-%d_%H:%M:%S_JST")
-					media_get(twi)
-		except tweepy.RateLimitError as err:
-			time.sleep(60 * 15)
-			continue
-		except tweepy.TweepError as err:
-			tweetidget_fault_count = tweetidget_fault_count +1
-			if tweetidget_fault_count < 3:
-				time.sleep(60 * 5)
-				continue
-			else:
-				tweetidget_fault_count = 0
-		tweetidget_fault_count = 0
-	###
-	for twi in g_api.search(q="#testing", count=10, until=s_date, tweet_mode = 'extended'):
-		print(twi.full_text)
-	tweet_hashtags = []
-	for i in g_api.get_status(1010433527404347393).entities['hashtags']:
-		#tweet_hashtags.append("#" + i['text'])
+### main
+'''
+flow
 
-def media_get(twi_def):
-	mediaget_fault_count = 0
-	if hasattr(twi_def, "extended_entities"):
-		if 'media' in twi_def.extended_entities:
-			for media in twi_def.extended_entities["media"]:
-				if media["type"] == 'photo':
-					dl_filename = media["media_url"]
-					dl_media = dl_filename + ":orig"
-				if media["type"] == 'animated_gif':
-					dl_media = media["video_info"]["variants"][0]["url"]
-					dl_filename = dl_media
-				if media["type"] == 'video':
-					dl_media = media["video_info"]["variants"][0]["url"]
-					if '.m3u8' in dl_media:
-						dl_media = media["video_info"]["variants"][1]["url"]
-					if '?tag=' in dl_media:
-						dl_media = dl_media[:-6]
-					dl_filename = dl_media
-				if os.path.exists(working_directory + "/" + os.path.basename(dl_filename)) == False:
-					try:
-						with open(working_directory + "/" + os.path.basename(dl_filename), 'wb') as f:
-							dl_file = urllib.request.urlopen(dl_media).read()
-							f.write(dl_file)
-					except tweepy.RateLimitError as err:
-						mediaget_fault_count = mediaget_fault_count +1
-						if mediaget_fault_count < 3:
-							time.sleep(60 * 5)
-							continue
-						else:
-							mediaget_fault_count = 0
-					except Exception as err:
-						mediaget_fault_count = mediaget_fault_count +1
-						if mediaget_fault_count < 3:
-							time.sleep(60)
-							continue
-						else:
-							mediaget_fault_count = 0
-				mediaget_fault_count = 0
+アイコン取得
+アイコンの変化を確認
+キャプチャ&トリミング
+投稿
 
+'''
 
+screen_names = [
+	"user1", "user2"
+]
 
-# main
+screen_and_usernames = [
+	{"screen1":"name1"}, {"screen2":"name2"}
+]
 
-g_file_path = os.getcwd()
-if os.path.exists(g_file_path + "/user_list.json") == False:
-	os.makedirs(g_file_path + "/user_list.json")
-	init_script()
-else:
-	json_file = open(g_file_path + "/user_list.json",'r')
-	g_user_list_json = json.load(json_file)
-	json_file.close()
-	if len(g_user_list_json) == 0:
-		init_script()
+screen_name = ""
+file_path = "/home/admin/script/icon_getter/"
+file_path_cap = "/home/admin/youtube/"
+capture_file = ""
+date = datetime.datetime.today().strftime("%Y%m%d_%H%M_%S")
+flag = "0"
 
-g_args = sys.argv
-if len(g_args) != 1:
-	if g_args[1] is 'user_add':
-		g_user_list_new = user_add(g_args)
-	elif os.path.exists(g_file_path + "/user_list.json") == False:
-		init_script()
-	elif g_args[1] is 'hashtag_add':
-		g_user_list_new = hashtag_add(g_args)
-	else:
-		print("please chech parameter: " + g_args)
-		sys.exit()
-elif os.path.exists(g_file_path + "/user_list.json") == False:
-	init_script()
+api = tweepy_api()
 
-#json_file = open(g_file_path + "/user_list.json",'w')
-#json.dump(g_user_list_new,json_file)
-#json_file.close()
+for screen_name in screen_names:
+	profile_image, profile_banner = get_url(screen_name)
+	if '_normal' in profile_image:
+		profile_image = profile_image.replace("_normal", "")
+	elif '_mini' in profile_image:
+		profile_image = profile_image.replace("_mini", "")
+	elif '_bigger' in profile_image:
+		profile_image = profile_image.replace("_bigger", "")
+	comparison_icon_file = file_path + screen_name + "_comparison_icon_" + date + "." + profile_image.rsplit(".", 1)[1]
+	get_img(profile_image, comparison_icon_file)
+	comparison_banner_file = file_path + screen_name + "_comparison_banner_" + date + ".jpg"
+	get_img(profile_banner, comparison_banner_file)
 
-g_api = tweepy_api()
-for g_user,g_tags in g_user_list_new.items():
-	g_working_directory = g_file_path + "/" + user
-	for i in user_description_check(g_user):
-		if i not in g_tags:
-			g_tags.update({i, ""})
-	search_user_tl(g_user,g_tags["dummy"])
-	search_hashtags(g_tags)
-	g_user_list_new[g_user] = g_tags
+	if not glob.glob(file_path + screen_name + '_base*'):
+		base_icon_file = file_path + screen_name + "_base_icon." + profile_image.rsplit(".", 1)[1]
+		shutil.copyfile(comparison_icon_file, base_icon_file)
+		shutil.copyfile(comparison_icon_file, file_path_cap + screen_name + "_icon_" + date + "." + profile_image.rsplit(".", 1)[1])
+		base_banner_file = file_path + screen_name + "_base_banner.jpg"
+		shutil.copyfile(comparison_banner_file, base_banner_file)
+		shutil.copyfile(comparison_banner_file, file_path_cap + screen_name + "_banner_" + date + ".jpg")
+		get_capture_icon(screen_name)
+		get_capture_banner(screen_name)
 
-g_json_file = open(g_file_path + "/user_list.json",'w')
-json.dump(g_user_list_new,g_json_file)
-g_json_file.close()
+	base_icon_file = glob.glob(file_path + screen_name + '_base_icon*')[0]
+	base_banner_file = glob.glob(file_path + screen_name + '_base_banner*')[0]
+
+	if filecmp.cmp(base_icon_file, comparison_icon_file) is False :
+		shutil.copyfile(comparison_icon_file, file_path_cap + screen_name + "_icon_" + date + "." + profile_image.rsplit(".", 1)[1])
+		shutil.copyfile(comparison_icon_file, base_icon_file)
+		get_capture_icon(screen_name)
+		#api.update_with_media(filename=capture_file)
+		flag = "1"
+	if filecmp.cmp(base_banner_file, comparison_banner_file) is False:
+		shutil.copyfile(comparison_banner_file, file_path_cap + screen_name + "_banner_" + date + ".jpg")
+		shutil.copyfile(comparison_banner_file, base_banner_file)
+		get_capture_banner(screen_name)
+		#api.update_with_media(filename=capture_file)
+		flag = "1"
+	os.remove(comparison_icon_file)
+	os.remove(comparison_banner_file)
+
+if flag != "0":
+	api.update_status("変わったかも_自動投稿")
