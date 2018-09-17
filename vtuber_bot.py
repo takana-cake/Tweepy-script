@@ -1,6 +1,8 @@
-
-#!/usr/bin python3
 # _*_ coding: utf-8 _*_
+
+'''
+wkhtmltoimageは/usr/local/binに入るからcronで動かすときはPATHを通す
+'''
 
 import tweepy
 import requests
@@ -80,8 +82,8 @@ screen_and_usernames = [
 ]
 
 screen_name = ""
-file_path = "/home/admin/script/icon_getter/"
-file_path_cap = "/home/admin/youtube/"
+file_path = "./"
+file_path_cap = "./"
 capture_file = ""
 date = datetime.datetime.today().strftime("%Y%m%d_%H%M_%S")
 flag = "0"
