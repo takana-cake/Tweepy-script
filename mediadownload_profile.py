@@ -3,8 +3,7 @@
 '''
 wkhtmltoimageは/usr/local/binに入るからcronで動かすときはPATHを通す
 
-flow
-
+### flow(予定) ###
 プロフ文を取得
 アイコン取得
 アイコンの変化を確認
