@@ -15,7 +15,7 @@ https://apps.twitter.com/
 「Key and Access Tokens」の「Create my access token」をクリック
 
 ## 絵
-
+<img src="./01.jpg" width="20%" height="20%"><img src="./02.jpg" width="20%" height="20%"><img src="./03.jpg" width="20%" height="20%">
 
 
 ## 参考にさせていただいたサイト
