@@ -19,6 +19,16 @@ https://apps.twitter.com/
 
 
 ## 参考にさせていただいたサイト
+
+https://qiita.com/bakira/items/00743d10ec42993f85eb</br>
+
+https://qiita.com/yubais/items/dd143fe608ccad8e9f85</br>
+
+https://qiita.com/ogrew/items/0b267f57b8aaa24f1b73</br>
+
+https://www.topgate.co.jp/rookie-python-twitter-api</br>
+
+http://ailaby.com/twitter_api/</br>
 Pythonで特定のTwitterアカウントの投稿した画像を取得する - ayihiscope<br>
 http://ayihis.hatenablog.com/entry/2016/06/24/172435<br>
 PythonでTwitterを使う 〜Tweepyの紹介〜 - kivantium活動日記<br>
