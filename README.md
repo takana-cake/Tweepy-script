@@ -22,16 +22,16 @@ https://apps.twitter.com/
 TLやプロフを収集するユーザのscreenとnameと最終取得日
 検索ワードと最終取得日
 
-## 参考にさせていただいたサイト
-PythonでTwitter API を利用していろいろ遊んでみる
+## 参考にさせていただいたサイト</br>
+PythonでTwitter API を利用していろいろ遊んでみる</br>
 https://qiita.com/bakira/items/00743d10ec42993f85eb</br>
-Python で Twitter API にアクセス
+Python で Twitter API にアクセス</br>
 https://qiita.com/yubais/items/dd143fe608ccad8e9f85</br>
-Pythonでサクッと簡単にTwitterAPIを叩いてみる
+Pythonでサクッと簡単にTwitterAPIを叩いてみる</br>
 https://qiita.com/ogrew/items/0b267f57b8aaa24f1b73</br>
-Python と Twitter API でリツイートしたユーザーの情報を取得する | GCP の導入支援・開発・コンサルティングは株式会社トップゲート
+Python と Twitter API でリツイートしたユーザーの情報を取得する | GCP の導入支援・開発・コンサルティングは株式会社トップゲート</br>
 https://www.topgate.co.jp/rookie-python-twitter-api</br>
-TwitterAPI でツイートを大量に取得。サーバー側エラーも考慮（pythonで） | コード７区
+TwitterAPI でツイートを大量に取得。サーバー側エラーも考慮（pythonで） | コード７区</br>
 http://ailaby.com/twitter_api/</br>
 Pythonで特定のTwitterアカウントの投稿した画像を取得する - ayihiscope<br>
 http://ayihis.hatenablog.com/entry/2016/06/24/172435<br>
