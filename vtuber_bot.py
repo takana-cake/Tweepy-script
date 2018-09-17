@@ -2,6 +2,14 @@
 
 '''
 wkhtmltoimageは/usr/local/binに入るからcronで動かすときはPATHを通す
+
+flow
+
+アイコン取得
+アイコンの変化を確認
+キャプチャ&トリミング
+投稿
+
 '''
 
 import tweepy
@@ -63,18 +71,10 @@ def get_capture_banner(screen_name):
 	subprocess.call(cmd_capture_banner.split(), shell=False)
 
 ### main
-'''
-flow
 
-アイコン取得
-アイコンの変化を確認
-キャプチャ&トリミング
-投稿
-
-'''
 
 screen_names = [
-	"user1", "user2"
+	"screen1", "screen2"
 ]
 
 screen_and_usernames = [
