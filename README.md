@@ -1,5 +1,6 @@
 # TLDownloader
-twitter TLimg Downloader
+twitter TLimg Downloader</br>
+Tweepyを使用(APIで処理するよう書き直す)
 
 ## APIキー、アクセストークンの取得
 Twitterアカウントの「設定」メニューの「モバイル」を開き電話番号を入力し認証。</br>
