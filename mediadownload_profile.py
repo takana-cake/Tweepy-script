@@ -5,6 +5,7 @@ wkhtmltoimageは/usr/local/binに入るからcronで動かすときはPATHを通
 
 flow
 
+プロフ文を取得
 アイコン取得
 アイコンの変化を確認
 キャプチャ&トリミング
