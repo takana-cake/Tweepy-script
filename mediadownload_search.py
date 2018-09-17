@@ -1,14 +1,6 @@
 # _*_ coding: utf-8 _*_
 
-'''
 
-### flow(予定) ###
-mainからQuery受け取る
-searchする。
-保存に渡すjsonつくる
-searchした中でDBにない新しいタグやuserがあったらjson作って渡す(まだ考えてない)
-
-'''
 
 import tweepy
 import sys
