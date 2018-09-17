@@ -17,6 +17,8 @@ https://apps.twitter.com/
 ## 絵
 <img src="./01.jpg" width="20%" height="20%"><img src="./02.jpg" width="20%" height="20%"><img src="./03.jpg" width="20%" height="20%">
 
+## json
+
 
 ## 参考にさせていただいたサイト
 PythonでTwitter API を利用していろいろ遊んでみる
