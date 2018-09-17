@@ -29,7 +29,7 @@ Python で Twitter API にアクセス</br>
 https://qiita.com/yubais/items/dd143fe608ccad8e9f85</br>
 Pythonでサクッと簡単にTwitterAPIを叩いてみる</br>
 https://qiita.com/ogrew/items/0b267f57b8aaa24f1b73</br>
-Python と Twitter API でリツイートしたユーザーの情報を取得する | GCP の導入支援・開発・コンサルティングは株式会社トップゲート</br>
+Python と Twitter API でリツイートしたユーザーの情報を取得する</br>
 https://www.topgate.co.jp/rookie-python-twitter-api</br>
 TwitterAPI でツイートを大量に取得。サーバー側エラーも考慮（pythonで） | コード７区</br>
 http://ailaby.com/twitter_api/</br>
