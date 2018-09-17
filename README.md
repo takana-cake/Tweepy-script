@@ -18,7 +18,9 @@ https://apps.twitter.com/
 <img src="./01.jpg" width="20%" height="20%"><img src="./02.jpg" width="20%" height="20%"><img src="./03.jpg" width="20%" height="20%">
 
 ## json
-
+-DB
+TLやプロフを収集するユーザのscreenとnameと最終取得日
+検索ワードと最終取得日
 
 ## 参考にさせていただいたサイト
 PythonでTwitter API を利用していろいろ遊んでみる
