@@ -351,11 +351,11 @@ def _log(err_subject, err_description):
 
 ### download ###
 
-def media_get(twi_def, follow_id_def):
+def _download(twi_def, follow_id_def, retweet_enable, photo_enable, gif_enable, video_enable):
 	# 画像取得
-	mediaget_fault_count = 0
+	download_fault_count = 0
 	# リツイート判断
-	if hasattr(twi_def, 'retweeted_status') is False:
+	if hasattr(twi_def, 'retweeted_status') is False and retweet_enable = :
 		# メディア判断
 		if hasattr(twi_def, "extended_entities"):
 			if 'media' in twi_def.extended_entities:
@@ -379,20 +379,20 @@ def media_get(twi_def, follow_id_def):
 								dl_file = urllib.request.urlopen(dl_media).read()
 								f.write(dl_file)
 						except tweepy.RateLimitError as err:
-							mediaget_fault_count = mediaget_fault_count +1
-							if mediaget_fault_count < 3:
+							download_fault_count = download_fault_count +1
+							if download_fault_count < 3:
 								time.sleep(60 * 5)
 								continue
 							else:
-								mediaget_fault_count = 0
+								download_fault_count = 0
 						except Exception as err:
-							mediaget_fault_count = mediaget_fault_count +1
-							if mediaget_fault_count < 3:
+							download_fault_count = download_fault_count +1
+							if download_fault_count < 3:
 								time.sleep(60)
 								continue
 							else:
-								mediaget_fault_count = 0
-					mediaget_fault_count = 0
+								download_fault_count = 0
+					download_fault_count = 0
 
 
 
