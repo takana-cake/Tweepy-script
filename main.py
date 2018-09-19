@@ -134,94 +134,103 @@ def tweet_id_get(query_def, follow_id, maxid_def):
 
 
 
-
-
-
 ### profile ###
 
-import requests
-import datetime
-import subprocess
-import glob
-import shutil
-import filecmp
+def _profile_get_url(screen_name):
+	profile_get_url_fault_count = 0
+	img = ""
+	def _get_url():
+		nonlocal profile_get_url_fault_count
+		nonlocal img
+		try:
+			img = api.get_user(screen_name)
+		except Exception as err:
+			if profile_get_url_fault_count < 2:
+				profile_get_url_fault_count = profile_get_url_fault_count + 1
+				sleep(60)
+				_get_url()
+	_get_url()
+	return img.profile_image_url_https, img.profile_banner_url
 
+def _profile_get_img(url, file_name):
+	profile_get_img_fault_count = 0
+	def _get_img(url, file_name):
+		nonlocal profile_get_img_fault_count
+		nonlocal 
+		res = requests.get(url=url)
+		if res.status_code == 200:
+			f = open(file_name, 'wb')
+			f.write(res.content)
+			f.close()
+		elif profile_get_img_fault_count < 2:
+			profile_get_img_fault_count = profile_get_img_fault_count + 1
+			_get_img(url, file_name)
+	_get_img(url, file_name)
 
-def get_url(screen_name):
-	try:
-		img = api.get_user(screen_name)
-		return img.profile_image_url_https, img.profile_banner_url
-	except Exception as err:
-		return None
-
-def get_img(url, file_name):
-	res = requests.get(url=url)
-	if res.status_code == 200:
-		f = open(file_name, 'wb')
-		f.write(res.content)
-		f.close()
-
-def get_capture_icon(screen_name):
+def _profile_get_capture_icon(screen_name, file_path_cap):
 	url_user = "https://twitter.com/" + screen_name
 	capture_icon_file = file_path_cap + screen_name + "_capture_icon_" + date + ".jpg"
 	cmd_capture_icon = "wkhtmltoimage --crop-h 255 --crop-w 255 --crop-x 50 --crop-y 185 " + url_user + " " + capture_icon_file
 	subprocess.call(cmd_capture_icon.split(), shell=False)
 
-def get_capture_banner(screen_name):
+def _profile_get_capture_banner(screen_name, file_path_cap):
 	url_user = "https://twitter.com/" + screen_name
 	capture_banner_file = file_path_cap + screen_name + "_capture_banner_" + date + ".jpg"
 	cmd_capture_banner = "wkhtmltoimage --crop-h 380 --crop-w 1023 --crop-x 1 --crop-y 40 " + url_user + " " + capture_banner_file
 	subprocess.call(cmd_capture_banner.split(), shell=False)
 
-
-'''
-
-for screen_name in screen_names:
-	profile_image, profile_banner = get_url(screen_name)
-	if '_normal' in profile_image:
-		profile_image = profile_image.replace("_normal", "")
-	elif '_mini' in profile_image:
-		profile_image = profile_image.replace("_mini", "")
-	elif '_bigger' in profile_image:
-		profile_image = profile_image.replace("_bigger", "")
-	comparison_icon_file = file_path + screen_name + "_comparison_icon_" + date + "." + profile_image.rsplit(".", 1)[1]
-	get_img(profile_image, comparison_icon_file)
-	comparison_banner_file = file_path + screen_name + "_comparison_banner_" + date + ".jpg"
-	get_img(profile_banner, comparison_banner_file)
-
-	if not glob.glob(file_path + screen_name + '_base*'):
-		base_icon_file = file_path + screen_name + "_base_icon." + profile_image.rsplit(".", 1)[1]
-		shutil.copyfile(comparison_icon_file, base_icon_file)
-		shutil.copyfile(comparison_icon_file, file_path_cap + screen_name + "_icon_" + date + "." + profile_image.rsplit(".", 1)[1])
-		base_banner_file = file_path + screen_name + "_base_banner.jpg"
-		shutil.copyfile(comparison_banner_file, base_banner_file)
-		shutil.copyfile(comparison_banner_file, file_path_cap + screen_name + "_banner_" + date + ".jpg")
-		get_capture_icon(screen_name)
-		get_capture_banner(screen_name)
-
-	base_icon_file = glob.glob(file_path + screen_name + '_base_icon*')[0]
-	base_banner_file = glob.glob(file_path + screen_name + '_base_banner*')[0]
-
-	if filecmp.cmp(base_icon_file, comparison_icon_file) is False :
-		shutil.copyfile(comparison_icon_file, file_path_cap + screen_name + "_icon_" + date + "." + profile_image.rsplit(".", 1)[1])
-		shutil.copyfile(comparison_icon_file, base_icon_file)
-		get_capture_icon(screen_name)
-		#api.update_with_media(filename=capture_file)
-		flag = "1"
-	if filecmp.cmp(base_banner_file, comparison_banner_file) is False:
-		shutil.copyfile(comparison_banner_file, file_path_cap + screen_name + "_banner_" + date + ".jpg")
-		shutil.copyfile(comparison_banner_file, base_banner_file)
-		get_capture_banner(screen_name)
-		#api.update_with_media(filename=capture_file)
-		flag = "1"
-	os.remove(comparison_icon_file)
-	os.remove(comparison_banner_file)
-
-if flag != "0":
-	api.update_status("変わったかも_自動投稿")
-
-'''
-
+def _profile(screen_names):
+	import requests
+	import datetime
+	import subprocess
+	import glob
+	import shutil
+	import filecmp
+	from time import sleep
+	
+	screen_name = ""
+	file_path = working_directory
+	file_path_cap = "<capture閲覧用>"
+	flag = "0"
+	for screen_name in screen_names:
+		profile_image, profile_banner = _profile_get_url(screen_name)
+		if '_normal' in profile_image:
+			profile_image = profile_image.replace("_normal", "")
+		elif '_mini' in profile_image:
+			profile_image = profile_image.replace("_mini", "")
+		elif '_bigger' in profile_image:
+			profile_image = profile_image.replace("_bigger", "")
+		comparison_icon_file = file_path + screen_name + "_comparison_icon_" + date + "." + profile_image.rsplit(".", 1)[1]
+		_get_img(profile_image, comparison_icon_file)
+		comparison_banner_file = file_path + screen_name + "_comparison_banner_" + date + ".jpg"
+		_get_img(profile_banner, comparison_banner_file)
+		if not glob.glob(file_path + screen_name + '_base*'):
+			base_icon_file = file_path + screen_name + "_base_icon." + profile_image.rsplit(".", 1)[1]
+			shutil.copyfile(comparison_icon_file, base_icon_file)
+			shutil.copyfile(comparison_icon_file, file_path_cap + screen_name + "_icon_" + date + "." + profile_image.rsplit(".", 1)[1])
+			base_banner_file = file_path + screen_name + "_base_banner.jpg"
+			shutil.copyfile(comparison_banner_file, base_banner_file)
+			shutil.copyfile(comparison_banner_file, file_path_cap + screen_name + "_banner_" + date + ".jpg")
+			_profile_get_capture_icon(screen_name, file_path_cap)
+			_profile_get_capture_banner(screen_name, file_path_cap)
+		base_icon_file = glob.glob(file_path + screen_name + '_base_icon*')[0]
+		base_banner_file = glob.glob(file_path + screen_name + '_base_banner*')[0]
+		if filecmp.cmp(base_icon_file, comparison_icon_file) is False :
+			shutil.copyfile(comparison_icon_file, file_path_cap + screen_name + "_icon_" + date + "." + profile_image.rsplit(".", 1)[1])
+			shutil.copyfile(comparison_icon_file, base_icon_file)
+			_profile_get_capture_icon(screen_name, file_path_cap)
+			#api.update_with_media(filename=capture_file)
+			flag = "1"
+		if filecmp.cmp(base_banner_file, comparison_banner_file) is False:
+			shutil.copyfile(comparison_banner_file, file_path_cap + screen_name + "_banner_" + date + ".jpg")
+			shutil.copyfile(comparison_banner_file, base_banner_file)
+			_profile_get_capture_banner(screen_name, file_path_cap)
+			#api.update_with_media(filename=capture_file)
+			flag = "1"
+			os.remove(comparison_icon_file)
+			os.remove(comparison_banner_file)
+		if flag != "0":
+			api.update_status("変わったかも_自動投稿")
 
 
 
