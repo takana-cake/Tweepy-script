@@ -41,15 +41,13 @@ def limit_handled(h):
 	while True:
 		try:
 			yield h.next()
-		except tweepy.RateLimitError as err:
-			print(str(datetime.datetime.now()) + ": RateLimitError_1: " + str(err))
-			with open(working_directory + "/_log.txt",'a') as f:
-				f.write(str(datetime.datetime.now()) + ": RateLimitError_1: " + str(err) + "\n")
+		except tweepy.RateLimitError as err_description:
+			err_subject = "RateLimitError_1"
+			_log(err_subject, err_description)
 			time.sleep(60 * 15)
-		except tweepy.TweepError as err:
-			print(str(datetime.datetime.now()) + ": TweepError_1: " + str(err))
-			with open(working_directory + "/_log.txt",'a') as f:
-				f.write(str(datetime.datetime.now()) + ": TweepError_1: " + str(err) + "\n")
+		except tweepy.TweepError as err_description:
+			err_subject = "TweepError_1"
+			_log(err_subject, err_description)
 			time.sleep(60 * 15)
 
 def first_tweet_id_set():
@@ -66,15 +64,15 @@ def first_tweet_id_set():
 			try:
 				maxid = api.user_timeline(follow_screen_get).max_id
 			# API対策
-			except tweepy.RateLimitError as err:
-				with open(working_directory + "/_log.txt",'a') as f:
-					f.write(str(datetime.datetime.now()) + ": " + str(follow_screen_get) + ": RateLimitError_3: " + str(err) + "\n")
+			except tweepy.RateLimitError as err_description:
+				err_subject = str(follow_screen_get) + " : RateLimitError_3"
+				_log(err_subject, err_description)
 				time.sleep(60 * 15)
 				continue
 			# その他
-			except Exception as err:
-				with open(working_directory + "/_log.txt",'a') as f:
-					f.write(str(datetime.datetime.now()) + ": " + str(follow_screen_get) + ": Exception_3: " + str(err) + "\n")
+			except Exception as err_description:
+				err_subject = str(follow_screen_get) + " : Exception_3"
+				_log(err_subject, err_description)
 				maxidget_fault_count = maxidget_fault_count +1
 				if maxidget_fault_count < 3:
 					time.sleep(60 * 3)
@@ -115,16 +113,15 @@ def tweet_id_get(query_def, follow_id, maxid_def):
 				#with open(working_directory + "/" + follow_id + "/_maxid.txt", 'w+') as f:
 				#	f.write(str(maxid_def))
 		#02-2
-		except tweepy.RateLimitError as err:
-			with open(working_directory + "/_log.txt",'a') as f:
-				f.write(str(datetime.datetime.now()) + ": " + str(follow_id) + ": RateLimitError_4: " + str(maxid_def) + ": TC=" + str(tweetidget_fault_count) + ": " + str(err) + "\n")
+		except tweepy.RateLimitError as err_description:
+			err_subject = str(follow_id) + " : RateLimitError_4 : " + str(maxid_def) + " : TC=" + str(tweetidget_fault_count)
+			_log(err_subject, err_description)
 			time.sleep(60 * 15)
 			continue
 		#02-3
-		except tweepy.TweepError as err:
-			print(str(datetime.datetime.now()) + str(follow_id) + ": TweepError_4: " + str(maxid_def) + ": TC=" + str(tweetidget_fault_count) + ": " + str(err))
-			with open(working_directory + "/_log.txt",'a') as f:
-				f.write(str(datetime.datetime.now()) + ": " + str(follow_id) + ": TweepError_4: " + str(maxid_def) + ": TC=" + str(tweetidget_fault_count) + ": " + str(err) + "\n")
+		except tweepy.TweepError as err_description:
+			err_subject = str(follow_id) + " : TweepError_4 : " + str(maxid_def) + " : TC=" + str(tweetidget_fault_count)
+			_log(err_subject, err_description)
 			tweetidget_fault_count = tweetidget_fault_count +1
 			if tweetidget_fault_count < 3:
 				time.sleep(60 * 5)
@@ -335,6 +332,11 @@ def new_follow_ids_json():
 
 
 ### log ###
+
+def _log(err_subject, err_description):
+	print(str(datetime.datetime.now()) + " : " + str(err_subject) + " : " + str(err_description))
+	with open(LOGFILE,'a') as f:
+		f.write(str(datetime.datetime.now()) + " : " + str(err_subject) + " : " + str(err_description) + "\n")
 
 
 
