@@ -392,6 +392,8 @@ def media_get(twi_def, follow_id_def):
 if __name__ == '__main__':
 	api = tweepy_api()
 	date = datetime.datetime.today().strftime("%Y%m%d_%H%M_%S")
+	working_directory = "./"
+	LOGFILE = working_directory + str(datetime.datetime.now()) + "_log.txt"
 
 
 
