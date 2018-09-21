@@ -37,19 +37,6 @@ import sys
 import urllib.request
 import time
 
-def limit_handled(h):
-	while True:
-		try:
-			yield h.next()
-		except tweepy.RateLimitError as err_description:
-			err_subject = "RateLimitError_1"
-			_log(err_subject, err_description)
-			time.sleep(60 * 15)
-		except tweepy.TweepError as err_description:
-			err_subject = "TweepError_1"
-			_log(err_subject, err_description)
-			time.sleep(60 * 15)
-
 def first_tweet_id_set():
 	# 取得開始のツイートIDをmaxidへいれる
 	# ./my_id/follow_id/_maxid.txtに前回実行時のMAXIDを記録している
@@ -337,6 +324,41 @@ def new_follow_ids_json():
 	json_file = open(working_directory + "/_my_friends_list.json",'w')
 	json.dump(my_friends_list_json,json_file)
 	json_file.close()
+
+
+
+### follow user get ###
+
+def limit_handled(h):
+	while True:
+		try:
+			yield h.next()
+		except tweepy.RateLimitError as err_description:
+			err_subject = "RateLimitError_1"
+			_log(err_subject, err_description)
+			time.sleep(60 * 15)
+		except tweepy.TweepError as err_description:
+			err_subject = "TweepError_1"
+			_log(err_subject, err_description)
+			time.sleep(60 * 15)
+
+def _follow_user_get
+	for tmp_id in limit_handled(tweepy.Cursor(api.friends_ids, id=my_id).items()):
+		my_friends_ids.append(tmp_id)
+	# 100IDsずつ詳細をmy_friends_listへ
+	follow_counter = 0
+	for i in range(0, len(my_friends_ids), 100):
+		try:
+			for tmp_user in api.lookup_users(user_ids=my_friends_ids[i:i+100]):
+				follow_counter = follow_counter + 1
+				my_friends_list[tmp_user.screen_name] = tmp_user.name
+				#my_friends_list[tmp_user.screen_name] = {"name":tmp_user.name, "maxid":""}
+		except tweepy.RateLimitError as err:
+			time.sleep(60 * 15)
+			continue
+		except Exception as err:
+			time.sleep(60 * 3)
+			continue
 
 
 
