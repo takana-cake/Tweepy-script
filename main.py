@@ -1,5 +1,10 @@
 # _*_ coding: utf-8 _*_
 
+'''
+***json
+sceen,name,tweetid,searchQ,date,RTflag,videoflag,gifflag
+'''
+
 
 import tweepy
 import os
