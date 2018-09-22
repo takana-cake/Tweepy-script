@@ -24,9 +24,9 @@ TLやプロフを収集するユーザのscreenとnameと最終取得日
 <pre>
 json = [
 	{subject:&lt;名前&gt; or &lt;検索名&gt;}, 
-	{screen:&lt;ユーザID&gt;}, 
-	{tag:[{&lt;tag1&gt;:&lt;lastdate&gt;}, {&lt;tag2&gt;:&lt;lastdate&gt;}...]}, 
-	{Profileflag:&lt;none or lastdate&gt;}, 
+	{destination:&lt;保存先。TL収集ならscreen&gt;}, 
+	{tag:[{&lt;tag1&gt;:&lt;last_tweet_id&gt;:&lt;lastdate&gt;}, {&lt;tag2&gt;:&lt;last_tweet_id&gt;:&lt;lastdate&gt;}...]}, 
+	{Profileflag:&lt;0 or 1&gt;}, 
 	{TLflag:&lt;none or lastdate&gt;}, 
 	{Searchflag:&lt;none or lastdate&gt;}, 
 	{RTflag:&lt;0 or 1&gt;}, 
