@@ -299,34 +299,14 @@ def tweet_search():
 ### init ###
 
 def init_start():
-	hashtag_json = {}
 	if os.path.exists(working_directory) == False:
 		os.makedirs(working_directory)
-	if os.path.exists(working_directory + "/_hashtag_list.json") == False:
-		f = open(working_directory + "/_hashtag_list.json",'w+')
+	if os.path.exists(working_directory + "db.json") == False:
+		f = open(working_directory + "db.json",'w+')
 		f.close()
-	if os.path.exists(working_directory + "/_hashtag_add.txt") == False:
-		f = open(working_directory + "/_hashtag_add.txt",'w+')
-		f.close()
-	if os.path.getsize(working_directory + "/_hashtag_add.txt"):
-		f = open(working_directory + "/_hashtag_add.txt")
-		hashtag_add = f.read().split('\n')
-		f.close()
-		if os.path.getsize(working_directory + "/_hashtag_list.json"):
-			f = open(working_directory + "/_hashtag_list.json",'r')
-			hashtag_json = json.load(f)
-			f.close()
-			for hashtag in hashtag_add:
-				if not hashtag in hashtag_json:
-					hashtag_json[hashtag] = ""
-		else:
-			for hashtag in hashtag_add:
-				hashtag_json[hashtag] = ""
-		f = open(working_directory + "/_hashtag_list.json",'w')
-		json.dump(hashtag_json,f)
-		f.close()
-		f = open(working_directory + "/_hashtag_add.txt",'w')
-		f.close()
+	print("init done.\n")
+	print(helptxt)
+	sys.exit()
 
 
 
@@ -443,6 +423,15 @@ def _download(twi_def, download_filepath, retweet_enable, photo_enable, gif_enab
 					if os.path.exists(working_directory + download_filepath + "/" + os.path.basename(dl_filename)) == False:
 						_download_file()
 
+
+						
+### help ###
+helptxt = "Usage: python3 main.py [OPTION]...	\n\
+						\n\
+  --name					\n\
+  --add-user             Add user.		\n\
+  --add-query					\n\
+"
 
 
 ### main ###
