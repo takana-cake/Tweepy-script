@@ -452,7 +452,9 @@ if __name__ == '__main__':
 	date = datetime.datetime.today().strftime("%Y%m%d_%H%M_%S")
 	working_directory = "./"
 	LOGFILE = working_directory + str(datetime.datetime.now()) + "_log.txt"
-
+	f = open(working_directory + "",'r')
+	json_file = json.load(f)
+	f.close()
 
 
 
