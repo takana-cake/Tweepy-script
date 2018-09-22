@@ -382,7 +382,9 @@ def _download(twi_def, download_filepath, retweet_enable, photo_enable, gif_enab
 	# 画像取得
 	download_fault_count = 0
 	# リツイート判断
-	if hasattr(twi_def, 'retweeted_status') is False and retweet_enable = :
+	if hasattr(twi_def, 'retweeted_status') is True and retweet_enable = False:
+		pass
+	else:
 		# メディア判断
 		if hasattr(twi_def, "extended_entities"):
 			if 'media' in twi_def.extended_entities:
