@@ -426,11 +426,19 @@ def _download(twi_def, download_filepath, retweet_enable, photo_enable, gif_enab
 
 						
 ### help ###
-helptxt = "Usage: python3 main.py [OPTION]...	\n\
-						\n\
-  --name					\n\
-  --add-user             Add user.		\n\
-  --add-query					\n\
+helptxt = "Usage: python3 main.py [OPTION]...			\n\
+       python3 main.py --file [DB json]				\n\
+								\n\
+  --file [DB json]						\n\
+  --name							\n\
+	--add-query [query word]				\n\
+  --add-object				Add object.		\n\
+  	--add-query [query word]				\n\
+  	--profile [0 or 1]					\n\
+  	--tl [0 or 1]						\n\
+  	--rt [0 or 1]						\n\
+  	--video [0 or 1]					\n\
+  	--gif [0 or 1]						\n\
 "
 
 
