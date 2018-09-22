@@ -23,15 +23,15 @@ TLやプロフを収集するユーザのscreenとnameと最終取得日
 検索ワードと最終取得日  
 <pre>
 json = [
-	{subject:\<名前\> or \<検索名\>}, 
-	{screen:\<ユーザID\>}, 
-	{tag:[{\<tag1\>:\<lastdate\>}, {\<tag2\>:\<lastdate\>}...]}, 
-	{Profileflag:\<none or lastdate\>}, 
-	{TLflag:\<none or lastdate\>}, 
-	{Searchflag:\<none or lastdate\>}, 
-	{RTflag:\<0 or 1\>}, 
-	{videoflag:\<0 or 1\>}, 
-	{gifflag:\<0 or 1\>}
+	{subject:&lt;名前&gt; or &lt;検索名&gt;}, 
+	{screen:&lt;ユーザID&gt;}, 
+	{tag:[{&lt;tag1&gt;:&lt;lastdate&gt;}, {&lt;tag2&gt;:&lt;lastdate&gt;}...]}, 
+	{Profileflag:&lt;none or lastdate&gt;}, 
+	{TLflag:&lt;none or lastdate&gt;}, 
+	{Searchflag:&lt;none or lastdate&gt;}, 
+	{RTflag:&lt;0 or 1&gt;}, 
+	{videoflag:&lt;0 or 1&gt;}, 
+	{gifflag:&lt;0 or 1&gt;}
 ]
 </pre>
 
