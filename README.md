@@ -22,8 +22,7 @@ https://apps.twitter.com/
 TLやプロフを収集するユーザのscreenとnameと最終取得日
 検索ワードと最終取得日
 
-sceen,name,tweetid,searchQ(tagなど),date,Profileflag,RTflag,videoflag,gifflag
-
+[screen, {name:名前}, {tag:[{tag1:lastdate}, {tag2:lastdate}...]}, {Profileflag:<none or lastdate>}, {TLflag:<none or lastdate>}, RTflag, videoflag, gifflag]
 
 ## 参考にさせていただいたサイト</br>
 PythonでTwitter API を利用していろいろ遊んでみる</br>
