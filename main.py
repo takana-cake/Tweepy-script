@@ -378,7 +378,7 @@ def _log(err_subject, err_description):
 
 ### download ###
 
-def _download(twi_def, follow_id_def, retweet_enable, photo_enable, gif_enable, video_enable):
+def _download(twi_def, download_filepath, retweet_enable, photo_enable, gif_enable, video_enable):
 	# 画像取得
 	download_fault_count = 0
 	# リツイート判断
@@ -400,9 +400,9 @@ def _download(twi_def, follow_id_def, retweet_enable, photo_enable, gif_enable, 
 						if '?tag=' in dl_media:
 							dl_media = dl_media[:-6]
 						dl_filename = dl_media
-					if os.path.exists(working_directory + "/" + follow_id_def + "/" + os.path.basename(dl_filename)) == False:
+					if os.path.exists(working_directory + "/" + download_filepath + "/" + os.path.basename(dl_filename)) == False:
 						try:
-							with open(working_directory + "/" + follow_id_def + "/" + os.path.basename(dl_filename), 'wb') as f:
+							with open(working_directory + "/" + download_filepath + "/" + os.path.basename(dl_filename), 'wb') as f:
 								dl_file = urllib.request.urlopen(dl_media).read()
 								f.write(dl_file)
 						except tweepy.RateLimitError as err:
