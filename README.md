@@ -22,6 +22,9 @@ https://apps.twitter.com/
 TLやプロフを収集するユーザのscreenとnameと最終取得日
 検索ワードと最終取得日
 
+sceen,name,tweetid,searchQ(tagなど),date,Profileflag,RTflag,videoflag,gifflag
+
+
 ## 参考にさせていただいたサイト</br>
 PythonでTwitter API を利用していろいろ遊んでみる</br>
 https://qiita.com/bakira/items/00743d10ec42993f85eb</br>
