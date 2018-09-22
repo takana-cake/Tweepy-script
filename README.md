@@ -31,8 +31,8 @@ TLやプロフを収集するユーザのscreenとnameと最終取得日
 <pre>
 json = [
 	{
-		"name":&lt;screen&gt; or &lt;検索名&gt;, 	#作業フォルダ名
-		"Query":{&lt;tag1&gt;:{"id":&lt;id&gt;, "date":&lt;lastdate&gt;}, &lt;tag2&gt;:{"id":&lt;id&gt;, "date":&lt;lastdate&gt;}...}, 	#searchで使用
+		"name":&lt;screen or 検索名&gt;, 	#作業フォルダ名
+		"Query":{&lt;tag1&gt;:{"id":&lt;id&gt;, "date":&lt;lastdate&gt;}, ...}, 	#searchで使用
 		"Profileflag":&lt;0 or 1&gt;, 	#プロフ監視するか
 		"TLflag":{"id":&lt;id&gt;, "date":&lt;lastdate&gt;}, 	#TL保存するか
 		"RTflag":&lt;0 or 1&gt;, 	#TL保存の時にRTを含めるか
