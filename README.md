@@ -23,13 +23,13 @@ TLやプロフを収集するユーザのscreenとnameと最終取得日
 検索ワードと最終取得日  
 <pre>
 json = [
-	{name:&lt;screen&gt; or &lt;検索名&gt;}, 
-	{Query:[{&lt;tag1&gt;:[{id:&lt;id&gt;}, {date:&lt;lastdate&gt;}]}, {&lt;tag2&gt;:[{id:&lt;id&gt;}, {date:&lt;lastdate&gt;}]}...]}, 
-	{Profileflag:&lt;0 or 1&gt;}, 
-	{TLflag:[{id:&lt;id&gt;}, {date:&lt;lastdate&gt;}]}, 
-	{RTflag:&lt;0 or 1&gt;}, 
-	{videoflag:&lt;0 or 1&gt;}, 
-	{gifflag:&lt;0 or 1&gt;}
+	{"name":&lt;screen&gt; or &lt;検索名&gt;}, 
+	{"Query":[{&lt;tag1&gt;:[{"id":&lt;id&gt;}, {"date":&lt;lastdate&gt;}]}, {&lt;tag2&gt;:[{"id":&lt;id&gt;}, {"date":&lt;lastdate&gt;}]}...]}, 
+	{"Profileflag":&lt;0 or 1&gt;}, 
+	{"TLflag":[{"id":&lt;id&gt;}, {"date":&lt;lastdate&gt;}]}, 
+	{"RTflag":&lt;0 or 1&gt;}, 
+	{"videoflag":&lt;0 or 1&gt;}, 
+	{"gifflag":&lt;0 or 1&gt;}
 ]
 </pre>
 
