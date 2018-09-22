@@ -389,13 +389,13 @@ def _download(twi_def, download_filepath, retweet_enable, photo_enable, gif_enab
 		if hasattr(twi_def, "extended_entities"):
 			if 'media' in twi_def.extended_entities:
 				for media in twi_def.extended_entities["media"]:
-					if media["type"] == 'photo':
+					if media["type"] == 'photo' and photo_enable == True:
 						dl_filename = media["media_url"]
 						dl_media = dl_filename + ":orig"
-					if media["type"] == 'animated_gif':
+					if media["type"] == 'animated_gif' and gif_enable == True:
 						dl_media = media["video_info"]["variants"][0]["url"]
 						dl_filename = dl_media
-					if media["type"] == 'video':
+					if media["type"] == 'video' and video_enable == True:
 						dl_media = media["video_info"]["variants"][0]["url"]
 						if '.m3u8' in dl_media:
 							dl_media = media["video_info"]["variants"][1]["url"]
