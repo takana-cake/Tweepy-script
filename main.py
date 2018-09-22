@@ -128,6 +128,23 @@ def tweet_id_get(query_def, follow_id, maxid_def):
 
 ### profile ###
 
+def _profile_description_hashtag(screen_name):
+	profile_description_hashtag_fault_count = 0
+	def _description_hashtag():
+		nonlocal profile_description_hashtag_fault_count
+		try:
+			description = api.get_user(screen_name).description
+			description = re.sub(r'#', " #", description)
+			pattern = re.compile(r'[\s\[\]\(\)\<\>\（\）\＜\＞\"\']')
+			description_split = re.split(pattern, description)
+			description_hashtags = [x for x in description_split if '#' in x]
+			return(description_hashtags)
+		except Exception as err:
+			if profile_description_hashtag_fault_count < 2:
+				profile_description_hashtag_fault_count = profile_description_hashtag_fault_count + 1
+				sleep(60)
+				_description_hashtag()
+
 def _profile_get_url(screen_name):
 	profile_get_url_fault_count = 0
 	img = ""
