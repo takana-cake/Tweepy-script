@@ -26,8 +26,7 @@ json = [
 	{name:&lt;screen&gt; or &lt;検索名&gt;}, 
 	{Query:[{&lt;tag1&gt;:[{id:&lt;id&gt;}, {date:&lt;lastdate&gt;}]}, {&lt;tag2&gt;:[{id:&lt;id&gt;}, {date:&lt;lastdate&gt;}]}...]}, 
 	{Profileflag:&lt;0 or 1&gt;}, 
-	{TLflag:&lt;none or lastdate&gt;}, 
-	{Searchflag:&lt;none or lastdate&gt;}, 
+	{TLflag:[{id:&lt;id&gt;}, {date:&lt;lastdate&gt;}]}, 
 	{RTflag:&lt;0 or 1&gt;}, 
 	{videoflag:&lt;0 or 1&gt;}, 
 	{gifflag:&lt;0 or 1&gt;}
