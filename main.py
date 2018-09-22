@@ -439,6 +439,9 @@ helptxt = "Usage: python3 main.py [OPTION]...			\n\
   	--rt [0 or 1]						\n\
   	--video [0 or 1]					\n\
   	--gif [0 or 1]						\n\
+  --profile-check						\n\
+  --tweet-search						\n\
+  --tl-get							\n\
 "
 
 
