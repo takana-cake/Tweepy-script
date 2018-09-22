@@ -21,17 +21,17 @@ https://apps.twitter.com/
 -DB
 TLやプロフを収集するユーザのscreenとnameと最終取得日
 検索ワードと最終取得日  
-	json = [
-		{subject:\<名前\> or \<検索名\>}, 
-		{screen:\<ユーザID\>}, 
-		{tag:[{\<tag1\>:\<lastdate\>}, {\<tag2\>:\<lastdate\>}...]}, 
-		{Profileflag:\<none or lastdate\>}, 
-		{TLflag:\<none or lastdate\>}, 
-		{Searchflag:\<none or lastdate\>}, 
-		{RTflag:\<0 or 1\>}, 
-		{videoflag:\<0 or 1\>}, 
-		{gifflag:\<0 or 1\>}
-	]
+    json = [
+        {subject:\<名前\> or \<検索名\>}, 
+        {screen:\<ユーザID\>}, 
+        {tag:[{\<tag1\>:\<lastdate\>}, {\<tag2\>:\<lastdate\>}...]}, 
+        {Profileflag:\<none or lastdate\>}, 
+        {TLflag:\<none or lastdate\>}, 
+        {Searchflag:\<none or lastdate\>}, 
+        {RTflag:\<0 or 1\>}, 
+        {videoflag:\<0 or 1\>}, 
+        {gifflag:\<0 or 1\>}
+    ]
 
 ## 参考にさせていただいたサイト</br>
 PythonでTwitter API を利用していろいろ遊んでみる</br>
