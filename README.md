@@ -14,7 +14,14 @@ https://apps.twitter.com/
 
 「Key and Access Tokens」の「Create my access token」をクリック
 
-## 絵(予定は未定)
+## フロー(予定は未定)
+<pre>
+# python3 main.py
+# python3 main.py --add-object
+# python3 main.py --name 名前 --add-query tag1 tag2...
+or
+直でjson書く
+</pre>
 <img src="./01.jpg" width="20%" height="20%"><img src="./02.jpg" width="20%" height="20%"><img src="./03.jpg" width="20%" height="20%">
 
 ## json
