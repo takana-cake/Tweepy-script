@@ -379,8 +379,29 @@ def _log(err_subject, err_description):
 ### download ###
 
 def _download(twi_def, download_filepath, retweet_enable, photo_enable, gif_enable, video_enable):
-	# 画像取得
 	download_fault_count = 0
+	def _download_file():
+		nonlocal download_fault_count
+		nonlocal dl_filename
+		try:
+			with open(working_directory + download_filepath + "/" + os.path.basename(dl_filename), 'wb') as f:
+				dl_file = urllib.request.urlopen(dl_media).read()
+				f.write(dl_file)
+		except tweepy.RateLimitError as err:
+			if download_fault_count < 2:
+				download_fault_count = download_fault_count +1
+				time.sleep(60 * 5)
+				_download_file()
+			else:
+				download_fault_count = 0
+		except Exception as err:
+			if download_fault_count < 2:
+				download_fault_count = download_fault_count +1
+				time.sleep(60)
+				_download_file()
+			else:
+				download_fault_count = 0
+		download_fault_count = 0
 	# リツイート判断
 	if hasattr(twi_def, 'retweeted_status') is True and retweet_enable = False:
 		pass
@@ -402,30 +423,12 @@ def _download(twi_def, download_filepath, retweet_enable, photo_enable, gif_enab
 						if '?tag=' in dl_media:
 							dl_media = dl_media[:-6]
 						dl_filename = dl_media
-					if os.path.exists(working_directory + "/" + download_filepath + "/" + os.path.basename(dl_filename)) == False:
-						try:
-							with open(working_directory + "/" + download_filepath + "/" + os.path.basename(dl_filename), 'wb') as f:
-								dl_file = urllib.request.urlopen(dl_media).read()
-								f.write(dl_file)
-						except tweepy.RateLimitError as err:
-							download_fault_count = download_fault_count +1
-							if download_fault_count < 3:
-								time.sleep(60 * 5)
-								continue
-							else:
-								download_fault_count = 0
-						except Exception as err:
-							download_fault_count = download_fault_count +1
-							if download_fault_count < 3:
-								time.sleep(60)
-								continue
-							else:
-								download_fault_count = 0
-					download_fault_count = 0
+					if os.path.exists(working_directory + download_filepath + "/" + os.path.basename(dl_filename)) == False:
+						_download_file()
 
 
 
-
+### main ###
 
 if __name__ == '__main__':
 	api = tweepy_api()
