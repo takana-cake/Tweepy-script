@@ -426,22 +426,22 @@ def _download(twi_def, download_filepath, retweet_enable, photo_enable, gif_enab
 
 						
 ### help ###
-helptxt = "Usage: python3 main.py [OPTION]...			\n\
-       python3 main.py --file [DB json]				\n\
-								\n\
-  --file [DB json]						\n\
-  --name							\n\
-	--add-query [query word]				\n\
-  --add-object				Add object.		\n\
-  	--add-query [query word]				\n\
-  	--profile [0 or 1]					\n\
-  	--tl [0 or 1]						\n\
-  	--rt [0 or 1]						\n\
-  	--video [0 or 1]					\n\
-  	--gif [0 or 1]						\n\
-  --profile-check						\n\
-  --tweet-search						\n\
-  --tl-get							\n\
+helptxt = "Usage: python3 main.py [OPTION]...				\n\
+       python3 main.py --file [DB json]					\n\
+									\n\
+  --file [DB json]			Select json-file.		\n\
+  --name				Select object to edit.	 	\n\
+	--add-query [query word]	Add search-query.		\n\
+  --add-object				Add object.			\n\
+  	--add-query [query word]					\n\
+  	--profile [0 or 1]						\n\
+  	--tl [0 or 1]							\n\
+  	--rt [0 or 1]							\n\
+  	--video [0 or 1]						\n\
+  	--gif [0 or 1]							\n\
+  --profile-check							\n\
+  --tweet-search							\n\
+  --tl-get								\n\
 "
 
 
