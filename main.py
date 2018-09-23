@@ -389,6 +389,7 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 	def _download_file():
 		nonlocal download_fault_count
 		nonlocal dl_filename
+		nonlocal dl_media
 		try:
 			with open(working_directory + download_filepath + "/" + os.path.basename(dl_filename), 'wb') as f:
 				dl_file = urllib.request.urlopen(dl_media).read()
