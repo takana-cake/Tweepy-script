@@ -229,29 +229,26 @@ def _profile(screen_names):
 
 ### search ###
 
-def tweet_search():
-	if not os.path.getsize(working_directory + "/_hashtag_list.json"):
-		return
+### search ###
+
+def _search():
 	hashtag_json = {}
 	retry_count = 0
-	f = open(working_directory + "/_hashtag_list.json",'r')
-	hashtag_json = json.load(f)
-	f.close()
-	for hash_tag,tweet_id in hashtag_json.items():
+	for user_object in json_file:
 		if tweet_id:
 			search_query = 'since_search'
 		else:
 			search_query = 'max_search'
-			tweet_id = api.search(q=hash_tag)
+			tweet_id = api.search(q=search_query)
 			tweet_id = tweet_id[0].id
 		for l in range(50):
 			try:
 				if search_query == 'since_search':
-					for twi in api.search(q=hash_tag, count=100, since_id=tweet_id):
+					for twi in api.search(q=search_query, count=100, since_id=tweet_id):
 						media_get(twi)
 						tweet_id = twi.id
 				else:
-					for twi in api.search(q=hash_tag, count=100, max_id=tweet_id):
+					for twi in api.search(q=search_query, count=100, max_id=tweet_id):
 						media_get(twi)
 						tweet_id = twi.id
 			except tweepy.RateLimitError as err:
@@ -269,10 +266,7 @@ def tweet_search():
 				else:
 					retry_count = 0
 			retry_count = 0
-		hashtag_json[hash_tag] = tweet_id
-	f = open(working_directory + "/_hashtag_list.json",'w')
-	json.dump(hashtag_json,f)
-	f.close()
+		hashtag_json[search_query] = tweet_id
 
 
 
