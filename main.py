@@ -424,14 +424,11 @@ helptxt = "Usage: python3 main.py [OPTION]...				\n\
 	--add-query [query word]	Add search-query.		\n\
   --add-object				Add object.			\n\
   	--add-query [query word]					\n\
-  	--profile [0 or 1]						\n\
-  	--tl [0 or 1]							\n\
-  	--rt [0 or 1]							\n\
-  	--video [0 or 1]						\n\
-  	--gif [0 or 1]							\n\
-  --profile-check							\n\
-  --tweet-search							\n\
-  --tl-get								\n\
+  	--profile [True or False]						\n\
+  	--tl [True or False]							\n\
+  	--rt [True or False]							\n\
+  	--video [True or False]						\n\
+  	--gif [True or False]							\n\
 "
 
 
