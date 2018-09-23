@@ -432,6 +432,7 @@ if __name__ == '__main__':
 	api = tweepy_api()
 	date = datetime.datetime.today().strftime("%Y%m%d_%H%M_%S")
 	working_directory = "./"
+	#working_directory = os.path.dirname(filepath)
 	LOGFILE = working_directory + str(datetime.datetime.now()) + "_log.txt"
 	f = open(working_directory + "",'r')
 	json_file = json.load(f)
