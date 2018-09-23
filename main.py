@@ -442,8 +442,25 @@ if __name__ == '__main__':
 	f = open(working_directory + "",'r')
 	json_file = json.load(f)
 	f.close()
-
-
-
+'''
+	commands_args = sys.argv
+	if len(commands) != 1:
+		if '--add-user' in commands_args:
+			g_user_list_new = user_add(commands_args)
+		elif os.path.exists(working_directory + "db.json") == False:
+			init_start()
+		elif '--add-query' in commands_args:
+			g_user_list_new = hashtag_add(commands_args)
+		else:
+			print("please chech parameter: " + commands_args)
+			print(helptxt)
+			sys.exit()
+	elif os.path.exists(g_file_path + "db.json") == False:
+		init_start()
+	else:
+		print("please chech parameter: " + commands_args)
+		print(helptxt)
+		sys.exit()
+'''
 
 
