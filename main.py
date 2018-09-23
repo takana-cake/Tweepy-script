@@ -1,10 +1,18 @@
 # _*_ coding: utf-8 _*_
 
 
-import tweepy
-import os
-import json
+from time import sleep
 import datetime
+import filecmp
+import glob
+import json
+import os
+import requests
+import shutil
+import subprocess
+import sys
+import tweepy
+import urllib.request
 
 
 ### 認証 ###
@@ -34,10 +42,6 @@ def tweepy_api():
 ### TL ###
 
 def _TL_search():
-	import sys
-	import urllib.request
-	from time import sleep
-	
 	def _get_tweetid():
 		nonlocal TL_search_fault_count
 		try:
@@ -177,14 +181,6 @@ def _profile_get_capture_banner(screen_name, file_path_cap):
 	subprocess.call(cmd_capture_banner.split(), shell=False)
 
 def _profile(screen_names):
-	import requests
-	import datetime
-	import subprocess
-	import glob
-	import shutil
-	import filecmp
-	from time import sleep
-	
 	screen_name = ""
 	file_path = working_directory
 	file_path_cap = "<capture閲覧用>"
@@ -232,10 +228,6 @@ def _profile(screen_names):
 
 
 ### search ###
-
-import sys
-import urllib.request
-import time
 
 def tweet_search():
 	if not os.path.getsize(working_directory + "/_hashtag_list.json"):
