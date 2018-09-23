@@ -106,5 +106,7 @@ http://ism1000ch.hatenablog.com/entry/2014/03/15/154533<br>
 ### その他<br>
 コマンドライン引数 | Python-izm<br>
 https://www.python-izm.com/basic/command_line_arguments/<br>
+pythonでコマンドライン引数を使うサンプル<br>
+https://qiita.com/stkdev/items/e262dada7b68ea91aa0c<br>
 
 <br>
