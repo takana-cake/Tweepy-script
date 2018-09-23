@@ -1,10 +1,5 @@
 # _*_ coding: utf-8 _*_
 
-'''
-***json
-sceen,name,tweetid,searchQ,date,RTflag,videoflag,gifflag
-'''
-
 
 import tweepy
 import os
@@ -38,91 +33,84 @@ def tweepy_api():
 
 ### TL ###
 
-import sys
-import urllib.request
-import time
-
-def first_tweet_id_set():
-	# 取得開始のツイートIDをmaxidへいれる
-	# ./my_id/follow_id/_maxid.txtに前回実行時のMAXIDを記録している
-	idget_fault_count = 0
-	json_file = open(working_directory + "/_my_friends_list.json",'r')
-	my_friends_list_json = json.load(json_file)
-	json_file.close()
-	for follow_screen_get,follow_name_get in my_friends_list_json.items():
-		# 新規 ->maxidを取得し_maxid.txtファイルへ。クエリはmax_search
-		if os.path.getsize(working_directory + "/" + follow_screen_get + "/_maxid.txt") == 0:
-			query = 'max_search'
-			try:
-				maxid = api.user_timeline(follow_screen_get).max_id
-			# API対策
-			except tweepy.RateLimitError as err_description:
+def _TL_search():
+	import sys
+	import urllib.request
+	from time import sleep
+	
+	def _get_tweetid():
+		nonlocal TL_search_fault_count
+		try:
+			get_id = api.user_timeline(TL_search_object["name"]).max_id
+			return get_id
+		except tweepy.RateLimitError as err_description:
+			if TL_search_fault_count < 2:
+				TL_search_fault_count = TL_search_fault_count + 1
 				err_subject = str(follow_screen_get) + " : RateLimitError_3"
 				_log(err_subject, err_description)
-				time.sleep(60 * 15)
-				continue
-			# その他
-			except Exception as err_description:
+				sleep(60 * 15)
+				_get_tweetid()
+		except Exception as err_description:
+			if TL_search_fault_count < 2:
+				TL_search_fault_count = TL_search_fault_count + 1
 				err_subject = str(follow_screen_get) + " : Exception_3"
 				_log(err_subject, err_description)
-				maxidget_fault_count = maxidget_fault_count +1
-				if maxidget_fault_count < 3:
-					time.sleep(60 * 3)
-					continue
-				else:
-					maxidget_fault_count = 0
-			maxidget_fault_count = 0
-			f = open(working_directory + "/" + follow_screen_get + "/_maxid.txt" , 'w')
-			f.write(str(maxid))
-			f.close()
-		# 既存 ->maxidに_maxid.txt、クエリはsince_search
-		else:
-			query = 'since_search'
-			f = open(working_directory + "/" + follow_screen_get + "/_maxid.txt" , 'r')
-			for i in f: maxid = i
-			f.close()
-		tweet_id_get(query, follow_screen_get, maxid)
-
-def tweet_id_get(query_def, follow_id, maxid_def):
-	# ツイートIDを取得
-	tweetidget_fault_count = 0
-	print(str(datetime.datetime.now()) + follow_id)
-	for l in range(50):
-		#02-1 TLを取得_API
-		try:
-			if query_def == 'max_search':
-				#03-1 新規サーチ
-				for twi in api.user_timeline(follow_id, count=100, max_id=maxid_def):
-					# media_getへ
-					media_get(twi, follow_id)
-					maxid_def = twi.id
-			elif query_def == 'since_search':
-				#03-2 既存サーチ
-				for twi in api.user_timeline(follow_id, count=100, since_id=maxid_def):
-					# media_getへ
-					media_get(twi, follow_id)
-					maxid_def = twi.id
-				#with open(working_directory + "/" + follow_id + "/_maxid.txt", 'w+') as f:
-				#	f.write(str(maxid_def))
-		#02-2
-		except tweepy.RateLimitError as err_description:
-			err_subject = str(follow_id) + " : RateLimitError_4 : " + str(maxid_def) + " : TC=" + str(tweetidget_fault_count)
-			_log(err_subject, err_description)
-			time.sleep(60 * 15)
-			continue
-		#02-3
-		except tweepy.TweepError as err_description:
-			err_subject = str(follow_id) + " : TweepError_4 : " + str(maxid_def) + " : TC=" + str(tweetidget_fault_count)
-			_log(err_subject, err_description)
-			tweetidget_fault_count = tweetidget_fault_count +1
-			if tweetidget_fault_count < 3:
-				time.sleep(60 * 5)
-				continue
+				sleep(60)
+				_get_tweetid()
+	for TL_search_object in json_file:
+		TL_search_fault_count = 0
+		if 'TLflag' in TL_search_object:
+			if TL_search_object["TLflag"]["id"] == "":
+				start_id_and_date = _get_tweetid()
+				TL_search_object["TLflag"]["id"] == start_id_and_date
+				TL_search_object["TLflag"]["date"] == date
+				query = 'max_search'
 			else:
-				tweetidget_fault_count = 0
-		tweetidget_fault_count = 0
-	with open(working_directory + "/" + follow_id + "/_maxid.txt", 'w+') as f:
-		f.write(str(maxid_def))
+				query = 'since_search'
+			_TL_tweet_get(TL_search_object, query)
+
+
+
+def _TL_tweet_get(TL_search_object, search_flag):
+	tweet_id = TL_search_object["TLflag"]["id"]
+	screen = TL_search_object["name"]
+	retweet_enable = TL_search_object["RTflag"]
+	gif_enable = TL_search_object["gifflag"]
+	video_enable = TL_search_object["videoflag"]
+	
+	tweet_id = ""
+	
+	def _tweet_get():
+		nonlocal TL_tweet_get_fault_count
+		nonlocal tweet_id
+		try:
+			if search_flag == 'max_search':
+				for twi in api.user_timeline(screen, count=100, max_id=tweet_id):
+					_download(twi, screen, retweet_enable, gif_enable, video_enable)
+					tweet_id = twi.id
+			elif search_flag == 'since_search':
+				for twi in api.user_timeline(screen, count=100, since_id=tweet_id):
+					_download(twi, screen, retweet_enable, gif_enable, video_enable)
+					tweet_id = twi.id
+			TL_tweet_get_fault_count = 0
+		except tweepy.RateLimitError as err_description:
+			if TL_tweet_get_fault_count < 2:
+				err_subject = str(screen) + " : RateLimitError_4 : " + str(tweet_id) + " : TC=" + str(tweetidget_fault_count)
+				_log(err_subject, err_description)
+				TL_tweet_get_fault_count = TL_tweet_get_fault_count +1
+				sleep(60 * 15)
+				_tweet_get()
+		except tweepy.TweepError as err_description:
+			if TL_tweet_get_fault_count < 2:
+				err_subject = str(screen) + " : TweepError_4 : " + str(tweet_id) + " : TC=" + str(tweetidget_fault_count)
+				_log(err_subject, err_description)
+				TL_tweet_get_fault_count = TL_tweet_get_fault_count +1
+				sleep(60 * 5)
+				_tweet_get()
+
+	for l in range(50):
+		TL_tweet_get_fault_count = 0
+		_tweet_get()
 
 
 
