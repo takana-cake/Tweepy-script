@@ -461,6 +461,24 @@ if __name__ == '__main__':
 		print("please chech parameter: " + commands_args)
 		print(helptxt)
 		sys.exit()
+
+# まずオブジェクト生成
+parser = argparse.ArgumentParser()
+parser.add_argument("input", help="please set me", type=str)
+parser.add_argument("--name", help="optional")
+parser.add_argument("--add-query", help="optional")
+parser.add_argument("--add-object", help="optional")
+parser.add_argument("--add-query", help="optional")
+parser.add_argument("--profile", help="optional")
+parser.add_argument("--tl", help="optional")
+parser.add_argument("--rt", help="optional")
+parser.add_argument("--video", help="optional")
+parser.add_argument("--gif", help="optional")
+
+args = parser.parse_args()
+
+# 参照できる
+args.param
 '''
 
 
