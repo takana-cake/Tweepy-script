@@ -310,6 +310,15 @@ def init_start():
 
 
 
+### Edit json ###
+
+def _edit_json(editdata):
+	json_file = open(working_directory + "db.json",'w')
+	json.dump(editdata,json_file)
+	json_file.close()
+
+
+
 ### add ###
 
 def new_follow_ids_json():
