@@ -417,18 +417,18 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 						
 ### help ###
 helptxt = "Usage: python3 main.py [OPTION]...				\n\
-       python3 main.py --file [DB json]					\n\
+       python3 main.py --file [DB json]				\n\
 									\n\
   --file [DB json]			Select json-file.		\n\
   --name				Select object to edit.	 	\n\
 	--add-query [query word]	Add search-query.		\n\
   --add-object				Add object.			\n\
   	--add-query [query word]					\n\
-  	--profile [True or False]						\n\
-  	--tl [True or False]							\n\
-  	--rt [True or False]							\n\
+  	--profile [True or False]					\n\
+  	--tl [True or False]						\n\
+  	--rt [True or False]						\n\
   	--video [True or False]						\n\
-  	--gif [True or False]							\n\
+  	--gif [True or False]						\n\
 "
 
 
