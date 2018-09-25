@@ -441,8 +441,8 @@ if __name__ == '__main__':
 import argparse
 
 parser = argparse.ArgumentParser(
-	usage=' python3 main.py [OPTION]...\n\
-	python3 main.py --file [DB json]',
+	usage=' python3 main.py\n\
+	python3 main.py [DB json] [OPTION]...',
 	add_help=True,
 	)
 parser.add_argument("json", help="please set me.", type=str)
