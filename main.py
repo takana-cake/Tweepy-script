@@ -434,7 +434,7 @@ if __name__ == '__main__':
 	working_directory = "./"
 	#working_directory = os.path.dirname(filepath)
 	LOGFILE = working_directory + str(datetime.datetime.now()) + "_log.txt"
-	f = open(working_directory + "",'r')
+	f = open(json_file,'r')
 	json_file = json.load(f)
 	f.close()
 '''
@@ -442,10 +442,10 @@ import argparse
 
 parser = argparse.ArgumentParser(
 	usage=' python3 main.py\n\
-	python3 main.py [DB json] [OPTION]...',
+	python3 main.py [json-file] [OPTION]...',
 	add_help=True,
 	)
-parser.add_argument("json", help="please set me.", type=str,  nargs=1)
+parser.add_argument("json_file", help="please set DBfile.json.", type=str,  nargs=1, metavar="[json-file]")
 parser.add_argument("--name", help="select object.", type=str, nargs=1, metavar="<object-name>")
 parser.add_argument("--add-object", help="add new-screen or new-search-description.", nargs=1,  metavar="<object-name>")
 parser.add_argument("--add-query", help="add search-query to object.", metavar="<query>")
