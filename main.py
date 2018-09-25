@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tweepy
 import urllib.request
+import argparse
 
 
 ### 認証 ###
@@ -272,10 +273,10 @@ def _search():
 
 ### init ###
 
-def init_start():
+def init_start(mkdb):
 	if os.path.exists(working_directory) == False:
 		os.makedirs(working_directory)
-	if os.path.exists(working_directory + "db.json") == False:
+	if os.path.exists(mkdb) == False:
 		f = open(working_directory + "db.json",'w+')
 		f.close()
 	print("init done.\n")
@@ -429,35 +430,34 @@ helptxt = "Usage: python3 main.py [OPTION]...				\n\
 ### main ###
 
 if __name__ == '__main__':
-	api = tweepy_api()
+	parser = argparse.ArgumentParser(
+		usage=' python3 main.py\n\
+		python3 main.py [json-file] [OPTION]...',
+		add_help=True,
+		)
+	parser.add_argument("json_file", help="please set DBfile.json.", type=str, nargs=1, metavar="[json-file]")
+	parser.add_argument("--name", help="select object.", type=str, nargs=1, metavar="<object-name>")
+	parser.add_argument("--add-object", help="add new-screen or new-search-description.", nargs=1,  metavar="<object-name>")
+	parser.add_argument("--add-query", help="add search-query to object.", metavar="<query>")
+	parser.add_argument("--profile", help="profile-check.", choices=['True','False'], nargs=1,   metavar="<True/False>")
+	parser.add_argument("--tl", help="TL-check.", choices=['True','False'], nargs=1,   metavar="<True/False>")
+	parser.add_argument("--rt", help="including Retweets at TL-check.", choices=['True','False'], nargs=1,   metavar="<True/False>")
+	parser.add_argument("--video", help="including video-file at Search,TL-check.", choices=['True','False'], nargs=1,   metavar="<True/False>")
+	parser.add_argument("--gif", help="including gif-file at Search,TL-check.", choices=['True','False'], nargs=1, metavar="<True/False>")
+	
+	cmd_args = parser.parse_args()
+	
+	working_directory = os.path.dirname(args.json_file) + "/"
 	date = datetime.datetime.today().strftime("%Y%m%d_%H%M_%S")
-	working_directory = "./"
-	#working_directory = os.path.dirname(filepath)
 	LOGFILE = working_directory + str(datetime.datetime.now()) + "_log.txt"
+	
+	if os.path.exists(args.json_file):
+		init_start(args.json_file)
+	'''
+	api = tweepy_api()
 	f = open(json_file,'r')
 	json_file = json.load(f)
 	f.close()
-'''
-import argparse
-
-parser = argparse.ArgumentParser(
-	usage=' python3 main.py\n\
-	python3 main.py [json-file] [OPTION]...',
-	add_help=True,
-	)
-parser.add_argument("json_file", help="please set DBfile.json.", type=str,  nargs=1, metavar="[json-file]")
-parser.add_argument("--name", help="select object.", type=str, nargs=1, metavar="<object-name>")
-parser.add_argument("--add-object", help="add new-screen or new-search-description.", nargs=1,  metavar="<object-name>")
-parser.add_argument("--add-query", help="add search-query to object.", metavar="<query>")
-parser.add_argument("--profile", help="profile-check.", choices=['True','False'], nargs=1,   metavar="<True/False>")
-parser.add_argument("--tl", help="TL-check.", choices=['True','False'], nargs=1,   metavar="<True/False>")
-parser.add_argument("--rt", help="including Retweets at TL-check.", choices=['True','False'], nargs=1,   metavar="<True/False>")
-parser.add_argument("--video", help="including video-file at Search,TL-check.", choices=['True','False'], nargs=1,   metavar="<True/False>")
-parser.add_argument("--gif", help="including gif-file at Search,TL-check.", choices=['True','False'], nargs=1, metavar="<True/False>")
-
-args = parser.parse_args()
-
-args.gif
-'''
+	'''
 
 
