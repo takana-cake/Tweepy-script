@@ -62,7 +62,7 @@ def _TL_search():
 				_log(err_subject, err_description)
 				sleep(60)
 				_get_tweetid()
-	for TL_search_object in json_file:
+	for TL_search_object in json_dict:
 		TL_search_fault_count = 0
 		if 'TLflag' in TL_search_object:
 			if TL_search_object["TLflag"]["id"] == "":
@@ -233,7 +233,7 @@ def _profile(screen_names):
 def _search():
 	hashtag_json = {}
 	retry_count = 0
-	for user_object in json_file:
+	for user_object in json_dict:
 		if tweet_id:
 			search_query = 'since_search'
 		else:
@@ -291,9 +291,9 @@ def init_start(mkdb):
 ### Edit json ###
 
 def _edit_json(editdata):
-	json_file = open(working_directory + "db.json",'w')
-	json.dump(editdata,json_file)
-	json_file.close()
+	json_dict = open(DB_file,'w')
+	json.dump(editdata,json_dict)
+	json_dict.close()
 
 
 
@@ -301,18 +301,18 @@ def _edit_json(editdata):
 
 def new_follow_ids_json():
 	# 新規フォロー初期化用
-	json_file = open(working_directory + "/_my_friends_list.json",'r')
-	my_friends_list_json = json.load(json_file)
-	json_file.close()
+	json_dict = open(DB_file,'r')
+	my_friends_list_json = json.load(json_dict)
+	json_dict.close()
 	for new_followuser_screen,new_followuser_detail in my_friends_list_json.items():
-		if os.path.exists(working_directory + "/" + new_followuser_screen) == False:
-			os.makedirs(working_directory + "/" + new_followuser_screen)
-			f = open(working_directory + "/" + new_followuser_screen + "/_maxid.txt" , 'w+')
+		if os.path.exists(working_directory + new_followuser_screen) == False:
+			os.makedirs(working_directory + new_followuser_screen)
+			f = open(working_directory + new_followuser_screen + "/_maxid.txt" , 'w+')
 			f.close()
 			my_friends_list_json[new_followuser_screen] = new_followuser_detail
-	json_file = open(working_directory + "/_my_friends_list.json",'w')
-	json.dump(my_friends_list_json,json_file)
-	json_file.close()
+	json_dict = open(DB_file,'w')
+	json.dump(my_friends_list_json,json_dict)
+	json_dict.close()
 
 
 
@@ -456,11 +456,11 @@ if __name__ == '__main__':
 	
 	if os.path.exists(DB_file):
 		init_start(DB_file)
-	'''
+
 	api = tweepy_api()
-	f = open(json_file,'r')
-	json_file = json.load(f)
+	f = open(DB_file,'r')
+	json_dict = json.load(f)
 	f.close()
-	'''
+	
 
 
