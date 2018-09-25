@@ -184,7 +184,8 @@ def _profile_get_capture_banner(screen_name, file_path_cap):
 def _profile(screen_names):
 	screen_name = ""
 	file_path = working_directory
-	file_path_cap = "<capture閲覧用>"
+	#file_path_cap = "<capture閲覧用>"
+	file_path_cap = working_directory
 	flag = "0"
 	for screen_name in screen_names:
 		profile_image, profile_banner = _profile_get_url(screen_name)
