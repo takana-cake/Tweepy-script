@@ -445,19 +445,19 @@ parser = argparse.ArgumentParser(
 	python3 main.py [DB json] [OPTION]...',
 	add_help=True,
 	)
-parser.add_argument("json", help="please set me.", type=str)
-parser.add_argument("--name", help="select object.", type=str, metavar="<object-name>")
-parser.add_argument("--add-object", help="add new-screen or new-search-description.", metavar="<object-name>")
+parser.add_argument("json", help="please set me.", type=str,  nargs=1)
+parser.add_argument("--name", help="select object.", type=str, nargs=1, metavar="<object-name>")
+parser.add_argument("--add-object", help="add new-screen or new-search-description.", nargs=1,  metavar="<object-name>")
 parser.add_argument("--add-query", help="add search-query to object.", metavar="<query>")
-parser.add_argument("--profile", help="profile-check.", metavar="<True/False>")
-parser.add_argument("--tl", help="TL-check.", metavar="<True/False>")
-parser.add_argument("--rt", help="including Retweets at TL-check.", metavar="<True/False>")
-parser.add_argument("--video", help="including video-file at Search,TL-check.", metavar="<True/False>")
-parser.add_argument("--gif", help="including gif-file at Search,TL-check.", metavar="<True/False>")
+parser.add_argument("--profile", help="profile-check.", choices=['True','False'], nargs=1,   metavar="<True/False>")
+parser.add_argument("--tl", help="TL-check.", choices=['True','False'], nargs=1,   metavar="<True/False>")
+parser.add_argument("--rt", help="including Retweets at TL-check.", choices=['True','False'], nargs=1,   metavar="<True/False>")
+parser.add_argument("--video", help="including video-file at Search,TL-check.", choices=['True','False'], nargs=1,   metavar="<True/False>")
+parser.add_argument("--gif", help="including gif-file at Search,TL-check.", choices=['True','False'], nargs=1, metavar="<True/False>")
 
 args = parser.parse_args()
 
-args.param
+args.gif
 '''
 
 
