@@ -230,8 +230,6 @@ def _profile(screen_names):
 
 ### search ###
 
-### search ###
-
 def _search():
 	hashtag_json = {}
 	retry_count = 0
@@ -275,13 +273,18 @@ def _search():
 
 def init_start(mkdb):
 	if os.path.exists(working_directory) == False:
-		os.makedirs(working_directory)
+		#os.makedirs(working_directory)
+		print("directory is not found.")
+		sys.exit()
 	if os.path.exists(mkdb) == False:
-		f = open(working_directory + "db.json",'w+')
-		f.close()
+		print("json-file is not found.")
+		print("Do you want to create a file?(y/n)")
+		q = input()
+		if q == "y":
+			f = open(mkdb,'w+')
+			f.close()
+			print("result: " + os.path.exists(mkdb))
 	print("init done.\n")
-	print(helptxt)
-	sys.exit()
 
 
 
@@ -431,8 +434,8 @@ helptxt = "Usage: python3 main.py [OPTION]...				\n\
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(
-		usage=' python3 main.py\n\
-		python3 main.py [json-file] [OPTION]...',
+		usage=' python3 main.py [json-file] [OPTION]...\n\
+		nohup python3 main.py [json-file] [OPTION]... &',
 		add_help=True,
 		)
 	parser.add_argument("json_file", help="please set DBfile.json.", type=str, nargs=1, metavar="[json-file]")
@@ -444,15 +447,15 @@ if __name__ == '__main__':
 	parser.add_argument("--rt", help="including Retweets at TL-check.", choices=['True','False'], nargs=1,   metavar="<True/False>")
 	parser.add_argument("--video", help="including video-file at Search,TL-check.", choices=['True','False'], nargs=1,   metavar="<True/False>")
 	parser.add_argument("--gif", help="including gif-file at Search,TL-check.", choices=['True','False'], nargs=1, metavar="<True/False>")
-	
 	cmd_args = parser.parse_args()
 	
 	working_directory = os.path.dirname(args.json_file) + "/"
+	DB_file = args.json_file
 	date = datetime.datetime.today().strftime("%Y%m%d_%H%M_%S")
 	LOGFILE = working_directory + str(datetime.datetime.now()) + "_log.txt"
 	
-	if os.path.exists(args.json_file):
-		init_start(args.json_file)
+	if os.path.exists(DB_file):
+		init_start(DB_file)
 	'''
 	api = tweepy_api()
 	f = open(json_file,'r')
