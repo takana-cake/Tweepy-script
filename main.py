@@ -440,16 +440,20 @@ if __name__ == '__main__':
 '''
 import argparse
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(
+	usage=' python3 main.py [OPTION]...\n\
+	python3 main.py --file [DB json]',
+	add_help=True,
+	)
 parser.add_argument("json", help="please set me.", type=str)
-parser.add_argument("--name", help="select object.")
-parser.add_argument("--add-object", help="add new-screen or new-search-description.")
-parser.add_argument("--add-query", help="add search-query to object.")
-parser.add_argument("--profile", help="profile-check. 1:enable/0:disable")
-parser.add_argument("--tl", help="TL-check. 1:enable/0:disable")
-parser.add_argument("--rt", help="including Retweets at TL-check. 1:enable/0:disable")
-parser.add_argument("--video", help="including video-file at Search,TL-check. 1:enable/0:disable")
-parser.add_argument("--gif", help="including gif-file at Search,TL-check. 1:enable/0:disable")
+parser.add_argument("--name", help="select object.", type=str, metavar="<object-name>")
+parser.add_argument("--add-object", help="add new-screen or new-search-description.", metavar="<object-name>")
+parser.add_argument("--add-query", help="add search-query to object.", metavar="<query>")
+parser.add_argument("--profile", help="profile-check.", metavar="<1/0>")
+parser.add_argument("--tl", help="TL-check. 1:enable/0:disable", metavar="<1/0>")
+parser.add_argument("--rt", help="including Retweets at TL-check. 1:enable/0:disable", metavar="<1/0>")
+parser.add_argument("--video", help="including video-file at Search,TL-check. 1:enable/0:disable", metavar="<1/0>")
+parser.add_argument("--gif", help="including gif-file at Search,TL-check. 1:enable/0:disable", metavar="<1/0>")
 
 args = parser.parse_args()
 
