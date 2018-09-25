@@ -438,41 +438,21 @@ if __name__ == '__main__':
 	json_file = json.load(f)
 	f.close()
 '''
-	commands_args = sys.argv
-	if len(commands) != 1:
-		if '--add-user' in commands_args:
-			g_user_list_new = user_add(commands_args)
-		elif os.path.exists(working_directory + "db.json") == False:
-			init_start()
-		elif '--add-query' in commands_args:
-			g_user_list_new = hashtag_add(commands_args)
-		else:
-			print("please chech parameter: " + commands_args)
-			print(helptxt)
-			sys.exit()
-	elif os.path.exists(g_file_path + "db.json") == False:
-		init_start()
-	else:
-		print("please chech parameter: " + commands_args)
-		print(helptxt)
-		sys.exit()
+import argparse
 
-# まずオブジェクト生成
 parser = argparse.ArgumentParser()
-parser.add_argument("input", help="please set me", type=str)
-parser.add_argument("--name", help="optional")
-parser.add_argument("--add-query", help="optional")
-parser.add_argument("--add-object", help="optional")
-parser.add_argument("--add-query", help="optional")
-parser.add_argument("--profile", help="optional")
-parser.add_argument("--tl", help="optional")
-parser.add_argument("--rt", help="optional")
-parser.add_argument("--video", help="optional")
-parser.add_argument("--gif", help="optional")
+parser.add_argument("json", help="please set me.", type=str)
+parser.add_argument("--name", help="select object.")
+parser.add_argument("--add-object", help="add new-screen or new-search-description.")
+parser.add_argument("--add-query", help="add search-query to object.")
+parser.add_argument("--profile", help="profile-check. 1:enable/0:disable")
+parser.add_argument("--tl", help="TL-check. 1:enable/0:disable")
+parser.add_argument("--rt", help="including Retweets at TL-check. 1:enable/0:disable")
+parser.add_argument("--video", help="including video-file at Search,TL-check. 1:enable/0:disable")
+parser.add_argument("--gif", help="including gif-file at Search,TL-check. 1:enable/0:disable")
 
 args = parser.parse_args()
 
-# 参照できる
 args.param
 '''
 
