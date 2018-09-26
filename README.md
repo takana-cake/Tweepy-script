@@ -35,6 +35,16 @@ TLやプロフを収集するユーザのscreenとnameと最終取得日
 <pre>
 json = [
 	{
+		'consumer':{
+			'key'	: "",
+			'secret': ""
+		},
+		'access':{
+			'key'	: "",
+			'secret': ""
+		}
+	},
+	{
 		"name":&lt;screen or 検索名&gt;,					#作業フォルダ名
 		"Query":{&lt;tag1&gt;:{"id":&lt;id&gt;, "date":&lt;lastdate&gt;}, ...},		#searchで使用
 		"Profileflag":&lt;False or True&gt;,					#プロフ監視するか
