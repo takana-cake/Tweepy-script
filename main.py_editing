@@ -336,7 +336,7 @@ def limit_handled(h):
 			_log(err_subject, err_description)
 			sleep(60)
 
-def _follow_user_get(my_id)
+def _follow_user_get(my_id):
 	for tmp_id in limit_handled(tweepy.Cursor(api.friends_ids, id=my_id).items()):
 		my_friends_ids.append(tmp_id)
 	
