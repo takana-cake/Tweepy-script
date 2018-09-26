@@ -292,9 +292,9 @@ def init_start(mkdb):
 ### Edit json ###
 
 def _edit_json(editdata):
-	json_dict = open(DB_file,'w')
-	json.dump(editdata,json_dict)
-	json_dict.close()
+	f = open(DB_file,'w')
+	json.dump(json_dict, f)
+	f.close()
 
 
 
@@ -302,18 +302,18 @@ def _edit_json(editdata):
 
 def new_follow_ids_json():
 	# 新規フォロー初期化用
-	json_dict = open(DB_file,'r')
-	my_friends_list_json = json.load(json_dict)
-	json_dict.close()
+	f = open(DB_file,'r')
+	my_friends_list_json = json.load(f)
+	f.close()
 	for new_followuser_screen,new_followuser_detail in my_friends_list_json.items():
 		if os.path.exists(working_directory + new_followuser_screen) == False:
 			os.makedirs(working_directory + new_followuser_screen)
 			f = open(working_directory + new_followuser_screen + "/_maxid.txt" , 'w+')
 			f.close()
 			my_friends_list_json[new_followuser_screen] = new_followuser_detail
-	json_dict = open(DB_file,'w')
-	json.dump(my_friends_list_json,json_dict)
-	json_dict.close()
+	f = open(DB_file,'w')
+	json.dump(my_friends_list_json,f)
+	f.close()
 
 
 
