@@ -3,6 +3,7 @@ twitter TLimg Downloader</br>
 
 ## 残タスク
 実際に動かす(まだ)</br>
+TL＆PROFのハッシュタグ収集</br>
 Tweepyを使用(もう更新されないみたいだしAPIで処理するよう書き直す)</br>
 認証用トークンデータをDBへ。生データはまずい？</br>
 
@@ -29,9 +30,11 @@ or
 <img src="./01.jpg" width="20%" height="20%"><img src="./02.jpg" width="20%" height="20%"><img src="./03.jpg" width="20%" height="20%">
 
 ## json
--DB
-TLやプロフを収集するユーザのscreenとnameと最終取得日
-検索ワードと最終取得日  
+json[0]に認証トークン</br>
+TLやプロフを収集するユーザのscreenとnameと最終取得日</br>
+検索ワードと最終取得日</br>
+PROFILEの変更をチェックするか</br>
+RT/VIDEOファイル/GIF等含めるかのフラグ</br>
 <pre>
 json = [
 	{
