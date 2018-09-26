@@ -24,8 +24,6 @@ https://apps.twitter.com/
 # python3 main.py &lt;json-file-name&gt;
 # python3 main.py --name &lt;object-name&gt; --add-object
 # python3 main.py --name &lt;object-name&gt; --add-query &lt;tag1&gt; &lt;tag2&gt;...
-or
-直でjson書く
 </pre>
 <img src="./01.jpg" width="20%" height="20%"><img src="./02.jpg" width="20%" height="20%"><img src="./03.jpg" width="20%" height="20%">
 
