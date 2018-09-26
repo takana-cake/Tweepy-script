@@ -21,9 +21,9 @@ https://apps.twitter.com/
 
 ## フロー(予定は未定)
 <pre>
-# python3 main.py
-# python3 main.py --add-object
-# python3 main.py --name 名前 --add-query tag1 tag2...
+# python3 main.py &lt;json-file-name&gt;
+# python3 main.py --name &lt;object-name&gt; --add-object
+# python3 main.py --name &lt;object-name&gt; --add-query &lt;tag1&gt; &lt;tag2&gt;...
 or
 直でjson書く
 </pre>
