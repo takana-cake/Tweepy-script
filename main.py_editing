@@ -336,9 +336,6 @@ def limit_handled(h):
 			_log(err_subject, err_description)
 			sleep(60)
 
-'''
-
-'''
 def _follow_user_get(my_id)
 	for tmp_id in limit_handled(tweepy.Cursor(api.friends_ids, id=my_id).items()):
 		my_friends_ids.append(tmp_id)
@@ -350,15 +347,16 @@ def _follow_user_get(my_id)
 		nonlocal follow_user_fault_count
 		try:
 			for tmp_user in api.lookup_users(user_ids=my_friends_ids[i:i+100]):
-				my_friends_list.append({
-					"name":tmp_user.name,
-					"Query":"",
-					"Profileflag":"",
-					"TLflag":{"id":"", "date":""},
-					"RTflag":"",
-					"videoflag":"",
-					"gifflag":""
-				})
+				if not tmp_user.name in json_dict:
+					json_dict.append({
+						"name":tmp_user.name,
+						"Query":"",
+						"Profileflag":"",
+						"TLflag":{"id":"", "date":""},
+						"RTflag":"",
+						"videoflag":"",
+						"gifflag":""
+					})
 		except tweepy.RateLimitError as err:
 			if follow_user_fault_count < 2:
 				follow_user_fault_count = follow_user_fault_count + 1
