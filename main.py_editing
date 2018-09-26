@@ -445,6 +445,7 @@ if __name__ == '__main__':
 	parser.add_argument("json_file", help="please set DBfile.json.", type=str, nargs=1, metavar="[json-file]")
 	parser.add_argument("--name", help="select object.", type=str, nargs=1, metavar="<object-name>")
 	parser.add_argument("--add-object", help="add new-screen or new-search-description.", nargs=1,  metavar="<object-name>")
+	parser.add_argument("--add-follow-user", help="add Screen's follow-user.", nargs=1,  metavar="<screen>")
 	parser.add_argument("--add-query", help="add search-query to object.", metavar="<query>")
 	parser.add_argument("--profile", help="profile-check.", choices=['True','False'], nargs=1,   metavar="<True/False>")
 	parser.add_argument("--tl", help="TL-check.", choices=['True','False'], nargs=1,   metavar="<True/False>")
@@ -465,6 +466,16 @@ if __name__ == '__main__':
 	f = open(DB_file,'r')
 	json_dict = json.load(f)
 	f.close()
+	
+	if args.add-follow-user:
+		_follow_user_get(args.add-follow-user)
+	
+	_TL_search()
+	#_profile(screen_names)
+	#_search()
+	_edit_json()
+	
+	
 	
 
 
