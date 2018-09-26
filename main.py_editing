@@ -326,29 +326,51 @@ def limit_handled(h):
 		except tweepy.RateLimitError as err_description:
 			err_subject = "RateLimitError_1"
 			_log(err_subject, err_description)
-			time.sleep(60 * 15)
+			sleep(60 * 15)
 		except tweepy.TweepError as err_description:
 			err_subject = "TweepError_1"
 			_log(err_subject, err_description)
-			time.sleep(60 * 15)
+			sleep(60 * 15)
+		except Exception as err_description:
+			err_subject = "Exception_1"
+			_log(err_subject, err_description)
+			sleep(60)
 
-def _follow_user_get
+'''
+
+'''
+def _follow_user_get(my_id)
 	for tmp_id in limit_handled(tweepy.Cursor(api.friends_ids, id=my_id).items()):
 		my_friends_ids.append(tmp_id)
-	# 100IDsずつ詳細をmy_friends_listへ
-	follow_counter = 0
-	for i in range(0, len(my_friends_ids), 100):
+	
+	my_friends_list = []
+	follow_user_fault_count = 0
+	def _follow_user():
+		nonlocal my_friends_ids
+		nonlocal follow_user_fault_count
 		try:
 			for tmp_user in api.lookup_users(user_ids=my_friends_ids[i:i+100]):
-				follow_counter = follow_counter + 1
-				my_friends_list[tmp_user.screen_name] = tmp_user.name
-				#my_friends_list[tmp_user.screen_name] = {"name":tmp_user.name, "maxid":""}
+				my_friends_list.append({
+					"name":tmp_user.name,
+					"Query":"",
+					"Profileflag":"",
+					"TLflag":{"id":"", "date":""},
+					"RTflag":"",
+					"videoflag":"",
+					"gifflag":""
+				})
 		except tweepy.RateLimitError as err:
-			time.sleep(60 * 15)
-			continue
+			if follow_user_fault_count < 2:
+				follow_user_fault_count = follow_user_fault_count + 1
+				sleep(60 * 15)
+				_follow_user()
 		except Exception as err:
-			time.sleep(60 * 3)
-			continue
+			if follow_user_fault_count < 2:
+				follow_user_fault_count = follow_user_fault_count + 1
+				sleep(60)
+				_follow_user()
+	for i in range(0, len(my_friends_ids), 100):
+		_follow_user()
 
 
 
