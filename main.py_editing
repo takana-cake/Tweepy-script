@@ -51,14 +51,14 @@ def _TL_search():
 		except tweepy.RateLimitError as err_description:
 			if TL_search_fault_count < 2:
 				TL_search_fault_count = TL_search_fault_count + 1
-				err_subject = " : RateLimitError_3"
+				err_subject = TL_search_object["name"] + " : RateLimitError_3"
 				_log(err_subject, err_description)
 				sleep(60 * 15)
 				_get_tweetid()
 		except Exception as err_description:
 			if TL_search_fault_count < 2:
 				TL_search_fault_count = TL_search_fault_count + 1
-				err_subject = " : Exception_3"
+				err_subject = TL_search_object["name"] + " : Exception_3"
 				_log(err_subject, err_description)
 				sleep(60)
 				_get_tweetid()
