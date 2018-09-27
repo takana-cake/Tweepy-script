@@ -319,26 +319,8 @@ def new_follow_ids_json():
 
 ### follow user get ###
 
-def limit_handled(h):
-	while True:
-		try:
-			yield h.next()
-		except tweepy.RateLimitError as err_description:
-			err_subject = "RateLimitError_1"
-			_log(err_subject, err_description)
-			sleep(60 * 15)
-		except tweepy.TweepError as err_description:
-			err_subject = "TweepError_1"
-			_log(err_subject, err_description)
-			sleep(60 * 15)
-		except Exception as err_description:
-			err_subject = "Exception_1"
-			_log(err_subject, err_description)
-			sleep(60)
-
 def _follow_user_get(my_id):
 	my_friends_ids = []
-	#for tmp_id in limit_handled(tweepy.Cursor(api.friends_ids, id=my_id).items()):
 	follow_user_fault_count = 0
 	follow_user_list_fault_count = 0
 	def _follow_user_list():
@@ -346,14 +328,18 @@ def _follow_user_get(my_id):
 		try:
 			for tmp_id in tweepy.Cursor(api.friends_ids, id=my_id).items():
 				my_friends_ids.append(tmp_id)
-		except tweepy.RateLimitError as err:
+		except tweepy.RateLimitError as err_description:
 			if follow_user_list_fault_count < 2:
 				follow_user_list_fault_count = follow_user_list_fault_count + 1
+				err_subject = "RateLimitError_follow_user_get_1"
+				_log(err_subject, err_description)
 				sleep(60 * 15)
 				_follow_user()
-		except Exception as err:
+		except Exception as err_description:
 			if follow_user_list_fault_count < 2:
 				follow_user_list_fault_count = follow_user_list_fault_count + 1
+				err_subject = "Exception_follow_user_get_1"
+				_log(err_subject, err_description)
 				sleep(60)
 				_follow_user()
 	def _follow_user_description():
@@ -363,7 +349,7 @@ def _follow_user_get(my_id):
 			for tmp_user in api.lookup_users(user_ids=my_friends_ids[i:i+100]):
 				if not tmp_user.name in json_dict:
 					json_dict.append({
-						"name":tmp_user.name,
+						"name":tmp_user.screen_name,
 						"Query":"",
 						"Profileflag":"",
 						"TLflag":{"id":"", "date":""},
@@ -371,14 +357,18 @@ def _follow_user_get(my_id):
 						"videoflag":"",
 						"gifflag":""
 					})
-		except tweepy.RateLimitError as err:
+		except tweepy.RateLimitError as err_description:
 			if follow_user_fault_count < 2:
 				follow_user_fault_count = follow_user_fault_count + 1
+				err_subject = "RateLimitError_follow_user_get_2"
+				_log(err_subject, err_description)
 				sleep(60 * 15)
 				_follow_user()
-		except Exception as err:
+		except Exception as err_description:
 			if follow_user_fault_count < 2:
 				follow_user_fault_count = follow_user_fault_count + 1
+				err_subject = "Exception_follow_user_get_2"
+				_log(err_subject, err_description)
 				sleep(60)
 				_follow_user()
 	for i in range(0, len(my_friends_ids), 100):
