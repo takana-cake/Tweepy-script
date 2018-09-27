@@ -51,14 +51,14 @@ def _TL_search():
 		except tweepy.RateLimitError as err_description:
 			if TL_search_fault_count < 2:
 				TL_search_fault_count = TL_search_fault_count + 1
-				err_subject = str(follow_screen_get) + " : RateLimitError_3"
+				err_subject = " : RateLimitError_3"
 				_log(err_subject, err_description)
 				sleep(60 * 15)
 				_get_tweetid()
 		except Exception as err_description:
 			if TL_search_fault_count < 2:
 				TL_search_fault_count = TL_search_fault_count + 1
-				err_subject = str(follow_screen_get) + " : Exception_3"
+				err_subject = " : Exception_3"
 				_log(err_subject, err_description)
 				sleep(60)
 				_get_tweetid()
@@ -100,14 +100,14 @@ def _TL_tweet_get(TL_search_object, search_flag):
 			TL_tweet_get_fault_count = 0
 		except tweepy.RateLimitError as err_description:
 			if TL_tweet_get_fault_count < 2:
-				err_subject = str(screen) + " : RateLimitError_4 : " + str(tweet_id) + " : TC=" + str(tweetidget_fault_count)
+				err_subject = str(screen) + " : RateLimitError_4 : " + str(tweet_id)
 				_log(err_subject, err_description)
 				TL_tweet_get_fault_count = TL_tweet_get_fault_count +1
 				sleep(60 * 15)
 				_tweet_get()
 		except tweepy.TweepError as err_description:
 			if TL_tweet_get_fault_count < 2:
-				err_subject = str(screen) + " : TweepError_4 : " + str(tweet_id) + " : TC=" + str(tweetidget_fault_count)
+				err_subject = str(screen) + " : TweepError_4 : " + str(tweet_id)
 				_log(err_subject, err_description)
 				TL_tweet_get_fault_count = TL_tweet_get_fault_count +1
 				sleep(60 * 5)
@@ -314,6 +314,19 @@ def new_follow_ids_json():
 	json.dump(my_friends_list_json,f)
 	f.close()
 
+def _add_user_list():
+	for tmp_user in user_list:
+		if not tmp_user in json_dict:
+			json_dict.append({
+				"name":tmp_user,
+				"Query":"",
+				"Profileflag":"",
+				"TLflag":{"id":"", "date":""},
+				"RTflag":"",
+				"videoflag":"True",
+				"gifflag":"True"
+			})
+
 
 
 ### follow user get ###
@@ -460,7 +473,7 @@ if __name__ == '__main__':
 	working_directory = os.path.dirname(cmd_args.json_file[0]) + "/"
 	DB_file = cmd_args.json_file[0]
 	date = datetime.datetime.today().strftime("%Y%m%d_%H%M_%S")
-	LOGFILE = working_directory + str(datetime.datetime.now()) + "_log.txt"
+	LOGFILE = working_directory + date + "_log.txt"
 	
 	if not os.path.exists(DB_file):
 		init_start(DB_file)
