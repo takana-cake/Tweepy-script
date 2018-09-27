@@ -338,10 +338,25 @@ def limit_handled(h):
 
 def _follow_user_get(my_id):
 	my_friends_ids = []
-	for tmp_id in limit_handled(tweepy.Cursor(api.friends_ids, id=my_id).items()):
-		my_friends_ids.append(tmp_id)
+	#for tmp_id in limit_handled(tweepy.Cursor(api.friends_ids, id=my_id).items()):
 	follow_user_fault_count = 0
-	def _follow_user():
+	follow_user_list_fault_count = 0
+	def _follow_user_list():
+		nonlocal follow_user_list_fault_count
+		try:
+			for tmp_id in tweepy.Cursor(api.friends_ids, id=my_id).items():
+				my_friends_ids.append(tmp_id)
+		except tweepy.RateLimitError as err:
+			if follow_user_list_fault_count < 2:
+				follow_user_list_fault_count = follow_user_list_fault_count + 1
+				sleep(60 * 15)
+				_follow_user()
+		except Exception as err:
+			if follow_user_list_fault_count < 2:
+				follow_user_list_fault_count = follow_user_list_fault_count + 1
+				sleep(60)
+				_follow_user()
+	def _follow_user_description():
 		nonlocal my_friends_ids
 		nonlocal follow_user_fault_count
 		try:
@@ -367,7 +382,7 @@ def _follow_user_get(my_id):
 				sleep(60)
 				_follow_user()
 	for i in range(0, len(my_friends_ids), 100):
-		_follow_user()
+		_follow_user_description()
 
 
 
