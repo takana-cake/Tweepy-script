@@ -337,10 +337,9 @@ def limit_handled(h):
 			sleep(60)
 
 def _follow_user_get(my_id):
+	my_friends_ids = []
 	for tmp_id in limit_handled(tweepy.Cursor(api.friends_ids, id=my_id).items()):
 		my_friends_ids.append(tmp_id)
-	
-	my_friends_list = []
 	follow_user_fault_count = 0
 	def _follow_user():
 		nonlocal my_friends_ids
