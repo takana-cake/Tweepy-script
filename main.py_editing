@@ -442,7 +442,7 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(
 		usage=' python3 main.py [json-file] [OPTION]...\n\
-		nohup python3 main.py [json-file] [OPTION]... ',
+	nohup python3 main.py [json-file] [OPTION]... ',
 		add_help=True,
 		)
 	parser.add_argument("json_file", help="please set DBfile.json.", type=str, nargs=1, metavar="[json-file]")
