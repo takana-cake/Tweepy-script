@@ -158,7 +158,6 @@ def _profile_get_img(url, file_name):
 	profile_get_img_fault_count = 0
 	def _get_img(url, file_name):
 		nonlocal profile_get_img_fault_count
-		nonlocal 
 		res = requests.get(url=url)
 		if res.status_code == 200:
 			f = open(file_name, 'wb')
@@ -284,14 +283,14 @@ def init_start(mkdb):
 		if q == "y":
 			f = open(mkdb,'w+')
 			f.close()
-			print("result: " + os.path.exists(mkdb))
+			print("result: " + str(os.path.exists(mkdb)))
 	print("init done.\n")
 
 
 
 ### Edit json ###
 
-def _edit_json(editdata):
+def _edit_json():
 	f = open(DB_file,'w')
 	json.dump(json_dict, f)
 	f.close()
@@ -413,7 +412,7 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 				download_fault_count = 0
 		download_fault_count = 0
 	# リツイート判断
-	if hasattr(twi_def, 'retweeted_status') is True and retweet_enable = False:
+	if hasattr(twi_def, 'retweeted_status') is True and retweet_enable is False:
 		pass
 	else:
 		# メディア判断
@@ -458,21 +457,23 @@ if __name__ == '__main__':
 	parser.add_argument("--gif", help="including gif-file at Search,TL-check.", choices=['True','False'], nargs=1, metavar="<True/False>")
 	cmd_args = parser.parse_args()
 	
-	working_directory = os.path.dirname(args.json_file) + "/"
-	DB_file = args.json_file
+	working_directory = os.path.dirname(cmd_args.json_file[0]) + "/"
+	DB_file = cmd_args.json_file[0]
 	date = datetime.datetime.today().strftime("%Y%m%d_%H%M_%S")
 	LOGFILE = working_directory + str(datetime.datetime.now()) + "_log.txt"
 	
-	if os.path.exists(DB_file):
+	if not os.path.exists(DB_file):
 		init_start(DB_file)
 
 	api = tweepy_api()
+	_add_user_list()
+	#空だとエラー伯
 	f = open(DB_file,'r')
 	json_dict = json.load(f)
 	f.close()
 	
-	if args.add-follow-user:
-		_follow_user_get(args.add-follow-user)
+	if cmd_args.add-follow-user[0]:
+		_follow_user_get(cmd_args.add-follow-user[0])
 	
 	_TL_search()
 	#_profile(screen_names)
