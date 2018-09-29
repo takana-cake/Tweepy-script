@@ -333,9 +333,9 @@ def _add_user_list():
 		add_tl = {"id":"", "date":""}
 	if cmd_args.rt is "True":
 		add_rt = "True"
-	if cmd_args.video is not "False"
+	if cmd_args.video is not "False":
 		add_video = "True"
-	if cmd_args.gif is not "False"
+	if cmd_args.gif is not "False":
 		add_gi = "True"
 	for tmp_user in cmd_args.name:
 		if not tmp_user in json_dict:
@@ -484,10 +484,10 @@ if __name__ == '__main__':
 	parser.add_argument("json_file", help="please set DBfile.json.\n\n", type=str, nargs=1, metavar="[json-file]")
 
 	parser.add_argument("--name", help="select object.", type=str, nargs='*', metavar="<object-name>")
-	parser.add_argument("--show", help="show db-objects.\nselect --name, show object summary.")
-	parser.add_argument("--add-follow-user", help="add Screen's follow-user.")
-	#parser.add_argument("--add-object", help="add new-screen or new-search-description.")
-	#parser.add_argument("--add-query", help="add search-query to object.\n\n")
+	parser.add_argument("--show",help="show db-objects.\nselect --name, show object summary.")
+	parser.add_argument("--add-follow-user", dest=add_follow_user, help="add Screen's follow-user.")
+	#parser.add_argument("--add-object", dest=add_object, help="add new-screen or new-search-description.")
+	#parser.add_argument("--add-query", dest=add_query, help="add search-query to object.\n\n")
 
 	parser.add_argument("--profile", help="profile-check. (default False)", choices=['True','False'], nargs=1, metavar="<True/False>")
 	parser.add_argument("--tl", help="TL-check. (default True)", choices=['True','False'], nargs=1, metavar="<True/False>")
@@ -509,7 +509,7 @@ if __name__ == '__main__':
 	json_dict = json.load(f)
 	f.close()
 
-	if cmd_args.add-follow-user and cmd_args.name is not "None":
+	if cmd_args.add_follow_user and cmd_args.name is not "None":
 		_add_user_list()
 	if len(json_dict) < 1:
 		sys.exit()
