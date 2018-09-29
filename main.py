@@ -64,7 +64,7 @@ def _TL_search():
 				_get_tweetid()
 	for TL_search_object in json_dict:
 		TL_search_fault_count = 0
-		if 'TLflag' in TL_search_object:
+		if TL_search_object["TLflag"] is not "False":
 			if TL_search_object["TLflag"]["id"] == "":
 				start_id_and_date = _get_tweetid()
 				TL_search_object["TLflag"]["id"] == start_id_and_date
