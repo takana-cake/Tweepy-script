@@ -186,6 +186,10 @@ def _profile(screen_names):
 	#file_path_cap = "<capture閲覧用>"
 	file_path_cap = working_directory
 	flag = "0"
+	
+	for profile_object in json_dict:
+		if "Profileflag" in profile_object:
+	
 	for screen_name in screen_names:
 		profile_image, profile_banner = _profile_get_url(screen_name)
 		if '_normal' in profile_image:
@@ -491,22 +495,22 @@ if __name__ == '__main__':
 
 	if not os.path.exists(DB_file):
 		init_start()
-		_add_user_list()
-		_edit_json()
-		sys.exit()
 
 	f = open(DB_file,'r')
 	json_dict = json.load(f)
 	f.close()
 
-	#if cmd_args.add-follow-user:
-	#       _follow_user_get(cmd_args.add-follow-user)
+	if cmd_args.add-follow-user and len(cmd_args.name) < 1:
+		_add_user_list()
+	if len(json_dict) < 1:
+		sys.exit()
 
 	api = tweepy_api()
 
 	_TL_search()
-	#_profile(screen_names)
-	#_search()
+	_profile()
+	_search()
+	
 	_edit_json()
 
 
