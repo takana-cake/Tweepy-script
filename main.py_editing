@@ -327,16 +327,26 @@ def new_follow_ids_json():
 	f.close()
 
 def _add_user_list():
-	for tmp_user in user_list:
+	if cmd_args.profile is "True":
+		add_profile = {"date":""}
+	if cmd_args.tl is not "False":
+		add_tl = {"id":"", "date":""}
+	if cmd_args.rt is "True":
+		add_rt = "True"
+	if cmd_args.video is not "False"
+		add_video = "True"
+	if cmd_args.gif is not "False"
+		add_gi = "True"
+	for tmp_user in cmd_args.name:
 		if not tmp_user in json_dict:
 			json_dict.append({
 				"name":tmp_user,
 				"Query":"",
-				"Profileflag":"",
-				"TLflag":{"id":"", "date":""},
-				"RTflag":"",
-				"videoflag":"True",
-				"gifflag":"True"
+				"Profileflag":"add_profile",
+				"TLflag":add_tl,
+				"RTflag":"add_rt",
+				"videoflag":add_video,
+				"gifflag":add_gi
 			})
 
 
@@ -472,7 +482,7 @@ if __name__ == '__main__':
 		formatter_class=argparse.RawTextHelpFormatter
 		)
 	parser.add_argument("json_file", help="please set DBfile.json.", type=str, nargs=1, metavar="[json-file]")
-	parser.add_argument("--name", help="select object.\n\n", type=str, nargs=1, metavar="<object-name>")
+	parser.add_argument("--name", help="select object.\n\n", type=str, nargs='*', metavar="<object-name>")
 
 	parser.add_argument("--show", help="show db-objects.\nselect --name, show object summary.")
 	parser.add_argument("--add-object", help="add new-screen or new-search-description.")
@@ -499,7 +509,7 @@ if __name__ == '__main__':
 	json_dict = json.load(f)
 	f.close()
 
-	if cmd_args.add-follow-user and len(cmd_args.name) < 1:
+	if cmd_args.add-follow-user and cmd_args.name is not "None":
 		_add_user_list()
 	if len(json_dict) < 1:
 		sys.exit()
