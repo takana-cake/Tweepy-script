@@ -481,13 +481,13 @@ if __name__ == '__main__':
 		add_help=True,
 		formatter_class=argparse.RawTextHelpFormatter
 		)
-	parser.add_argument("json_file", help="please set DBfile.json.", type=str, nargs=1, metavar="[json-file]")
-	parser.add_argument("--name", help="select object.\n\n", type=str, nargs='*', metavar="<object-name>")
+	parser.add_argument("json_file", help="please set DBfile.json.\n\n", type=str, nargs=1, metavar="[json-file]")
 
+	parser.add_argument("--name", help="select object.", type=str, nargs='*', metavar="<object-name>")
 	parser.add_argument("--show", help="show db-objects.\nselect --name, show object summary.")
-	parser.add_argument("--add-object", help="add new-screen or new-search-description.")
 	parser.add_argument("--add-follow-user", help="add Screen's follow-user.")
-	parser.add_argument("--add-query", help="add search-query to object.\n\n")
+	#parser.add_argument("--add-object", help="add new-screen or new-search-description.")
+	#parser.add_argument("--add-query", help="add search-query to object.\n\n")
 
 	parser.add_argument("--profile", help="profile-check. (default False)", choices=['True','False'], nargs=1, metavar="<True/False>")
 	parser.add_argument("--tl", help="TL-check. (default True)", choices=['True','False'], nargs=1, metavar="<True/False>")
