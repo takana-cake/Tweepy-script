@@ -328,7 +328,7 @@ def new_follow_ids_json():
 
 def _add_user_list():
 	if cmd_args.profile is "True":
-		add_profile = {"date":""}
+		add_profile = "True"
 	if cmd_args.tl is not "False":
 		add_tl = {"id":"", "date":""}
 	if cmd_args.rt is "True":
