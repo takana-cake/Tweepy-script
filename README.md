@@ -2,7 +2,8 @@
 twitter TLimg Downloader</br>
 
 ## 残タスク
-実際に動かす(まだ)</br>
+ツイ消し時の動作確認</br>
+凍結アカウント処理</br>
 TL＆PROFのハッシュタグ収集</br>
 Tweepyを使用(もう更新されないみたいだしAPIで処理するよう書き直す)</br>
 認証用トークンデータをDBへ。生データはまずい？</br>
@@ -22,7 +23,7 @@ https://apps.twitter.com/
 ## フロー(予定は未定)
 <pre>
 # python3 main.py &lt;json-file-name&gt;
-# python3 main.py --name &lt;object-name&gt; --add-object
+# python3 main.py --name &lt;object-name...&gt; --add-object
 # python3 main.py --name &lt;object-name&gt; --add-query &lt;tag1&gt; &lt;tag2&gt;...
 </pre>
 <img src="./01.jpg" width="20%" height="20%"><img src="./02.jpg" width="20%" height="20%"><img src="./03.jpg" width="20%" height="20%">
