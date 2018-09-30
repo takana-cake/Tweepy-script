@@ -286,12 +286,13 @@ def init_start():
 			f = open(DB_file,'w+')
 			f.close()
 			json_dict.append({
-				'consumer' : {
-					'key'	: "",
-					'secret' : ""	},
-				'access'   : {
-					'key'	: "",
-					'secret' : ""	}
+				"name":"",
+				"Query":"",
+				"Profileflag":"",
+				"TLflag":"",
+				"RTflag":"",
+				"videoflag":"",
+				"gifflag":""
 			})
 			_edit_json()
 			print("result: " + str(os.path.exists(DB_file)))
@@ -326,26 +327,28 @@ def new_follow_ids_json():
 	f.close()
 
 def _add_user_list():
-	if cmd_args.profile is "True":
-		add_profile = "True"
-	if cmd_args.tl is not "False":
+	if cmd_args.tl is "False":
+		add_tl = "False"
+	else:
 		add_tl = {"id":"", "date":""}
-	if cmd_args.rt is "True":
-		add_rt = "True"
-	if cmd_args.video is not "False":
+	if cmd_args.video is "False":
+		add_video = "False"
+	else:
 		add_video = "True"
-	if cmd_args.gif is not "False":
-		add_gi = "True"
+	if cmd_args.gif is "False":
+		add_gif = "False"
+	else:
+		add_gif = "True"
 	for tmp_user in cmd_args.name:
 		if not tmp_user in json_dict:
 			json_dict.append({
 				"name":tmp_user,
 				"Query":"",
-				"Profileflag":"add_profile",
+				"Profileflag":cmd_args.profile,
 				"TLflag":add_tl,
-				"RTflag":"add_rt",
+				"RTflag":cmd_args.rt,
 				"videoflag":add_video,
-				"gifflag":add_gi
+				"gifflag":add_gif
 			})
 
 
