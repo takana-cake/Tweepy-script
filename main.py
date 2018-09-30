@@ -259,8 +259,8 @@ def _search():
 				sleep(10)
 				_search_start()
 		search_fault_count = 0
-	for user_object in json_dict:
-		if 'Query' in user_object:
+	for index,user_object in enumerate(json_dict):
+		if user_object['Query'] is not "False":
 			for search_query,search_date in user_object['Query']:
 				if search_date["id"]:
 					sinormax = 'since_search'
@@ -270,9 +270,7 @@ def _search():
 					search_date["id"] = search_date_tmp[0].id
 				for l in range(50):
 					_search_start()
-				hashtag_json[search_query] = tweet_id
-
-
+				json_dict[index]['Query'][search_query]["id"] = search_date["id"]
 
 ### init ###
 
@@ -288,7 +286,9 @@ def init_start():
 			f = open(DB_file,'w+')
 			f.close()
 			json_dict.append({
-				"name":"dummy"
+				"name":"dummy",
+				"TLflag":"False",
+				"Query":"False"
 			})
 			_edit_json()
 			print("result: " + str(os.path.exists(DB_file)))
