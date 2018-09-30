@@ -79,9 +79,9 @@ def _TL_search():
 def _TL_tweet_get(TL_search_object, search_flag):
 	tweet_id = TL_search_object["TLflag"]["id"]
 	screen = TL_search_object["name"]
-	retweet_enable = TL_search_object["RTflag"][0]
-	gif_enable = TL_search_object["gifflag"][0]
-	video_enable = TL_search_object["videoflag"][0]
+	retweet_enable = TL_search_object["RTflag"]
+	gif_enable = TL_search_object["gifflag"]
+	video_enable = TL_search_object["videoflag"]
 	tweet_id = ""
 	
 	def _tweet_get():
