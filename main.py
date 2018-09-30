@@ -237,42 +237,50 @@ def _profile():
 ### search ###
 
 def _search():
-	hashtag_json = {}
-	retry_count = 0
+	search_fault_count = 0
+	search_date_tmp = ""
+	def _search_start():
+		nonlocal search_fault_count
+		nonlocal sinormax
+		nonlocal search_query
+		nonlocal search_date
+		try:
+			if sinormax == 'since_search':
+				for twi in api.search(q=search_query, count=100, since_id=search_date["id"]):
+					_download(twi, screen, retweet_enable, gif_enable, video_enable)
+					search_date["id"] = twi.id
+					search_fault_count = 0
+			else:
+				for twi in api.search(q=search_query, count=100, max_id=search_date["id"]):
+					_download(twi, screen, retweet_enable, gif_enable, video_enable)
+					search_date["id"] = twi.id
+					search_fault_count = 0
+		except tweepy.RateLimitError as err_description:
+			if search_fault_count < 3:
+				search_fault_count = search_fault_count +1
+				err_subject = screen_name + " : RateLimitError_search_start"
+				_log(err_subject, err_description)
+				sleep(60 * 5)
+				_search_start()
+		except Exception as err_description:
+			if search_fault_count < 3:
+				search_fault_count = search_fault_count +1
+				err_subject = screen_name + " : Exception_search_start"
+				_log(err_subject, err_description)
+				sleep(10)
+				_search_start()
+		search_fault_count = 0
 	for user_object in json_dict:
 		if 'Query' in user_object:
-			for tweet_id in user_object['Query']:
-				if tweet_id["id"]:
-					search_query = 'since_search'
+			for search_query,search_date in user_object['Query']:
+				if search_date["id"]:
+					sinormax = 'since_search'
 				else:
-					search_query = 'max_search'
-					tweet_id = api.search(q=search_query)
-					tweet_id = tweet_id[0].id
+					sinormax = 'max_search'
+					search_date_tmp = api.search(q=search_query)
+					search_date["id"] = search_date_tmp[0].id
 				for l in range(50):
-					try:
-						if search_query == 'since_search':
-							for twi in api.search(q=search_query, count=100, since_id=tweet_id):
-								media_get(twi)
-								tweet_id = twi.id
-						else:
-							for twi in api.search(q=search_query, count=100, max_id=tweet_id):
-								media_get(twi)
-								tweet_id = twi.id
-					except tweepy.RateLimitError as err:
-						retry_count = retry_count +1
-						if retry_count < 3:
-							time.sleep(60 * 5)
-							continue
-						else:
-							retry_count = 0
-					except:
-						retry_count = retry_count +1
-						if retry_count < 3:
-							time.sleep(10)
-							continue
-						else:
-							retry_count = 0
-					retry_count = 0
+					_search_start()
 				hashtag_json[search_query] = tweet_id
 
 
@@ -281,7 +289,6 @@ def _search():
 
 def init_start():
 	if os.path.exists(working_directory) == False:
-		#os.makedirs(working_directory)
 		print("directory is not found.")
 		sys.exit()
 	if os.path.exists(DB_file) == False:
@@ -296,6 +303,8 @@ def init_start():
 			})
 			_edit_json()
 			print("result: " + str(os.path.exists(DB_file)))
+		else:
+			sys.exit()
 	print("init done.\n")
 
 
@@ -477,6 +486,10 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 ### main ###
 
 if __name__ == '__main__':
+	add_follow_user = ""
+	add_object = ""
+	add_query= ""
+	
 	parser = argparse.ArgumentParser(
 		usage=' python3 main.py [json-file] [OPTION]...\n\
 	nohup python3 main.py [json-file] [OPTION]... ',
@@ -488,8 +501,8 @@ if __name__ == '__main__':
 	parser.add_argument("--name", help="select object.", type=str, nargs='*', metavar="<object-name>")
 	parser.add_argument("--show",help="show db-objects.\nselect --name, show object summary.")
 	parser.add_argument("--add-follow-user", dest=add_follow_user, help="add Screen's follow-user.")
-	#parser.add_argument("--add-object", dest=add_object, help="add new-screen or new-search-description.")
-	#parser.add_argument("--add-query", dest=add_query, help="add search-query to object.\n\n")
+	parser.add_argument("--add-object", dest=add_object, help="add new-screen-object or new-search-object.")
+	parser.add_argument("--add-query", dest=add_query, help="add search-query to object.\n\n")
 
 	parser.add_argument("--profile", help="profile-check. (default False)", choices=['True','False'], nargs=1, metavar="<True/False>")
 	parser.add_argument("--tl", help="TL-check. (default True)", choices=['True','False'], nargs=1, metavar="<True/False>")
@@ -511,10 +524,15 @@ if __name__ == '__main__':
 	json_dict = json.load(f)
 	f.close()
 
-	if cmd_args.add_follow_user and cmd_args.name is not "None":
+	if add_follow_user and cmd_args.name is not "None":
 		_add_user_list()
 	if len(json_dict) < 1:
+		print("please add object.")
 		sys.exit()
+	if add_object and cmd_args.name is not "None":
+		#
+	if add_query and cmd_args.name is not "None":
+		#
 
 	api = tweepy_api()
 
