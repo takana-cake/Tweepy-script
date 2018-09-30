@@ -2,7 +2,6 @@
 twitter TLimg Downloader</br>
 
 ## 残タスク
-jsonを更新する処理入れ忘れてる</br>
 ツイ消し時の動作確認</br>
 凍結アカウント処理</br>
 TL＆PROFのハッシュタグ収集</br>
