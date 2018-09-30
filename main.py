@@ -286,13 +286,7 @@ def init_start():
 			f = open(DB_file,'w+')
 			f.close()
 			json_dict.append({
-				"name":"",
-				"Query":"",
-				"Profileflag":"",
-				"TLflag":"",
-				"RTflag":"",
-				"videoflag":"",
-				"gifflag":""
+				"name":"dummy"
 			})
 			_edit_json()
 			print("result: " + str(os.path.exists(DB_file)))
