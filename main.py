@@ -62,7 +62,35 @@ def _TL_search():
 				_log(err_subject, err_description)
 				sleep(60)
 				_get_tweetid()
-	for TL_search_object in json_dict:
+	def _TL_tweet_get():
+		nonlocal TL_tweet_get_fault_count
+		nonlocal TL_search_object
+		try:
+			if search_flag == 'max_search':
+				for twi in api.user_timeline(TL_search_object["name"], count=100, max_id=TL_search_object["TLflag"]["id"]):
+					_download(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
+					TL_search_object["TLflag"]["id"] = twi.id
+			elif search_flag == 'since_search':
+				for twi in api.user_timeline(TL_search_object["name"], count=100, since_id=TL_search_object["TLflag"]["id"]):
+					_download(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
+					TL_search_object["TLflag"]["id"] = twi.id
+			TL_tweet_get_fault_count = 0
+		except tweepy.RateLimitError as err_description:
+			if TL_tweet_get_fault_count < 2:
+				err_subject = str(TL_search_object["name"]) + " : RateLimitError__tweet_get : " + str(TL_search_object["TLflag"]["id"])
+				_log(err_subject, err_description)
+				TL_tweet_get_fault_count = TL_tweet_get_fault_count +1
+				sleep(60 * 15)
+				_tweet_get()
+		except Exception as err_description:
+			if TL_tweet_get_fault_count < 2:
+				err_subject = str(TL_search_object["name"]) + " : Exception_tweet_get : " + str(TL_search_object["TLflag"]["id"])
+				_log(err_subject, err_description)
+				TL_tweet_get_fault_count = TL_tweet_get_fault_count +1
+				sleep(60 * 5)
+				_tweet_get()
+
+	for index,TL_search_object in enumerate(json_dict):
 		TL_search_fault_count = 0
 		if TL_search_object["TLflag"] is not "False":
 			if TL_search_object["TLflag"]["id"] == "":
@@ -72,49 +100,10 @@ def _TL_search():
 				query = 'max_search'
 			else:
 				query = 'since_search'
-			_TL_tweet_get(TL_search_object, query)
-
-
-
-def _TL_tweet_get(TL_search_object, search_flag):
-	tweet_id = TL_search_object["TLflag"]["id"]
-	screen = TL_search_object["name"]
-	retweet_enable = TL_search_object["RTflag"]
-	gif_enable = TL_search_object["gifflag"]
-	video_enable = TL_search_object["videoflag"]
-	tweet_id = ""
-	
-	def _tweet_get():
-		nonlocal TL_tweet_get_fault_count
-		nonlocal tweet_id
-		try:
-			if search_flag == 'max_search':
-				for twi in api.user_timeline(screen, count=100, max_id=tweet_id):
-					_download(twi, screen, retweet_enable, gif_enable, video_enable)
-					tweet_id = twi.id
-			elif search_flag == 'since_search':
-				for twi in api.user_timeline(screen, count=100, since_id=tweet_id):
-					_download(twi, screen, retweet_enable, gif_enable, video_enable)
-					tweet_id = twi.id
-			TL_tweet_get_fault_count = 0
-		except tweepy.RateLimitError as err_description:
-			if TL_tweet_get_fault_count < 2:
-				err_subject = str(screen) + " : RateLimitError__tweet_get : " + str(tweet_id)
-				_log(err_subject, err_description)
-				TL_tweet_get_fault_count = TL_tweet_get_fault_count +1
-				sleep(60 * 15)
+			for l in range(50):
+				TL_tweet_get_fault_count = 0
 				_tweet_get()
-		except Exception as err_description:
-			if TL_tweet_get_fault_count < 2:
-				err_subject = str(screen) + " : Exception_tweet_get : " + str(tweet_id)
-				_log(err_subject, err_description)
-				TL_tweet_get_fault_count = TL_tweet_get_fault_count +1
-				sleep(60 * 5)
-				_tweet_get()
-
-	for l in range(50):
-		TL_tweet_get_fault_count = 0
-		_tweet_get()
+			json_dict[index]["TLflag"]["id"] = TL_search_object["TLflag"]["id"]
 
 
 
