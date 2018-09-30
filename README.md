@@ -11,16 +11,16 @@ Tweepyを使用(もう更新されないみたいだしAPIで処理するよう�
 ## APIキー、アクセストークンの取得
 APIをたたくのに使う。</br>
 <pre>
-	twitter_conf = {
-		'consumer' : {
-			'key'	: "",
-			'secret' : ""
-		},
-		'access'   : {
-			'key'	: "",
-			'secret' : ""
-		}
+twitter_conf = {
+	'consumer' : {
+		'key'	: "",
+		'secret' : ""
+	},
+	'access'   : {
+		'key'	: "",
+		'secret' : ""
 	}
+}
 </pre>
 Twitterアカウントの「設定」メニューの「モバイル」を開き電話番号を入力し認証。</br>
 認証後は電話番号を削除すれば他アカウントにも使える（たぶん）
