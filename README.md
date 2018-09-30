@@ -10,6 +10,16 @@ Tweepyを使用(もう更新されないみたいだしAPIで処理するよう�
 
 ## APIキー、アクセストークンの取得
 APIをたたくのに使う。</br>
+Twitterアカウントの「設定」メニューの「モバイル」を開き電話番号を入力し認証。</br>
+認証後は電話番号を削除すれば他アカウントにも使える（たぶん）
+
+下記ＵＲＬからTwitterアプリを作成
+
+https://apps.twitter.com/
+
+※作成の際に作成理由？みたいなのを300字ぐらい入れなきゃならない。適当に打ってもダメっぽい？
+
+「Key and Access Tokens」の「Create my access token」をクリック
 <pre>
 twitter_conf = {
 	'consumer' : {
@@ -22,16 +32,6 @@ twitter_conf = {
 	}
 }
 </pre>
-Twitterアカウントの「設定」メニューの「モバイル」を開き電話番号を入力し認証。</br>
-認証後は電話番号を削除すれば他アカウントにも使える（たぶん）
-
-下記ＵＲＬからTwitterアプリを作成
-
-https://apps.twitter.com/
-
-※作成の際に作成理由？みたいなのを300字ぐらい入れなきゃならない。適当に打ってもダメっぽい？
-
-「Key and Access Tokens」の「Create my access token」をクリック
 
 ## フロー(予定は未定)
 <pre>
