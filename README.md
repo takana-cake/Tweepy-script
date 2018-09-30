@@ -9,6 +9,19 @@ Tweepyを使用(もう更新されないみたいだしAPIで処理するよう�
 認証用トークンデータどうする？</br>
 
 ## APIキー、アクセストークンの取得
+APIをたたくのに使う。</br>
+<pre>
+	twitter_conf = {
+		'consumer' : {
+			'key'	: "",
+			'secret' : ""
+		},
+		'access'   : {
+			'key'	: "",
+			'secret' : ""
+		}
+	}
+</pre>
 Twitterアカウントの「設定」メニューの「モバイル」を開き電話番号を入力し認証。</br>
 認証後は電話番号を削除すれば他アカウントにも使える（たぶん）
 
@@ -29,7 +42,6 @@ https://apps.twitter.com/
 <img src="./01.jpg" width="20%" height="20%"><img src="./02.jpg" width="20%" height="20%"><img src="./03.jpg" width="20%" height="20%">
 
 ## json
-json[0]に認証トークン</br>
 TLやプロフを収集するユーザのscreenとnameと最終取得日</br>
 検索ワードと最終取得日</br>
 PROFILEの変更をチェックするか</br>
