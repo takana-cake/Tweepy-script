@@ -51,14 +51,14 @@ def _TL_search():
 		except tweepy.RateLimitError as err_description:
 			if TL_search_fault_count < 2:
 				TL_search_fault_count = TL_search_fault_count + 1
-				err_subject = TL_search_object["name"] + " : RateLimitError_3"
+				err_subject = TL_search_object["name"] + " : RateLimitError_TL_search"
 				_log(err_subject, err_description)
 				sleep(60 * 15)
 				_get_tweetid()
 		except Exception as err_description:
 			if TL_search_fault_count < 2:
 				TL_search_fault_count = TL_search_fault_count + 1
-				err_subject = TL_search_object["name"] + " : Exception_3"
+				err_subject = TL_search_object["name"] + " : Exception_TL_search"
 				_log(err_subject, err_description)
 				sleep(60)
 				_get_tweetid()
@@ -99,14 +99,14 @@ def _TL_tweet_get(TL_search_object, search_flag):
 			TL_tweet_get_fault_count = 0
 		except tweepy.RateLimitError as err_description:
 			if TL_tweet_get_fault_count < 2:
-				err_subject = str(screen) + " : RateLimitError_4 : " + str(tweet_id)
+				err_subject = str(screen) + " : RateLimitError__tweet_get : " + str(tweet_id)
 				_log(err_subject, err_description)
 				TL_tweet_get_fault_count = TL_tweet_get_fault_count +1
 				sleep(60 * 15)
 				_tweet_get()
-		except tweepy.TweepError as err_description:
+		except Exception as err_description:
 			if TL_tweet_get_fault_count < 2:
-				err_subject = str(screen) + " : TweepError_4 : " + str(tweet_id)
+				err_subject = str(screen) + " : Exception_tweet_get : " + str(tweet_id)
 				_log(err_subject, err_description)
 				TL_tweet_get_fault_count = TL_tweet_get_fault_count +1
 				sleep(60 * 5)
@@ -131,9 +131,11 @@ def _profile_description_hashtag(screen_name):
 			description_split = re.split(pattern, description)
 			description_hashtags = [x for x in description_split if '#' in x]
 			return(description_hashtags)
-		except Exception as err:
+		except Exception as err_description:
 			if profile_description_hashtag_fault_count < 2:
 				profile_description_hashtag_fault_count = profile_description_hashtag_fault_count + 1
+				err_subject = screen_name + " : Exception_profile_description"
+				_log(err_subject, err_description)
 				sleep(60)
 				_description_hashtag()
 
@@ -148,6 +150,8 @@ def _profile_get_url(screen_name):
 		except Exception as err:
 			if profile_get_url_fault_count < 2:
 				profile_get_url_fault_count = profile_get_url_fault_count + 1
+				err_subject = screen_name + " : Exception_profile_get"
+				_log(err_subject, err_description)
 				sleep(60)
 				_get_url()
 	_get_url()
@@ -236,38 +240,40 @@ def _search():
 	hashtag_json = {}
 	retry_count = 0
 	for user_object in json_dict:
-		if tweet_id:
-			search_query = 'since_search'
-		else:
-			search_query = 'max_search'
-			tweet_id = api.search(q=search_query)
-			tweet_id = tweet_id[0].id
-		for l in range(50):
-			try:
-				if search_query == 'since_search':
-					for twi in api.search(q=search_query, count=100, since_id=tweet_id):
-						media_get(twi)
-						tweet_id = twi.id
+		if 'Query' in user_object:
+			for tweet_id in user_object['Query']:
+				if tweet_id["id"]:
+					search_query = 'since_search'
 				else:
-					for twi in api.search(q=search_query, count=100, max_id=tweet_id):
-						media_get(twi)
-						tweet_id = twi.id
-			except tweepy.RateLimitError as err:
-				retry_count = retry_count +1
-				if retry_count < 3:
-					time.sleep(60 * 5)
-					continue
-				else:
+					search_query = 'max_search'
+					tweet_id = api.search(q=search_query)
+					tweet_id = tweet_id[0].id
+				for l in range(50):
+					try:
+						if search_query == 'since_search':
+							for twi in api.search(q=search_query, count=100, since_id=tweet_id):
+								media_get(twi)
+								tweet_id = twi.id
+						else:
+							for twi in api.search(q=search_query, count=100, max_id=tweet_id):
+								media_get(twi)
+								tweet_id = twi.id
+					except tweepy.RateLimitError as err:
+						retry_count = retry_count +1
+						if retry_count < 3:
+							time.sleep(60 * 5)
+							continue
+						else:
+							retry_count = 0
+					except:
+						retry_count = retry_count +1
+						if retry_count < 3:
+							time.sleep(10)
+							continue
+						else:
+							retry_count = 0
 					retry_count = 0
-			except:
-				retry_count = retry_count +1
-				if retry_count < 3:
-					time.sleep(10)
-					continue
-				else:
-					retry_count = 0
-			retry_count = 0
-		hashtag_json[search_query] = tweet_id
+				hashtag_json[search_query] = tweet_id
 
 
 
