@@ -318,8 +318,8 @@ def _add_new_object():
 				"Profileflag":cmd_args.profile,
 				"TLflag":add_tl,
 				"RTflag":cmd_args.rt,
-				"videoflag":add_video,
-				"gifflag":add_gif
+				"videoflag":cmd_args.video,
+				"gifflag":cmd_args.gif
 			})
 
 
@@ -358,11 +358,11 @@ def _follow_user_get(my_id):
 					json_dict.append({
 						"name":tmp_user.screen_name,
 						"Query":"",
-						"Profileflag":"",
-						"TLflag":{"id":"", "date":""},
-						"RTflag":"",
-						"videoflag":"",
-						"gifflag":""
+						"Profileflag":cmd_args.profile,
+						"TLflag":add_tl,
+						"RTflag":cmd_args.rt,
+						"videoflag":add_video,
+						"gifflag":add_gif
 					})
 		except tweepy.RateLimitError as err_description:
 			if follow_user_fault_count < 2:
@@ -463,11 +463,11 @@ if __name__ == '__main__':
 	parser.add_argument("--addo", help="add new-screen-object or new-search-object.", action="store_true")
 	parser.add_argument("--addq", help="add search-query to object.\n\n", action="store_true")
 
-	parser.add_argument("--profile", help="profile-check. (default False)", choices=['True','False'], nargs=1, metavar="<True/False>")
-	parser.add_argument("--tl", help="TL-check. (default True)", choices=['True','False'], nargs=1, metavar="<True/False>")
-	parser.add_argument("--rt", help="including Retweets at TL-check. (default False)", choices=['True','False'], nargs=1, metavar="<True/False>")
-	parser.add_argument("--video", help="including video-file at Search,TL-check. (default True)", choices=['True','False'], nargs=1, metavar="<True/False>")
-	parser.add_argument("--gif", help="including gif-file at Search,TL-check. (default True)", choices=['True','False'], nargs=1, metavar="<True/False>")
+	parser.add_argument("--profile", help="profile-check.", action="store_true")
+	parser.add_argument("--tl", help="TL-check.", action="store_true")
+	parser.add_argument("--rt", help="including Retweets at TL-check.", action="store_true")
+	parser.add_argument("--video", help="including video-file at Search,TL-check.", action="store_true")
+	parser.add_argument("--gif", help="including gif-file at Search,TL-check.", action="store_true")
 	cmd_args = parser.parse_args()
 
 	working_directory = os.path.dirname(cmd_args.json_file[0]) + "/"
@@ -485,16 +485,6 @@ if __name__ == '__main__':
 	
 	if cmd_args.tl is "False":
 		add_tl = "False"
-	else:
-		add_tl = {"id":"", "date":""}
-	if cmd_args.video is "False":
-		add_video = "False"
-	else:
-		add_video = "True"
-	if cmd_args.gif is "False":
-		add_gif = "False"
-	else:
-		add_gif = "True"
 		
 	if cmd_args.addf:
 		if len(cmd_args.name) != 1:
