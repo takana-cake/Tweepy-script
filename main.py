@@ -180,7 +180,7 @@ def _profile():
 	
 	for profile_object in json_dict:
 		if "Profileflag" in profile_object:
-			if profile_object["Profileflag"] is "True":
+			if profile_object["Profileflag"] is true:
 				profile_object_name = profile_object["name"]
 				profile_image, profile_banner = _profile_get_url(profile_object_name)
 				if '_normal' in profile_image:
@@ -287,8 +287,8 @@ def init_start():
 			f.close()
 			json_dict.append({
 				"name":"dummy",
-				"TLflag":"False",
-				"Query":"False"
+				"TLflag":false,
+				"Query":false
 			})
 			_edit_json()
 			print("result: " + str(os.path.exists(DB_file)))
@@ -430,10 +430,10 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 					if media["type"] == 'photo':
 						dl_filename = media["media_url"]
 						dl_media = dl_filename + ":orig"
-					if media["type"] == 'animated_gif' and gif_enable == True:
+					if media["type"] == 'animated_gif' and gif_enable == true:
 						dl_media = media["video_info"]["variants"][0]["url"]
 						dl_filename = dl_media
-					if media["type"] == 'video' and video_enable == True:
+					if media["type"] == 'video' and video_enable == true:
 						dl_media = media["video_info"]["variants"][0]["url"]
 						if '.m3u8' in dl_media:
 							dl_media = media["video_info"]["variants"][1]["url"]
@@ -483,20 +483,29 @@ if __name__ == '__main__':
 	json_dict = json.load(f)
 	f.close()
 	
-	if cmd_args.tl is "False":
-		add_tl = "False"
+	if cmd_args.tl is false:
+		add_tl = false
+	else:
+		add_tl = {"id":"", "date":""}
 		
 	if cmd_args.addf:
 		if len(cmd_args.name) != 1:
 			print("invalid argument")
 			sys.exit()
 		_follow_user_get(cmd_args.name[0])
+		_edit_json()
+		sys.exit()
 	if cmd_args.addo:
 		_add_new_object()
+		_edit_json()
+		sys.exit()
 	if len(json_dict) < 2:
 		print("please add object.")
 		sys.exit()
-	#if cmd_args.addq:
+	if cmd_args.addq:
+		#_add_query()
+		#_edit_json()
+		sys.exit()
 
 
 	api = tweepy_api()
