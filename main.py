@@ -92,7 +92,7 @@ def _TL_search():
 
 	for index,TL_search_object in enumerate(json_dict):
 		TL_search_fault_count = 0
-		if TL_search_object["TLflag"] is not "False":
+		if not TL_search_object["TLflag"]:
 			if TL_search_object["TLflag"]["id"] == "":
 				start_id_and_date = _get_tweetid()
 				TL_search_object["TLflag"]["id"] == start_id_and_date
@@ -260,7 +260,7 @@ def _search():
 				_search_start()
 		search_fault_count = 0
 	for index,user_object in enumerate(json_dict):
-		if user_object['Query'] is not "False":
+		if not user_object['Query']:
 			for search_query,search_date in user_object['Query']:
 				if search_date["id"]:
 					sinormax = 'since_search'
@@ -309,34 +309,7 @@ def _edit_json():
 
 ### add ###
 
-def new_follow_ids_json():
-	# 新規フォロー初期化用
-	f = open(DB_file,'r')
-	my_friends_list_json = json.load(f)
-	f.close()
-	for new_followuser_screen,new_followuser_detail in my_friends_list_json.items():
-		if os.path.exists(working_directory + new_followuser_screen) == False:
-			os.makedirs(working_directory + new_followuser_screen)
-			f = open(working_directory + new_followuser_screen + "/_maxid.txt" , 'w+')
-			f.close()
-			my_friends_list_json[new_followuser_screen] = new_followuser_detail
-	f = open(DB_file,'w')
-	json.dump(my_friends_list_json,f)
-	f.close()
-
-def _add_user_list():
-	if cmd_args.tl is "False":
-		add_tl = "False"
-	else:
-		add_tl = {"id":"", "date":""}
-	if cmd_args.video is "False":
-		add_video = "False"
-	else:
-		add_video = "True"
-	if cmd_args.gif is "False":
-		add_gif = "False"
-	else:
-		add_gif = "True"
+def _add_new_object():
 	for tmp_user in cmd_args.name:
 		if not tmp_user in json_dict:
 			json_dict.append({
@@ -512,16 +485,32 @@ if __name__ == '__main__':
 	f = open(DB_file,'r')
 	json_dict = json.load(f)
 	f.close()
-
-	if add_follow_user and cmd_args.name is not "None":
-		_add_user_list()
+	
+	if cmd_args.tl is "False":
+		add_tl = "False"
+	else:
+		add_tl = {"id":"", "date":""}
+	if cmd_args.video is "False":
+		add_video = "False"
+	else:
+		add_video = "True"
+	if cmd_args.gif is "False":
+		add_gif = "False"
+	else:
+		add_gif = "True"
+		
+	if add_follow_user and not cmd_args.name:
+		if len(cmd_args.name) < 1:
+			print("too many names")
+			sys.exit()
+		_follow_user_get(cmd_args.name[0])
 	if len(json_dict) < 1:
 		print("please add object.")
 		sys.exit()
-	if add_object and cmd_args.name is not "None":
-		#
-	if add_query and cmd_args.name is not "None":
-		#
+	if add_object and not cmd_args.name:
+		_add_new_object()
+	#if add_query and not cmd_args.name:
+
 
 	api = tweepy_api()
 
