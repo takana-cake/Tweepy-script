@@ -448,9 +448,6 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 ### main ###
 
 if __name__ == '__main__':
-	add_follow_user = ""
-	add_object = ""
-	add_query= ""
 	
 	parser = argparse.ArgumentParser(
 		usage=' python3 main.py [json-file] [OPTION]...\n\
@@ -461,10 +458,10 @@ if __name__ == '__main__':
 	parser.add_argument("json_file", help="please set DBfile.json.\n\n", type=str, nargs=1, metavar="[json-file]")
 
 	parser.add_argument("--name", help="select object.", type=str, nargs='*', metavar="<object-name>")
-	parser.add_argument("--show",help="show db-objects.\nselect --name, show object summary.")
-	parser.add_argument("--add-follow-user", dest=add_follow_user, help="add Screen's follow-user.")
-	parser.add_argument("--add-object", dest=add_object, help="add new-screen-object or new-search-object.")
-	parser.add_argument("--add-query", dest=add_query, help="add search-query to object.\n\n")
+	parser.add_argument("--show", help="show db-objects.\nselect --name, show object summary.", action="store_true")
+	parser.add_argument("--addf", help="add Screen's follow-user.", action="store_true")
+	parser.add_argument("--addo", help="add new-screen-object or new-search-object.", action="store_true")
+	parser.add_argument("--addq", help="add search-query to object.\n\n", action="store_true")
 
 	parser.add_argument("--profile", help="profile-check. (default False)", choices=['True','False'], nargs=1, metavar="<True/False>")
 	parser.add_argument("--tl", help="TL-check. (default True)", choices=['True','False'], nargs=1, metavar="<True/False>")
@@ -499,17 +496,17 @@ if __name__ == '__main__':
 	else:
 		add_gif = "True"
 		
-	if add_follow_user and not cmd_args.name:
-		if len(cmd_args.name) < 1:
-			print("too many names")
+	if cmd_args.addf:
+		if len(cmd_args.name) != 1:
+			print("invalid argument")
 			sys.exit()
 		_follow_user_get(cmd_args.name[0])
-	if len(json_dict) < 1:
+	if cmd_args.addo:
+		_add_new_object()
+	if len(json_dict) < 2:
 		print("please add object.")
 		sys.exit()
-	if add_object and not cmd_args.name:
-		_add_new_object()
-	#if add_query and not cmd_args.name:
+	#if cmd_args.addq:
 
 
 	api = tweepy_api()
