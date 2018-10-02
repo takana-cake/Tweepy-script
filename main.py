@@ -261,7 +261,7 @@ def _search():
 				_search_start()
 		search_fault_count = 0
 	for index,user_object in enumerate(json_dict):
-		if not user_object['Query']:
+		if not user_object['Query'] == False:
 			for search_query,search_date in user_object['Query']:
 				if search_date["id"]:
 					sinormax = 'since_search'
@@ -315,7 +315,7 @@ def _add_new_object():
 		if not tmp_user in json_dict:
 			json_dict.append({
 				"name":tmp_user,
-				"Query":"",
+				"Query":False,
 				"Profileflag":cmd_args.profile,
 				"TLflag":add_tl,
 				"RTflag":cmd_args.rt,
