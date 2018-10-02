@@ -12,7 +12,7 @@ import shutil
 import subprocess
 import sys
 import tweepy
-import urllib.request
+import urllib.requestf
 import argparse
 
 
@@ -65,6 +65,7 @@ def _TL_search():
 	def _TL_tweet_get():
 		nonlocal TL_tweet_get_fault_count
 		nonlocal TL_search_object
+		nonlocal search_flag
 		try:
 			if search_flag == 'max_search':
 				for twi in api.user_timeline(TL_search_object["name"], count=100, max_id=TL_search_object["TLflag"]["id"]):
@@ -97,9 +98,9 @@ def _TL_search():
 				start_id_and_date = _get_tweetid()
 				TL_search_object["TLflag"]["id"] == start_id_and_date
 				TL_search_object["TLflag"]["date"] == date
-				query = 'max_search'
+				search_flag = 'max_search'
 			else:
-				query = 'since_search'
+				search_flag = 'since_search'
 			for l in range(50):
 				TL_tweet_get_fault_count = 0
 				_tweet_get()
