@@ -180,7 +180,7 @@ def _profile():
 	
 	for profile_object in json_dict:
 		if "Profileflag" in profile_object:
-			if profile_object["Profileflag"] is true:
+			if profile_object["Profileflag"] == True:
 				profile_object_name = profile_object["name"]
 				profile_image, profile_banner = _profile_get_url(profile_object_name)
 				if '_normal' in profile_image:
@@ -204,13 +204,13 @@ def _profile():
 					_profile_get_capture_banner(profile_object_name, file_path_cap)
 				base_icon_file = glob.glob(file_path + profile_object_name + '_base_icon*')[0]
 				base_banner_file = glob.glob(file_path + profile_object_name + '_base_banner*')[0]
-				if filecmp.cmp(base_icon_file, comparison_icon_file) is False :
+				if filecmp.cmp(base_icon_file, comparison_icon_file) == False :
 					shutil.copyfile(comparison_icon_file, file_path_cap + profile_object_name + "_icon_" + date + "." + profile_image.rsplit(".", 1)[1])
 					shutil.copyfile(comparison_icon_file, base_icon_file)
 					_profile_get_capture_icon(profile_object_name, file_path_cap)
 					#api.update_with_media(filename=capture_file)
 					flag = "1"
-				if filecmp.cmp(base_banner_file, comparison_banner_file) is False:
+				if filecmp.cmp(base_banner_file, comparison_banner_file) == False:
 					shutil.copyfile(comparison_banner_file, file_path_cap + profile_object_name + "_banner_" + date + ".jpg")
 					shutil.copyfile(comparison_banner_file, base_banner_file)
 					_profile_get_capture_banner(profile_object_name, file_path_cap)
@@ -287,8 +287,8 @@ def init_start():
 			f.close()
 			json_dict.append({
 				"name":"dummy",
-				"TLflag":false,
-				"Query":false
+				"TLflag":False,
+				"Query":False
 			})
 			_edit_json()
 			print("result: " + str(os.path.exists(DB_file)))
@@ -420,7 +420,7 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 				download_fault_count = 0
 		download_fault_count = 0
 	# リツイート判断
-	if hasattr(twi_def, 'retweeted_status') is True and retweet_enable is False:
+	if hasattr(twi_def, 'retweeted_status') == True and retweet_enable == False:
 		pass
 	else:
 		# メディア判断
@@ -430,10 +430,10 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 					if media["type"] == 'photo':
 						dl_filename = media["media_url"]
 						dl_media = dl_filename + ":orig"
-					if media["type"] == 'animated_gif' and gif_enable == true:
+					if media["type"] == 'animated_gif' and gif_enable == True:
 						dl_media = media["video_info"]["variants"][0]["url"]
 						dl_filename = dl_media
-					if media["type"] == 'video' and video_enable == true:
+					if media["type"] == 'video' and video_enable == True:
 						dl_media = media["video_info"]["variants"][0]["url"]
 						if '.m3u8' in dl_media:
 							dl_media = media["video_info"]["variants"][1]["url"]
@@ -483,8 +483,8 @@ if __name__ == '__main__':
 	json_dict = json.load(f)
 	f.close()
 	
-	if cmd_args.tl is false:
-		add_tl = false
+	if cmd_args.tl == false:
+		add_tl = False
 	else:
 		add_tl = {"id":"", "date":""}
 		
