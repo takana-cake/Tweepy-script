@@ -12,7 +12,7 @@ import shutil
 import subprocess
 import sys
 import tweepy
-import urllib.requestf
+import urllib.request
 import argparse
 
 
@@ -96,8 +96,8 @@ def _TL_search():
 		if not TL_search_object["TLflag"] == False:
 			if TL_search_object["TLflag"]["id"] == "":
 				start_id_and_date = _get_tweetid()
-				TL_search_object["TLflag"]["id"] == start_id_and_date
-				TL_search_object["TLflag"]["date"] == date
+				TL_search_object["TLflag"]["id"] = _get_tweetid()
+				TL_search_object["TLflag"]["date"] = date
 				search_flag = 'max_search'
 			else:
 				search_flag = 'since_search'
@@ -313,6 +313,8 @@ def _edit_json():
 def _add_new_object():
 	for tmp_user in cmd_args.name:
 		if not tmp_user in json_dict:
+			if os.path.exists(working_directory + tmp_user) == False:
+				os.makedirs(working_directory + tmp_user)
 			json_dict.append({
 				"name":tmp_user,
 				"Query":False,
