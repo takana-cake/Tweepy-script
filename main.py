@@ -483,7 +483,7 @@ if __name__ == '__main__':
 	json_dict = json.load(f)
 	f.close()
 	
-	if cmd_args.tl == false:
+	if cmd_args.tl == False:
 		add_tl = False
 	else:
 		add_tl = {"id":"", "date":""}
