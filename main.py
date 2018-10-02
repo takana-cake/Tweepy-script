@@ -405,16 +405,20 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 			with open(working_directory + download_filepath + "/" + os.path.basename(dl_filename), 'wb') as f:
 				dl_file = urllib.request.urlopen(dl_media).read()
 				f.write(dl_file)
-		except tweepy.RateLimitError as err:
+		except tweepy.RateLimitError as err_description:
 			if download_fault_count < 2:
 				download_fault_count = download_fault_count +1
+				err_subject = "RateLimitError_download"
+				_log(err_subject, err_description)
 				time.sleep(60 * 5)
 				_download_file()
 			else:
 				download_fault_count = 0
-		except Exception as err:
+		except Exception as err_description:
 			if download_fault_count < 2:
 				download_fault_count = download_fault_count +1
+				err_subject = "Exception_download"
+				_log(err_subject, err_description)
 				time.sleep(60)
 				_download_file()
 			else:
