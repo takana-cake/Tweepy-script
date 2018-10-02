@@ -82,14 +82,14 @@ def _TL_search():
 				_log(err_subject, err_description)
 				TL_tweet_get_fault_count = TL_tweet_get_fault_count +1
 				sleep(60 * 15)
-				_tweet_get()
+				_TL_tweet_get()
 		except Exception as err_description:
 			if TL_tweet_get_fault_count < 2:
 				err_subject = str(TL_search_object["name"]) + " : Exception_tweet_get : " + str(TL_search_object["TLflag"]["id"])
 				_log(err_subject, err_description)
 				TL_tweet_get_fault_count = TL_tweet_get_fault_count +1
 				sleep(60 * 5)
-				_tweet_get()
+				_TL_tweet_get()
 
 	for index,TL_search_object in enumerate(json_dict):
 		TL_search_fault_count = 0
@@ -103,7 +103,7 @@ def _TL_search():
 				search_flag = 'since_search'
 			for l in range(50):
 				TL_tweet_get_fault_count = 0
-				_tweet_get()
+				_TL_tweet_get()
 			json_dict[index]["TLflag"]["id"] = TL_search_object["TLflag"]["id"]
 
 
