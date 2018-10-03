@@ -101,7 +101,7 @@ def _TL_search():
 				search_flag = 'max_search'
 			else:
 				search_flag = 'since_search'
-			if not TL_search_object["TLflag"]["id"] == "":
+			if not TL_search_object["TLflag"]["id"] == None:
 				for l in range(50):
 					TL_tweet_get_fault_count = 0
 					_TL_tweet_get()
