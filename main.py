@@ -359,6 +359,8 @@ def _follow_user_get(my_id):
 		try:
 			for tmp_user in api.lookup_users(user_ids=my_friends_ids[i:i+100]):
 				if not tmp_user.name in json_dict:
+					if os.path.exists(working_directory + tmp_user) == False:
+						os.makedirs(working_directory + tmp_user)
 					json_dict.append({
 						"name":tmp_user.screen_name,
 						"Query":"",
@@ -382,6 +384,7 @@ def _follow_user_get(my_id):
 				_log(err_subject, err_description)
 				sleep(60)
 				_follow_user_description()
+	_follow_user_list()
 	for i in range(0, len(my_friends_ids), 100):
 		_follow_user_description()
 
