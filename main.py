@@ -365,8 +365,8 @@ def _follow_user_get(my_id):
 						"Profileflag":cmd_args.profile,
 						"TLflag":add_tl,
 						"RTflag":cmd_args.rt,
-						"videoflag":add_video,
-						"gifflag":add_gif
+						"videoflag":cmd_args.video,
+						"gifflag":cmd_args.gif
 					})
 		except tweepy.RateLimitError as err_description:
 			if follow_user_fault_count < 2:
