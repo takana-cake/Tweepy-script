@@ -374,14 +374,14 @@ def _follow_user_get(my_id):
 				err_subject = "RateLimitError_follow_user_get_2"
 				_log(err_subject, err_description)
 				sleep(60 * 15)
-				_follow_user()
+				_follow_user_description()
 		except Exception as err_description:
 			if follow_user_fault_count < 2:
 				follow_user_fault_count = follow_user_fault_count + 1
 				err_subject = "Exception_follow_user_get_2"
 				_log(err_subject, err_description)
 				sleep(60)
-				_follow_user()
+				_follow_user_description()
 	for i in range(0, len(my_friends_ids), 100):
 		_follow_user_description()
 
@@ -477,6 +477,8 @@ if __name__ == '__main__':
 	parser.add_argument("--video", help="including video-file at Search,TL-check.", action="store_true")
 	parser.add_argument("--gif", help="including gif-file at Search,TL-check.", action="store_true")
 	cmd_args = parser.parse_args()
+	
+	api = tweepy_api()
 
 	working_directory = os.path.dirname(cmd_args.json_file[0]) + "/"
 	DB_file = cmd_args.json_file[0]
@@ -514,9 +516,6 @@ if __name__ == '__main__':
 		#_add_query()
 		#_edit_json()
 		sys.exit()
-
-
-	api = tweepy_api()
 
 	_TL_search()
 	_profile()
