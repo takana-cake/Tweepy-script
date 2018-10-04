@@ -413,7 +413,7 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 				download_fault_count = download_fault_count +1
 				err_subject = "RateLimitError_download"
 				_log(err_subject, err_description)
-				time.sleep(60 * 5)
+				sleep(60 * 5)
 				_download_file()
 			else:
 				download_fault_count = 0
@@ -422,7 +422,7 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 				download_fault_count = download_fault_count +1
 				err_subject = "Exception_download"
 				_log(err_subject, err_description)
-				time.sleep(60)
+				sleep(60)
 				_download_file()
 			else:
 				download_fault_count = 0
