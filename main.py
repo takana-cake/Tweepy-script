@@ -357,12 +357,14 @@ def _follow_user_get(my_id):
 		nonlocal my_friends_ids
 		nonlocal follow_user_fault_count
 		try:
-			for tmp_user in api.lookup_users(user_ids=my_friends_ids[i:i+100]):
-				if not tmp_user.screen_name in json_dict:
-					if os.path.exists(working_directory + tmp_user.screen_name) == False:
-						os.makedirs(working_directory + tmp_user.screen_name)
+			#for tmp_user in api.lookup_users(user_ids=my_friends_ids[i:i+100]):
+			for tmp_id in my_friends_ids:
+				tmp_user = api.get_user(tmp_id).screen_name
+				if not tmp_user in json_dict:
+					if os.path.exists(working_directory + tmp_user) == False:
+						os.makedirs(working_directory + tmp_user)
 					json_dict.append({
-						"name":tmp_user.screen_name,
+						"name":tmp_user,
 						"Query":"",
 						"Profileflag":cmd_args.profile,
 						"TLflag":add_tl,
@@ -385,8 +387,9 @@ def _follow_user_get(my_id):
 				sleep(60)
 				_follow_user_description()
 	_follow_user_list()
-	for i in range(0, len(my_friends_ids), 100):
-		_follow_user_description()
+	#for i in range(0, len(my_friends_ids), 100):
+	#	_follow_user_description()
+	_follow_user_description()
 
 
 
