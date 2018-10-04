@@ -358,9 +358,9 @@ def _follow_user_get(my_id):
 		nonlocal follow_user_fault_count
 		try:
 			for tmp_user in api.lookup_users(user_ids=my_friends_ids[i:i+100]):
-				if not tmp_user.name in json_dict:
-					if os.path.exists(working_directory + tmp_user) == False:
-						os.makedirs(working_directory + tmp_user)
+				if not tmp_user.screen_name in json_dict:
+					if os.path.exists(working_directory + tmp_user.screen_name) == False:
+						os.makedirs(working_directory + tmp_user.screen_name)
 					json_dict.append({
 						"name":tmp_user.screen_name,
 						"Query":"",
