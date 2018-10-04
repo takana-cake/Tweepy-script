@@ -345,14 +345,14 @@ def _follow_user_get(my_id):
 				err_subject = "RateLimitError_follow_user_get_1"
 				_log(err_subject, err_description)
 				sleep(60 * 15)
-				_follow_user()
+				_follow_user_list()
 		except Exception as err_description:
 			if follow_user_list_fault_count < 2:
 				follow_user_list_fault_count = follow_user_list_fault_count + 1
 				err_subject = "Exception_follow_user_get_1"
 				_log(err_subject, err_description)
 				sleep(60)
-				_follow_user()
+				_follow_user_list()
 	def _follow_user_description():
 		nonlocal my_friends_ids
 		nonlocal follow_user_fault_count
