@@ -78,7 +78,7 @@ def _TL_search():
 			TL_tweet_get_fault_count = 0
 		except tweepy.RateLimitError as err_description:
 			if TL_tweet_get_fault_count < 2:
-				err_subject = str(TL_search_object["name"]) + " : RateLimitError__tweet_get : " + str(TL_search_object["TLflag"]["id"])
+				err_subject = str(TL_search_object["name"]) + " : RateLimitError_tweet_get : " + str(TL_search_object["TLflag"]["id"])
 				_log(err_subject, err_description)
 				TL_tweet_get_fault_count = TL_tweet_get_fault_count +1
 				sleep(60 * 15)
