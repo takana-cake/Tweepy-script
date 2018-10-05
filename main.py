@@ -483,11 +483,12 @@ if __name__ == '__main__':
 	parser.add_argument("--video", help="including video-file at Search,TL-check.", action="store_true")
 	parser.add_argument("--gif", help="including gif-file at Search,TL-check.", action="store_true")
 	cmd_args = parser.parse_args()
-	
-	api = tweepy_api()
 
-	working_directory = os.path.dirname(cmd_args.json_file[0]) + "/"
-	DB_file = cmd_args.json_file[0]
+	if os.path.dirname(cmd_args.json_file[0]):
+		working_directory = os.path.dirname(cmd_args.json_file[0]) + "/"
+	else:
+		working_directory = os.getcwd() +"/"
+	DB_file = working_directory + os.path.basename(cmd_args.json_file[0])
 	date = datetime.datetime.today().strftime("%Y%m%d_%H%M_%S")
 	LOGFILE = working_directory + date + "_log.txt"
 	json_dict = []
@@ -503,7 +504,9 @@ if __name__ == '__main__':
 		add_tl = False
 	else:
 		add_tl = {"id":"", "date":""}
-		
+	
+	api = tweepy_api()
+
 	if cmd_args.addf:
 		if len(cmd_args.name) != 1:
 			print("invalid argument")
