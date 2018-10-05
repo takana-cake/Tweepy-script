@@ -129,6 +129,7 @@ def _profile_description_hashtag(screen_name):
 				_log(err_subject, err_description)
 				sleep(60)
 				_description_hashtag()
+	_description_hashtag()
 
 def _profile_get_url(screen_name):
 	profile_get_url_fault_count = 0
@@ -177,7 +178,7 @@ def _profile_get_capture_banner(screen_name, file_path_cap):
 def _profile():
 	file_path = working_directory
 	#file_path_cap = "<capture閲覧用>"
-	file_path_cap = working_directory
+	file_path_cap = "/var/www/html/capture/"
 	flag = "0"
 	
 	for profile_object in json_dict:
@@ -529,6 +530,7 @@ if __name__ == '__main__':
 	_TL_search()
 	_profile()
 	_search()
+	_profile()
 	
 	_edit_json()
 
