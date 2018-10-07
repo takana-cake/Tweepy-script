@@ -2,7 +2,6 @@
 twitter TLimg Downloader</br>
 
 ## 残タスク
-ツイ消し時の動作確認</br>
 凍結アカウント処理</br>
 TL＆PROFのハッシュタグ収集</br>
 Tweepyを使用(もう更新されないみたいだしAPIで処理するよう書き直す)</br>
