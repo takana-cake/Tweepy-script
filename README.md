@@ -33,12 +33,6 @@ twitter_conf = {
 </pre>
 
 ## フロー(予定は未定)
-<pre>
-# python3 main.py &lt;json-file-name&gt;
-# python3 main.py --name &lt;object-name...&gt; --add-object
-# python3 main.py --name &lt;object-name&gt; --add-query &lt;tag1&gt; &lt;tag2&gt;...
-</pre>
-<img src="./01.jpg" width="20%" height="20%"><img src="./02.jpg" width="20%" height="20%"><img src="./03.jpg" width="20%" height="20%">
 
 ## json
 TLやプロフを収集するユーザのscreenとnameと最終取得日</br>
