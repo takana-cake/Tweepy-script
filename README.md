@@ -2,8 +2,7 @@
 twitter TLimg Downloader</br>
 
 ## 残タスク
-delとshow</br>
-TL＆PROFのハッシュタグ収集</br>
+delとshowとhashtag</br>
 凍結アカウント処理(現在はスキップするだけ)</br>
 認証用トークンデータどうする？</br>
 Tweepy更新されないみたいだしAPIで処理するよう書き直す</br>
