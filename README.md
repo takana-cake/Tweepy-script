@@ -120,7 +120,7 @@ Twitterのつぶやきにある2つ以上の#(ハッシュタグ)にリンクを
 https://e-yota.com/webservice/post-2441/<br>
 pythonで正規表現を使ってみる - すこしふしぎ．<br>
 http://ism1000ch.hatenablog.com/entry/2014/03/15/154533<br>
-### その他<br>
+### オプションを使いたい<br>
 コマンドライン引数 | Python-izm<br>
 https://www.python-izm.com/basic/command_line_arguments/<br>
 pythonでコマンドライン引数を使うサンプル<br>
