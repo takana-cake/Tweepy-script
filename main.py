@@ -304,7 +304,7 @@ def init_start():
 			json_dict.append({
 				"name":"dummy",
 				"TLflag":False,
-				"Query":False
+				"Query":None
 			})
 			_edit_json()
 			print("result: " + str(os.path.exists(DB_file)))
@@ -332,7 +332,7 @@ def _add_new_object():
 				os.makedirs(working_directory + tmp_user)
 			json_dict.append({
 				"name":tmp_user,
-				"Query":False,
+				"Query":None,
 				"Profileflag":cmd_args.profile,
 				"TLflag":add_tl,
 				"RTflag":cmd_args.rt,
@@ -380,7 +380,7 @@ def _follow_user_get(my_id):
 						os.makedirs(working_directory + tmp_user)
 					json_dict.append({
 						"name":tmp_user,
-						"Query":"",
+						"Query":None,
 						"Profileflag":cmd_args.profile,
 						"TLflag":add_tl,
 						"RTflag":cmd_args.rt,
