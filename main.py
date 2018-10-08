@@ -106,6 +106,7 @@ def _TL_search():
 					TL_tweet_get_fault_count = 0
 					_TL_tweet_get()
 				json_dict[index]["TLflag"]["id"] = TL_search_object["TLflag"]["id"]
+	_edit_json()
 
 
 
@@ -130,6 +131,7 @@ def _profile_description_hashtag(screen_name):
 				sleep(60)
 				_description_hashtag()
 	_description_hashtag()
+	_edit_json()
 
 def _profile_get_url(screen_name):
 	profile_get_url_fault_count = 0
@@ -274,7 +276,10 @@ def _search():
 				for l in range(50):
 					_search_start()
 				json_dict[index]['Query'][search_query]["id"] = search_date["id"]
+	_edit_json()
 
+	
+	
 ### init ###
 
 def init_start():
@@ -326,6 +331,7 @@ def _add_new_object():
 				"videoflag":cmd_args.video,
 				"gifflag":cmd_args.gif
 			})
+	_edit_json()
 
 
 
@@ -391,6 +397,7 @@ def _follow_user_get(my_id):
 	#for i in range(0, len(my_friends_ids), 100):
 	#	_follow_user_description()
 	_follow_user_description()
+	_edit_json()
 
 
 
@@ -470,14 +477,17 @@ if __name__ == '__main__':
 		add_help=True,
 		formatter_class=argparse.RawTextHelpFormatter
 		)
-	parser.add_argument("json_file", help="please set DBfile.json.\n\n", type=str, nargs=1, metavar="[json-file]")
-
-	parser.add_argument("--name", help="select object.", type=str, nargs='*', metavar="<object-name>")
-	parser.add_argument("--show", help="show db-objects.\nselect --name, show object summary.", action="store_true")
+	parser.add_argument("json_file", help="please set DBfile.json.", type=str, nargs=1, metavar="[json-file]")
+	parser.add_argument("--name", help="select object.", type=str, nargs='*', metavar="<object-name>...")
+	#parser.add_argument("--show", help="show object-list. if select object, show query.\n\n", action="store_true")
+	
 	parser.add_argument("--addf", help="add Screen's follow-user.", action="store_true")
 	parser.add_argument("--addo", help="add new-screen-object or new-search-object.", action="store_true")
-	parser.add_argument("--addq", help="add search-query to object.\n\n", action="store_true")
+	parser.add_argument("--addq", help="add search-query to object.\n\n", type=str, nargs='*', metavar="<query-name>...")
 
+	#parser.add_argument("--delo", help="del screen-object or search-object.", action="store_true")
+	#parser.add_argument("--delq", help="del search-query object.\n\n", action="store_true")
+	
 	parser.add_argument("--profile", help="profile-check.", action="store_true")
 	parser.add_argument("--tl", help="TL-check.", action="store_true")
 	parser.add_argument("--rt", help="including Retweets at TL-check.", action="store_true")
@@ -509,22 +519,25 @@ if __name__ == '__main__':
 	api = tweepy_api()
 
 	if cmd_args.addf:
-		if len(cmd_args.name) != 1:
-			print("invalid argument")
+		if not cmd_args.name or len(cmd_args.name) != 1:
+			print("invalid argument '--name'")
 			sys.exit()
 		_follow_user_get(cmd_args.name[0])
-		_edit_json()
 		sys.exit()
 	if cmd_args.addo:
+		if not cmd_args.name or len(cmd_args.name) < 0:
+			print("invalid argument '--name'")
+			sys.exit()
 		_add_new_object()
-		_edit_json()
 		sys.exit()
 	if len(json_dict) < 2:
 		print("please add object.")
 		sys.exit()
 	if cmd_args.addq:
+		if not cmd_args.name or len(cmd_args.name) != 1:
+			print("invalid argument '--name'")
+			sys.exit()
 		#_add_query()
-		#_edit_json()
 		sys.exit()
 
 	_TL_search()
@@ -532,6 +545,5 @@ if __name__ == '__main__':
 	_search()
 	_profile()
 	
-	_edit_json()
 
 
