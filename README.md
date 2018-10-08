@@ -105,7 +105,7 @@ https://qiita.com/areph/items/0745cb744a12810334c6<br>
 Twitter APIでつぶやきを取得する - Qiita<br>
 https://qiita.com/yokoh9/items/760e432ebd39040d5a0f<br>
 ### APIレスポンス<br>
-Pythonメモ: Tweepyのややこしいレスポンスデータの読み方 ?Twitter API活用の最初の難関? - StatsBeginner: 初学者の統計学習ノート<br>
+Pythonメモ: Tweepyのややこしいレスポンスデータの読み方 - StatsBeginner: 初学者の統計学習ノート<br>
 http://www.statsbeginner.net/entry/2017/02/12/231400<br>
 Entities - Twitter 開発者ドキュメント 日本語訳<br>
 http://westplain.sakuraweb.com/translate/twitter/API-Overview/Entities.cgi<br>
@@ -115,14 +115,10 @@ https://blogs.yahoo.co.jp/dpdtp652/39381397.html<br>
 ### 正規表現<br>
 Bugle Diary: [Python]Twitterのようにハッシュタグを検索する方法<br>
 http://temping-amagramer.blogspot.com/2014/11/pythontwitter.html<br>
-Twitterのつぶやきにある2つ以上の#(ハッシュタグ)にリンクをつけたいときの正規表現について ? エコテキブログ<br>
+Twitterのつぶやきにある2つ以上の#(ハッシュタグ)にリンクをつけたいときの正規表現について エコテキブログ<br>
 https://e-yota.com/webservice/post-2441/<br>
 pythonで正規表現を使ってみる - すこしふしぎ．<br>
 http://ism1000ch.hatenablog.com/entry/2014/03/15/154533<br>
 ### オプションを使いたい<br>
-コマンドライン引数 | Python-izm<br>
-https://www.python-izm.com/basic/command_line_arguments/<br>
-pythonでコマンドライン引数を使うサンプル<br>
-https://qiita.com/stkdev/items/e262dada7b68ea91aa0c<br>
 【Python入門】argparseでコマンドライン引数を扱う方法 | 侍エンジニア塾ブログ<br>
 https://www.sejuku.net/blog/23647<br>
