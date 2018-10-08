@@ -507,9 +507,7 @@ if __name__ == '__main__':
 	if not os.path.exists(DB_file):
 		init_start()
 
-	f = open(DB_file,'r')
-	json_dict = json.load(f)
-	f.close()
+
 	
 	if cmd_args.tl == False:
 		add_tl = False
@@ -518,28 +516,34 @@ if __name__ == '__main__':
 	
 	api = tweepy_api()
 
-	if cmd_args.addf:
-		if not cmd_args.name or len(cmd_args.name) != 1:
-			print("invalid argument '--name'")
-			sys.exit()
-		_follow_user_get(cmd_args.name[0])
+	if cmd_args.addf or cmd_args.addo or cmd_args.addq is not None:
+		if cmd_args.addf:
+			if not cmd_args.name or len(cmd_args.name) != 1:
+				print("invalid argument '--name'")
+				sys.exit()
+			_follow_user_get(cmd_args.name[0])
+		if cmd_args.addo:
+			if not cmd_args.name:
+				print("invalid argument '--name'")
+				sys.exit()
+			_add_new_object()
+		if cmd_args.addq is not None:
+			if not cmd_args.name or len(cmd_args.name) != 1:
+				print("invalid argument '--name'")
+				sys.exit()
+			if len(cmd_args.addq) < 1:
+				print("invalid argument '--addq'")
+				sys.exit()
+			#_add_query()
 		sys.exit()
-	if cmd_args.addo:
-		if not cmd_args.name or len(cmd_args.name) < 0:
-			print("invalid argument '--name'")
-			sys.exit()
-		_add_new_object()
-		sys.exit()
+
+	f = open(DB_file,'r')
+	json_dict = json.load(f)
+	f.close()
 	if len(json_dict) < 2:
 		print("please add object.")
 		sys.exit()
-	if cmd_args.addq:
-		if not cmd_args.name or len(cmd_args.name) != 1:
-			print("invalid argument '--name'")
-			sys.exit()
-		#_add_query()
-		sys.exit()
-
+	
 	_TL_search()
 	_profile()
 	_search()
