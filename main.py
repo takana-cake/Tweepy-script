@@ -36,7 +36,7 @@ def tweepy_api():
 		twitter_conf['access']['key'],
 		twitter_conf['access']['secret'])
 	tweepy_auth = tweepy.API(auth)
-	return(tweepy_auth)
+	return tweepy_auth
 
 
 
