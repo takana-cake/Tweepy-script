@@ -286,41 +286,6 @@ def _search():
 				json_dict[index]['Query'][search_query]["id"] = search_date["id"]
 	_edit_json()
 
-	
-	
-### init ###
-
-def init_start():
-	if os.path.exists(working_directory) == False:
-		print("directory is not found.")
-		sys.exit()
-	if os.path.exists(DB_file) == False:
-		print("json-file is not found.")
-		print("Do you want to create a file?(y/n)")
-		q = input()
-		if q == "y":
-			f = open(DB_file,'w+')
-			f.close()
-			json_dict.append({
-				"name":"dummy",
-				"TLflag":False,
-				"Query":None
-			})
-			_edit_json()
-			print("result: " + str(os.path.exists(DB_file)))
-		else:
-			sys.exit()
-	print("init done.\n")
-
-
-
-### Edit json ###
-
-def _edit_json():
-	f = open(DB_file,'w')
-	json.dump(json_dict, f)
-	f.close()
-
 
 
 ### add ###
@@ -409,15 +374,6 @@ def _follow_user_get(my_id):
 
 
 
-### log ###
-
-def _log(err_subject, err_description):
-	print(str(datetime.datetime.now()) + " : " + str(err_subject) + " : " + str(err_description))
-	with open(LOGFILE,'a') as f:
-		f.write(str(datetime.datetime.now()) + " : " + str(err_subject) + " : " + str(err_description) + "\n")
-
-
-
 ### download ###
 
 def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enable):
@@ -475,6 +431,56 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 
 
 
+### log ###
+
+def _log(err_subject, err_description):
+	print(str(datetime.datetime.now()) + " : " + str(err_subject) + " : " + str(err_description))
+	with open(LOGFILE,'a') as f:
+		f.write(str(datetime.datetime.now()) + " : " + str(err_subject) + " : " + str(err_description) + "\n")
+
+
+
+### show ###
+
+def _show():
+	
+
+	
+### init ###
+
+def init_start():
+	if os.path.exists(working_directory) == False:
+		print("directory is not found.")
+		sys.exit()
+	if os.path.exists(DB_file) == False:
+		print("json-file is not found.")
+		print("Do you want to create a file?(y/n)")
+		q = input()
+		if q == "y":
+			f = open(DB_file,'w+')
+			f.close()
+			json_dict.append({
+				"name":"dummy",
+				"TLflag":False,
+				"Query":None
+			})
+			_edit_json()
+			print("result: " + str(os.path.exists(DB_file)))
+		else:
+			sys.exit()
+	print("init done.\n")
+
+
+
+### Edit json ###
+
+def _edit_json():
+	f = open(DB_file,'w')
+	json.dump(json_dict, f)
+	f.close()
+
+
+
 ### parser ###
 
 def _parser():
@@ -520,7 +526,7 @@ if __name__ == '__main__':
 		init_start()
 	api = tweepy_api()
 	
-	if cmd_args.addf or cmd_args.addo or cmd_args.addq is not None:
+	if cmd_args.addf or cmd_args.addo or cmd_args.addq is not None cmd_args.show:
 		if cmd_args.tl == False:
 			add_tl = False
 		else:
@@ -543,6 +549,8 @@ if __name__ == '__main__':
 				print("invalid argument '--addq'")
 				sys.exit()
 			#_add_query()
+		if cmd_args.show:
+			_show()
 		sys.exit()
 
 	f = open(DB_file,'r')
