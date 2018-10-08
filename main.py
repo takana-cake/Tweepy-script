@@ -110,11 +110,14 @@ def _TL_search():
 
 
 
-### profile ###
+### hash tag ###
 
-def _profile_description_hashtag(screen_name):
+def _hashtag():
 	profile_description_hashtag_fault_count = 0
-	def _description_hashtag():
+	def _TL_text_hashtag(screen_name):
+		
+	
+	def _profile_description_hashtag():
 		nonlocal profile_description_hashtag_fault_count
 		try:
 			description = api.get_user(screen_name).description
@@ -129,9 +132,14 @@ def _profile_description_hashtag(screen_name):
 				err_subject = screen_name + " : Exception_profile_description"
 				_log(err_subject, err_description)
 				sleep(60)
-				_description_hashtag()
-	_description_hashtag()
+				_profile_description_hashtag()
+	_TL_text_hashtag()
+	_profile_description_hashtag()
 	_edit_json()
+
+
+
+### profile ###
 
 def _profile_get_url(screen_name):
 	profile_get_url_fault_count = 0
