@@ -464,13 +464,12 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 						dl_filename = dl_media
 					if os.path.exists(working_directory + download_filepath + "/" + os.path.basename(dl_filename)) == False:
 						_download_file()
-				
 
 
-### main ###
 
-if __name__ == '__main__':
-	
+### parser ###
+
+def _parser():
 	parser = argparse.ArgumentParser(
 		usage=' python3 main.py [json-file] [OPTION]...\n\
 	nohup python3 main.py [json-file] [OPTION]... ',
@@ -493,8 +492,15 @@ if __name__ == '__main__':
 	parser.add_argument("--rt", help="including Retweets at TL-check.", action="store_true")
 	parser.add_argument("--video", help="including video-file at Search,TL-check.", action="store_true")
 	parser.add_argument("--gif", help="including gif-file at Search,TL-check.", action="store_true")
-	cmd_args = parser.parse_args()
+	retrun parser.parse_args()
 
+
+	
+### main ###
+
+if __name__ == '__main__':
+	json_dict = []
+	cmd_args = _parser()
 	if os.path.dirname(cmd_args.json_file[0]):
 		working_directory = os.path.dirname(cmd_args.json_file[0]) + "/"
 	else:
@@ -502,21 +508,15 @@ if __name__ == '__main__':
 	DB_file = working_directory + os.path.basename(cmd_args.json_file[0])
 	date = datetime.datetime.today().strftime("%Y%m%d_%H%M_%S")
 	LOGFILE = working_directory + date + "_log.txt"
-	json_dict = []
-
 	if not os.path.exists(DB_file):
 		init_start()
-
-
-	
-	if cmd_args.tl == False:
-		add_tl = False
-	else:
-		add_tl = {"id":"", "date":""}
-	
 	api = tweepy_api()
-
+	
 	if cmd_args.addf or cmd_args.addo or cmd_args.addq is not None:
+		if cmd_args.tl == False:
+			add_tl = False
+		else:
+			add_tl = {"id":"", "date":""}
 		if cmd_args.addf:
 			if not cmd_args.name or len(cmd_args.name) != 1:
 				print("invalid argument '--name'")
