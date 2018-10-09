@@ -103,8 +103,8 @@ def _TL_search():
 			else:
 				search_flag = 'since_search'
 			if not TL_search_object["TLflag"]["id"] == None:
+				TL_tweet_get_fault_count = 0
 				for l in range(50):
-					TL_tweet_get_fault_count = 0
 					_TL_tweet_get()
 				json_dict[index]["TLflag"]["id"] = TL_search_object["TLflag"]["id"]
 	_edit_json()
