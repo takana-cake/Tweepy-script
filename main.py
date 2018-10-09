@@ -71,11 +71,12 @@ def _TL_search():
 				for twi in api.user_timeline(TL_search_object["name"], count=100, max_id=TL_search_object["TLflag"]["id"]):
 					_download(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
 					TL_search_object["TLflag"]["id"] = twi.id
+					TL_tweet_get_fault_count = 0
 			elif search_flag == 'since_search':
 				for twi in api.user_timeline(TL_search_object["name"], count=100, since_id=TL_search_object["TLflag"]["id"]):
 					_download(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
 					TL_search_object["TLflag"]["id"] = twi.id
-			TL_tweet_get_fault_count = 0
+					TL_tweet_get_fault_count = 0
 		except tweepy.RateLimitError as err_description:
 			if TL_tweet_get_fault_count < 2:
 				err_subject = str(TL_search_object["name"]) + " : RateLimitError_tweet_get : " + str(TL_search_object["TLflag"]["id"])
@@ -271,7 +272,6 @@ def _search():
 				_log(err_subject, err_description)
 				sleep(10)
 				_search_start()
-		search_fault_count = 0
 	for index,user_object in enumerate(json_dict):
 		if not user_object['Query'] == False:
 			for search_query,search_date in user_object['Query']:
@@ -282,6 +282,7 @@ def _search():
 					search_date_tmp = api.search(q=search_query)
 					search_date["id"] = search_date_tmp[0].id
 				for l in range(50):
+					search_fault_count = 0
 					_search_start()
 				json_dict[index]['Query'][search_query]["id"] = search_date["id"]
 	_edit_json()
