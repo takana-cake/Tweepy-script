@@ -115,7 +115,7 @@ def _TL_search():
 
 def _hashtag():
 	profile_description_hashtag_fault_count = 0
-	def _TL_text_hashtag(screen_name):
+	#def _TL_text_hashtag(screen_name):
 		
 	
 	def _profile_description_hashtag():
@@ -435,7 +435,7 @@ def _log(err_subject, err_description):
 
 ### show ###
 
-def _show():
+#def _show():
 	
 
 	
@@ -485,7 +485,7 @@ def _parser():
 		)
 	parser.add_argument("json_file", help="please set DBfile.json.", type=str, nargs=1, metavar="[json-file]")
 	parser.add_argument("--name", help="select object.", type=str, nargs='*', metavar="<object-name>...")
-	#parser.add_argument("--show", help="show object-list. if select object, show query.\n\n", action="store_true")
+	parser.add_argument("--show", help="show object-list. if select object, show query.\n\n", action="store_true")
 	
 	parser.add_argument("--addf", help="add Screen's follow-user.", action="store_true")
 	parser.add_argument("--addo", help="add new-screen-object or new-search-object.", action="store_true")
@@ -499,7 +499,7 @@ def _parser():
 	parser.add_argument("--rt", help="including Retweets at TL-check.", action="store_true")
 	parser.add_argument("--video", help="including video-file at Search,TL-check.", action="store_true")
 	parser.add_argument("--gif", help="including gif-file at Search,TL-check.", action="store_true")
-	retrun parser.parse_args()
+	return parser.parse_args()
 
 
 	
@@ -519,7 +519,7 @@ if __name__ == '__main__':
 		init_start()
 	api = tweepy_api()
 	
-	if cmd_args.addf or cmd_args.addo or cmd_args.addq is not None cmd_args.show:
+	if cmd_args.addf or cmd_args.addo or cmd_args.addq is not None or cmd_args.show:
 		if cmd_args.tl == False:
 			add_tl = False
 		else:
