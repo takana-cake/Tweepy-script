@@ -320,6 +320,7 @@ def _follow_user_get(my_id):
 		try:
 			for tmp_id in tweepy.Cursor(api.friends_ids, id=my_id).items():
 				my_friends_ids.append(tmp_id)
+				follow_user_list_fault_count = 0
 		except tweepy.RateLimitError as err_description:
 			if follow_user_list_fault_count < 2:
 				follow_user_list_fault_count = follow_user_list_fault_count + 1
@@ -353,6 +354,7 @@ def _follow_user_get(my_id):
 						"videoflag":cmd_args.video,
 						"gifflag":cmd_args.gif
 					})
+				follow_user_fault_count = 0
 		except tweepy.RateLimitError as err_description:
 			if follow_user_fault_count < 2:
 				follow_user_fault_count = follow_user_fault_count + 1
@@ -387,15 +389,6 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 			with open(working_directory + download_filepath + "/" + os.path.basename(dl_filename), 'wb') as f:
 				dl_file = urllib.request.urlopen(dl_media).read()
 				f.write(dl_file)
-		except tweepy.RateLimitError as err_description:
-			if download_fault_count < 2:
-				download_fault_count = download_fault_count +1
-				err_subject = "RateLimitError_download"
-				_log(err_subject, err_description)
-				sleep(60 * 5)
-				_download_file()
-			else:
-				download_fault_count = 0
 		except Exception as err_description:
 			if download_fault_count < 2:
 				download_fault_count = download_fault_count +1
@@ -405,7 +398,6 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 				_download_file()
 			else:
 				download_fault_count = 0
-		download_fault_count = 0
 	# リツイート判断
 	if hasattr(twi_def, 'retweeted_status') == True and retweet_enable == False:
 		pass
