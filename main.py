@@ -478,8 +478,9 @@ def _edit_json():
 
 def _parser():
 	parser = argparse.ArgumentParser(
-		usage=' python3 main.py [json-file] [OPTION]...\n\
-	nohup python3 main.py [json-file] [OPTION]... ',
+		usage=' python3 main.py [json-file]\n\
+	python3 main.py [json-file] [OPTION]...\n\
+	nohup python3 main.py [json-file] &',
 		add_help=True,
 		formatter_class=argparse.RawTextHelpFormatter
 		)
