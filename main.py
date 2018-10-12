@@ -392,7 +392,7 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 		except Exception as err_description:
 			if download_fault_count < 2:
 				download_fault_count = download_fault_count +1
-				err_subject = "Exception_download"
+				err_subject = "Exception_download : " + dl_media
 				_log(err_subject, err_description)
 				sleep(60)
 				_download_file()
