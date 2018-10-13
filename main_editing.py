@@ -115,19 +115,13 @@ def _TL_search():
 
 def _hashtag():
 	profile_description_hashtag_fault_count = 0
-	description_hashtags = []
-	#def _TL_text_hashtag(screen_name):
-		
-	
+	hashtags = []
+
 	def _profile_description_hashtag():
 		nonlocal profile_description_hashtag_fault_count
-		nonlocal description_hashtags
 		try:
-			description = api.get_user(screen_name).description
-			description = re.sub(r'#', " #", description)
-			pattern = re.compile(r'[\s\[\]\(\)\<\>\（\）\＜\＞\"\']')
-			description_split = re.split(pattern, description)
-			description_hashtags = [x for x in description_split if '#' in x]
+			hashtag_tmp = api.get_user(screen_name).description
+			_hashtag_split(hashtag_tmp)
 		except Exception as err_description:
 			if profile_description_hashtag_fault_count < 2:
 				profile_description_hashtag_fault_count = profile_description_hashtag_fault_count + 1
@@ -135,10 +129,19 @@ def _hashtag():
 				_log(err_subject, err_description)
 				sleep(60)
 				_profile_description_hashtag()
-	_TL_text_hashtag()
-	_profile_description_hashtag()
-	#description_hashtags
-	_edit_json()
+	
+	def _hashtag_split(hashtag_tmp):
+		nonlocal hashtags
+		hashtag_tmp = re.sub(r'#', " #", hashtag_tmp)
+		pattern = re.compile(r'[\s\[\]\(\)\<\>\（\）\＜\＞\"\']')
+		hashtag_split = re.split(pattern, hashtag_tmp)
+		hashtags = [x for x in hashtag_split if '#' in x]
+	
+	for hashtag_object in json_dict:
+		if "hashtagflag" in hashtag_object:
+			if hashtag_object["hashtagflag"] == True:
+				_profile_description_hashtag()
+				#description_hashtags
 
 
 
@@ -302,6 +305,7 @@ def _add_new_object():
 				"name":tmp_user,
 				"Query":None,
 				"Profileflag":cmd_args.profile,
+				"hashtagflag":cmd_args.hashtag,
 				"TLflag":add_tl,
 				"RTflag":cmd_args.rt,
 				"videoflag":cmd_args.video,
@@ -351,6 +355,7 @@ def _follow_user_get(my_id):
 						"name":tmp_user,
 						"Query":None,
 						"Profileflag":cmd_args.profile,
+						"hashtagflag":cmd_args.hashtag,
 						"TLflag":add_tl,
 						"RTflag":cmd_args.rt,
 						"videoflag":cmd_args.video,
@@ -506,6 +511,7 @@ def _parser():
 	#parser.add_argument("--delq", help="del search-query object.\n\n", action="store_true")
 	
 	parser.add_argument("--profile", help="profile-check.", action="store_true")
+	parser.add_argument("--hashtag", help="hashtag-check(TL, User-Profile).", action="store_true")
 	parser.add_argument("--tl", help="TL-check.", action="store_true")
 	parser.add_argument("--rt", help="including Retweets at TL-check.", action="store_true")
 	parser.add_argument("--video", help="including video-file at Search,TL-check.", action="store_true")
@@ -538,26 +544,26 @@ if __name__ == '__main__':
 		if cmd_args.addf:
 			if not cmd_args.name or len(cmd_args.name) != 1:
 				print("invalid argument '--name'")
-				sys.exit()
-			_follow_user_get(cmd_args.name[0])
+			else:
+				_follow_user_get(cmd_args.name[0])
 		if cmd_args.addo:
 			if not cmd_args.name:
 				print("invalid argument '--name'")
-				sys.exit()
-			_add_new_object()
+			else:
+				_add_new_object()
 		if cmd_args.addq is not None:
 			if not cmd_args.name or len(cmd_args.name) != 1:
 				print("invalid argument '--name'")
-				sys.exit()
 			if len(cmd_args.addq) < 1:
 				print("invalid argument '--addq'")
-				sys.exit()
-			#_add_query()
+			#else:
+			#	_add_query()
 		if cmd_args.show:
 			if not cmd_args.name or len(cmd_args.name) != 1:
 				print("invalid argument '--name'")
-				sys.exit()
-			_show()
+			else:
+				_show()
+		_edit_json()
 		sys.exit()
 
 	f = open(DB_file,'r')
@@ -567,10 +573,11 @@ if __name__ == '__main__':
 		print("please add object.")
 		sys.exit()
 	
+	_profile()
+	_hashtag()
 	_TL_search()
-	_profile()
 	_search()
-	_profile()
+	_edit_json()
 	
 
 
