@@ -280,7 +280,7 @@ def _search():
 				sleep(10)
 				_search_start()
 	for index,user_object in enumerate(json_dict):
-		if not user_object['Query'] == False:
+		if not user_object['Query'] == {}:
 			for search_query,search_date in user_object['Query']:
 				if search_date["id"]:
 					sinormax = 'since_search'
@@ -304,7 +304,7 @@ def _add_new_object():
 				os.makedirs(working_directory + tmp_user)
 			json_dict.append({
 				"name":tmp_user,
-				"Query":None,
+				"Query":{},
 				"Profileflag":cmd_args.profile,
 				"hashtagflag":cmd_args.hashtag,
 				"TLflag":add_tl,
@@ -353,7 +353,7 @@ def _follow_user_get(my_id):
 						os.makedirs(working_directory + tmp_user)
 					json_dict.append({
 						"name":tmp_user,
-						"Query":None,
+						"Query":{},
 						"Profileflag":cmd_args.profile,
 						"hashtagflag":cmd_args.hashtag,
 						"TLflag":add_tl,
@@ -469,7 +469,7 @@ def init_start():
 			json_dict.append({
 				"name":"dummy",
 				"TLflag":False,
-				"Query":None
+				"Query":{}
 			})
 			print("result: " + str(os.path.exists(DB_file)))
 		else:
