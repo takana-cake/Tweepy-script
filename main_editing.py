@@ -107,7 +107,6 @@ def _TL_search():
 				for l in range(50):
 					_TL_tweet_get()
 				json_dict[index]["TLflag"]["id"] = TL_search_object["TLflag"]["id"]
-	_edit_json()
 
 
 
@@ -293,7 +292,6 @@ def _search():
 					search_fault_count = 0
 					_search_start()
 				json_dict[index]['Query'][search_query]["id"] = search_date["id"]
-	_edit_json()
 
 
 
@@ -314,7 +312,6 @@ def _add_new_object():
 				"videoflag":cmd_args.video,
 				"gifflag":cmd_args.gif
 			})
-	_edit_json()
 
 
 
@@ -383,7 +380,6 @@ def _follow_user_get(my_id):
 	#for i in range(0, len(my_friends_ids), 100):
 	#	_follow_user_description()
 	_follow_user_description()
-	_edit_json()
 
 
 
@@ -475,7 +471,6 @@ def init_start():
 				"TLflag":False,
 				"Query":None
 			})
-			_edit_json()
 			print("result: " + str(os.path.exists(DB_file)))
 		else:
 			sys.exit()
@@ -537,6 +532,7 @@ if __name__ == '__main__':
 	LOGFILE = working_directory + date + "_log.txt"
 	if not os.path.exists(DB_file):
 		init_start()
+		_edit_json()
 	api = tweepy_api()
 	
 	if cmd_args.addf or cmd_args.addo or cmd_args.addq is not None or cmd_args.show:
