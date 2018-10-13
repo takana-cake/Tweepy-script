@@ -2,7 +2,8 @@
 twitter TLimg Downloader</br>
 
 ## 残タスク
-delとshowとhashtag</br>
+del</br>
+RT含める場合、statusがretweeted_statusに入る。書き直す</br>
 凍結アカウント処理(現在はスキップするだけ)</br>
 認証用トークンデータどうする？</br>
 Tweepy更新されないみたいだしAPIで処理するよう書き直す</br>
