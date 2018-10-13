@@ -44,7 +44,7 @@ json = [
 	{
 		"name":"dummy",
 		"TLflag":False,
-		"Query":None
+		"Query":{}
 	},
 	{
 		"name":&lt;screen or 検索名&gt;,					#作業フォルダ名
