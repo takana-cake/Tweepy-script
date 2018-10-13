@@ -437,10 +437,18 @@ def _log(err_subject, err_description):
 
 ### show ###
 
-#def _show():
+def _show():
+	print(json_dict[cmd_args.name])
+	sys.exit()
+
+
+### add query ###
+
+#def _add_query():
 	
 
-	
+
+
 ### init ###
 
 def init_start():
@@ -546,6 +554,9 @@ if __name__ == '__main__':
 				sys.exit()
 			#_add_query()
 		if cmd_args.show:
+			if not cmd_args.name or len(cmd_args.name) != 1:
+				print("invalid argument '--name'")
+				sys.exit()
 			_show()
 		sys.exit()
 
