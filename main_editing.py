@@ -40,7 +40,7 @@ def tweepy_api():
 
 
 
-### TL to Download ###
+### TL chech ###
 
 def _TL_search():
 	def _get_tweetid():
@@ -66,15 +66,18 @@ def _TL_search():
 		nonlocal TL_tweet_get_fault_count
 		nonlocal TL_search_object
 		nonlocal search_flag
+		nonlocal hashtag_tmp
 		try:
 			if search_flag == 'max_search':
 				for twi in api.user_timeline(TL_search_object["name"], count=100, max_id=TL_search_object["TLflag"]["id"]):
 					_download(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
+					hashtag_tmp.append(_hashtag_split(twi.description))
 					TL_search_object["TLflag"]["id"] = twi.id
 					TL_tweet_get_fault_count = 0
 			elif search_flag == 'since_search':
 				for twi in api.user_timeline(TL_search_object["name"], count=100, since_id=TL_search_object["TLflag"]["id"]):
 					_download(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
+					hashtag_tmp.append(_hashtag_split(twi.description))
 					TL_search_object["TLflag"]["id"] = twi.id
 					TL_tweet_get_fault_count = 0
 		except tweepy.RateLimitError as err_description:
@@ -94,6 +97,7 @@ def _TL_search():
 
 	for index,TL_search_object in enumerate(json_dict):
 		TL_search_fault_count = 0
+		hashtag_tmp = []
 		if not TL_search_object["TLflag"] == False:
 			if TL_search_object["TLflag"]["id"] == "":
 				start_id_and_date = _get_tweetid()
@@ -104,9 +108,13 @@ def _TL_search():
 				search_flag = 'since_search'
 			if not TL_search_object["TLflag"]["id"] == None:
 				TL_tweet_get_fault_count = 0
+				DL_or_hash = 0
 				for l in range(50):
 					_TL_tweet_get()
 				json_dict[index]["TLflag"]["id"] = TL_search_object["TLflag"]["id"]
+		if TL_search_object["hashtagflag"] == True:
+			for tag_TL in hashtag_tmp:
+				json_dict[index]["Query"].append({tag_TL:{"date":"", "id":""}})
 
 
 
