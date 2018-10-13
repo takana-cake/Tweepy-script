@@ -40,7 +40,7 @@ def tweepy_api():
 
 
 
-### TL ###
+### TL to Download ###
 
 def _TL_search():
 	def _get_tweetid():
@@ -115,18 +115,19 @@ def _TL_search():
 
 def _hashtag():
 	profile_description_hashtag_fault_count = 0
+	description_hashtags = []
 	#def _TL_text_hashtag(screen_name):
 		
 	
 	def _profile_description_hashtag():
 		nonlocal profile_description_hashtag_fault_count
+		nonlocal description_hashtags
 		try:
 			description = api.get_user(screen_name).description
 			description = re.sub(r'#', " #", description)
 			pattern = re.compile(r'[\s\[\]\(\)\<\>\（\）\＜\＞\"\']')
 			description_split = re.split(pattern, description)
 			description_hashtags = [x for x in description_split if '#' in x]
-			return(description_hashtags)
 		except Exception as err_description:
 			if profile_description_hashtag_fault_count < 2:
 				profile_description_hashtag_fault_count = profile_description_hashtag_fault_count + 1
@@ -136,6 +137,7 @@ def _hashtag():
 				_profile_description_hashtag()
 	_TL_text_hashtag()
 	_profile_description_hashtag()
+	#description_hashtags
 	_edit_json()
 
 
