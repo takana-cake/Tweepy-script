@@ -113,15 +113,24 @@ def _TL_search():
 
 ### hash tag ###
 
+def _hashtag_split(hashtag_tmp):
+	hashtag_tmp = re.sub(r'#', " #", hashtag_tmp)
+	pattern = re.compile(r'[\s\[\]\(\)\<\>\（\）\＜\＞\"\']')
+	hashtag_split = re.split(pattern, hashtag_tmp)
+	hashtags = [x for x in hashtag_split if '#' in x]
+	return hashtags
+
+
 def _hashtag():
 	profile_description_hashtag_fault_count = 0
 	hashtags = []
 
 	def _profile_description_hashtag():
 		nonlocal profile_description_hashtag_fault_count
+		nonlocal hashtags
 		try:
 			hashtag_tmp = api.get_user(screen_name).description
-			_hashtag_split(hashtag_tmp)
+			hashtags = _hashtag_split(hashtag_tmp)
 		except Exception as err_description:
 			if profile_description_hashtag_fault_count < 2:
 				profile_description_hashtag_fault_count = profile_description_hashtag_fault_count + 1
@@ -129,19 +138,13 @@ def _hashtag():
 				_log(err_subject, err_description)
 				sleep(60)
 				_profile_description_hashtag()
-	
-	def _hashtag_split(hashtag_tmp):
-		nonlocal hashtags
-		hashtag_tmp = re.sub(r'#', " #", hashtag_tmp)
-		pattern = re.compile(r'[\s\[\]\(\)\<\>\（\）\＜\＞\"\']')
-		hashtag_split = re.split(pattern, hashtag_tmp)
-		hashtags = [x for x in hashtag_split if '#' in x]
-	
+
 	for hashtag_object in json_dict:
 		if "hashtagflag" in hashtag_object:
 			if hashtag_object["hashtagflag"] == True:
 				_profile_description_hashtag()
-				#description_hashtags
+				for tag in hashtags:
+					json_dict[hashtag_object.name]["Query"].update({tag:{"date":"", "id":""}})
 
 
 
