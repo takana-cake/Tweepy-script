@@ -50,6 +50,7 @@ json = [
 		"name":&lt;screen or 検索名&gt;,					#作業フォルダ名
 		"Query":{&lt;tag1&gt;:{"id":&lt;id&gt;, "date":&lt;lastdate&gt;}, ...},		#searchで使用
 		"Profileflag":&lt;False or True&gt;,					#プロフ監視するか
+		"hashtagflag":&lt;False or True&gt;,					#ハッシュタグ収集するか(Queryへ格納)
 		"TLflag":{"id":&lt;id&gt;, "date":&lt;lastdate&gt;},			#TL保存するか
 		"RTflag":&lt;False or True&gt;,					#TL保存の時にRTを含めるか
 		"videoflag":&lt;False or True&gt;,					#動画を保存するか
