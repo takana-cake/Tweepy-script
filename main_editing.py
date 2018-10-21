@@ -541,6 +541,9 @@ if __name__ == '__main__':
 	if not os.path.exists(DB_file):
 		init_start()
 		_edit_json()
+	f = open(DB_file,'r')
+	json_dict = json.load(f)
+	f.close()
 	api = tweepy_api()
 	
 	if cmd_args.addf or cmd_args.addo or cmd_args.addq is not None or cmd_args.show:
@@ -572,10 +575,6 @@ if __name__ == '__main__':
 				_show()
 		_edit_json()
 		sys.exit()
-
-	f = open(DB_file,'r')
-	json_dict = json.load(f)
-	f.close()
 	if len(json_dict) < 2:
 		print("please add object.")
 		sys.exit()
