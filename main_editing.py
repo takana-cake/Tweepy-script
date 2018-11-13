@@ -112,9 +112,10 @@ def _TL_search():
 				for l in range(50):
 					_TL_tweet_get()
 				json_dict[index]["TLflag"]["id"] = TL_search_object["TLflag"]["id"]
-		if TL_search_object["hashtagflag"] == True:
-			for tag_TL in hashtag_tmp:
-				json_dict[index]["Query"].append({tag_TL:{"date":"", "id":""}})
+		if "hashtagflag" in TL_search_object:
+			if TL_search_object["hashtagflag"] == True:
+				for tag_TL in hashtag_tmp:
+					json_dict[index]["Query"].append({tag_TL:{"date":"", "id":""}})
 
 
 
@@ -173,7 +174,7 @@ def _profile_get_url(screen_name):
 				sleep(60)
 				_get_url()
 	_get_url()
-	return img.profile_image_url_https, img.profile_banner_url
+	return img
 
 def _profile_get_img(url, file_name):
 	profile_get_img_fault_count = 0
@@ -206,47 +207,54 @@ def _profile():
 	#file_path_cap = "<capture閲覧用>"
 	file_path_cap = "/var/www/html/capture/"
 	flag = "0"
-	
+
 	for profile_object in json_dict:
 		if "Profileflag" in profile_object:
 			if profile_object["Profileflag"] == True:
 				profile_object_name = profile_object["name"]
-				profile_image, profile_banner = _profile_get_url(profile_object_name)
-				if '_normal' in profile_image:
-					profile_image = profile_image.replace("_normal", "")
-				elif '_mini' in profile_image:
-					profile_image = profile_image.replace("_mini", "")
-				elif '_bigger' in profile_image:
-					profile_image = profile_image.replace("_bigger", "")
-				comparison_icon_file = file_path + profile_object_name + "_comparison_icon_" + date + "." + profile_image.rsplit(".", 1)[1]
-				_get_img(profile_image, comparison_icon_file)
-				comparison_banner_file = file_path + profile_object_name + "_comparison_banner_" + date + ".jpg"
-				_get_img(profile_banner, comparison_banner_file)
-				if not glob.glob(file_path + profile_object_name + '_base*'):
-					base_icon_file = file_path + profile_object_name + "_base_icon." + profile_image.rsplit(".", 1)[1]
-					shutil.copyfile(comparison_icon_file, base_icon_file)
-					shutil.copyfile(comparison_icon_file, file_path_cap + profile_object_name + "_icon_" + date + "." + profile_image.rsplit(".", 1)[1])
-					base_banner_file = file_path + profile_object_name + "_base_banner.jpg"
-					shutil.copyfile(comparison_banner_file, base_banner_file)
-					shutil.copyfile(comparison_banner_file, file_path_cap + profile_object_name + "_banner_" + date + ".jpg")
-					_profile_get_capture_icon(profile_object_name, file_path_cap)
-					_profile_get_capture_banner(profile_object_name, file_path_cap)
-				base_icon_file = glob.glob(file_path + profile_object_name + '_base_icon*')[0]
-				base_banner_file = glob.glob(file_path + profile_object_name + '_base_banner*')[0]
-				if filecmp.cmp(base_icon_file, comparison_icon_file) == False :
-					shutil.copyfile(comparison_icon_file, file_path_cap + profile_object_name + "_icon_" + date + "." + profile_image.rsplit(".", 1)[1])
-					shutil.copyfile(comparison_icon_file, base_icon_file)
-					_profile_get_capture_icon(profile_object_name, file_path_cap)
-					#api.update_with_media(filename=capture_file)
-					flag = "1"
-				if filecmp.cmp(base_banner_file, comparison_banner_file) == False:
-					shutil.copyfile(comparison_banner_file, file_path_cap + profile_object_name + "_banner_" + date + ".jpg")
-					shutil.copyfile(comparison_banner_file, base_banner_file)
-					_profile_get_capture_banner(profile_object_name, file_path_cap)
-					#api.update_with_media(filename=capture_file)
-					flag = "1"
+				profile_image = _profile_get_url(profile_object_name)
+				
+				if hasattr(profile_image, "profile_image_url_https"):
+					profile_icon = profile_image.profile_image_url_https
+					if '_normal' in profile_icon:
+						profile_icon = profile_icon.replace("_normal", "")
+					elif '_mini' in profile_icon:
+						profile_icon = profile_icon.replace("_mini", "")
+					elif '_bigger' in profile_icon:
+						profile_icon = profile_icon.replace("_bigger", "")
+					comparison_icon_file = file_path + profile_object_name + "_comparison_icon_" + date + "." + profile_icon.rsplit(".", 1)[1]
+					_profile_get_img(profile_icon, comparison_icon_file)
+					if not glob.glob(file_path + profile_object_name + '_base*'):
+						base_icon_file = file_path + profile_object_name + "_base_icon." + profile_icon.rsplit(".", 1)[1]
+						shutil.copyfile(comparison_icon_file, base_icon_file)
+						shutil.copyfile(comparison_icon_file, file_path_cap + profile_object_name + "_icon_" + date + "." + profile_icon.rsplit(".", 1)[1])
+						_profile_get_capture_icon(profile_object_name, file_path_cap)
+					base_icon_file = glob.glob(file_path + profile_object_name + '_base_icon*')[0]
+					if filecmp.cmp(base_icon_file, comparison_icon_file) == False :
+						shutil.copyfile(comparison_icon_file, file_path_cap + profile_object_name + "_icon_" + date + "." + profile_icon.rsplit(".", 1)[1])
+						shutil.copyfile(comparison_icon_file, base_icon_file)
+						_profile_get_capture_icon(profile_object_name, file_path_cap)
+						#api.update_with_media(filename=capture_file)
+						flag = "1"
 					os.remove(comparison_icon_file)
+				if hasattr(profile_image, "profile_banner_url"):
+					profile_banner = profile_image.profile_banner_url
+					comparison_banner_file = file_path + profile_object_name + "_comparison_banner_" + date + ".jpg"
+					_profile_get_img(profile_banner, comparison_banner_file)
+					if not glob.glob(file_path + profile_object_name + '_base*'):
+						base_banner_file = file_path + profile_object_name + "_base_banner.jpg"
+						shutil.copyfile(comparison_banner_file, base_banner_file)
+						shutil.copyfile(comparison_banner_file, file_path_cap + profile_object_name + "_banner_" + date + ".jpg")
+						_profile_get_capture_banner(profile_object_name, file_path_cap)
+					base_banner_file = glob.glob(file_path + profile_object_name + '_base_banner*')[0]
+					if filecmp.cmp(base_banner_file, comparison_banner_file) == False:
+						shutil.copyfile(comparison_banner_file, file_path_cap + profile_object_name + "_banner_" + date + ".jpg")
+						shutil.copyfile(comparison_banner_file, base_banner_file)
+						_profile_get_capture_banner(profile_object_name, file_path_cap)
+						#api.update_with_media(filename=capture_file)
+						flag = "1"
 					os.remove(comparison_banner_file)
+				
 				if flag != "0":
 					api.update_status("変わったかも_自動投稿")
 
@@ -585,5 +593,3 @@ if __name__ == '__main__':
 	_search()
 	_edit_json()
 	
-
-
