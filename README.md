@@ -121,6 +121,9 @@ Twitterのつぶやきにある2つ以上の#(ハッシュタグ)にリンクを
 https://e-yota.com/webservice/post-2441/<br>
 pythonで正規表現を使ってみる - すこしふしぎ．<br>
 http://ism1000ch.hatenablog.com/entry/2014/03/15/154533<br>
+### 絵文字<br>
+EmojiRemove.py<br>
+https://gist.github.com/silverskyvicto/73bc1fb870e0c36b4ab6e1fca7cccd24<br>
 ### オプションを使いたい<br>
 【Python入門】argparseでコマンドライン引数を扱う方法 | 侍エンジニア塾ブログ<br>
 https://www.sejuku.net/blog/23647<br>
