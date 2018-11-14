@@ -1,5 +1,5 @@
+#!/usr/bin python3
 # _*_ coding: utf-8 _*_
-
 
 from time import sleep
 import datetime
@@ -14,18 +14,20 @@ import sys
 import tweepy
 import urllib.request
 import argparse
+import re
+import csv
 
 
-### 認証 ###
 
+# 認証
 def tweepy_api():
 	twitter_conf = {
 		'consumer' : {
-			'key'	: "",
+			'key'   : "",
 			'secret' : ""
 		},
 		'access'   : {
-			'key'	: "",
+			'key'   : "",
 			'secret' : ""
 		}
 	}
@@ -36,13 +38,31 @@ def tweepy_api():
 		twitter_conf['access']['key'],
 		twitter_conf['access']['secret'])
 	tweepy_auth = tweepy.API(auth)
-	return tweepy_auth
-
+	return(tweepy_auth)
 
 
 ### TL chech ###
 
 def _TL_search():
+	def _hashtag_split_00(twi):
+		nonlocal hashtag_tmp
+		nonlocal hashtag_2csv
+		if hasattr(twi, "retweeted_status"):
+			if "hashtags" in twi.retweeted_status.entities:
+				for x in twi.retweeted_status.entities["hashtags"]:
+					if x["text"] not in hashtag_tmp or x["text"] not in hashtag_2csv or x["text"] not in json_dict:
+						hashtag_tmp.append(x["text"])
+		elif hasattr(twi, "quoted_status"):
+			if "hashtags" in twi.quoted_status.entities:
+				for y in twi.quoted_status.entities["hashtags"]:
+					if y["text"] not in hashtag_tmp or y["text"] not in hashtag_2csv or y["text"] not in json_dict:
+						hashtag_tmp.append(y["text"])
+		else:
+			if "hashtags" in twi.entities:
+				for z in twi.entities["hashtags"]:
+					if z["text"] not in hashtag_tmp or z["text"] not in hashtag_2csv or z["text"] not in json_dict:
+						hashtag_tmp.append(z["text"])
+
 	def _get_tweetid():
 		nonlocal TL_search_fault_count
 		try:
@@ -66,18 +86,18 @@ def _TL_search():
 		nonlocal TL_tweet_get_fault_count
 		nonlocal TL_search_object
 		nonlocal search_flag
-		nonlocal hashtag_tmp
+
 		try:
 			if search_flag == 'max_search':
 				for twi in api.user_timeline(TL_search_object["name"], count=100, max_id=TL_search_object["TLflag"]["id"]):
 					_download(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
-					hashtag_tmp.append(_hashtag_split(twi.description))
+					_hashtag_split_00(twi)
 					TL_search_object["TLflag"]["id"] = twi.id
 					TL_tweet_get_fault_count = 0
 			elif search_flag == 'since_search':
 				for twi in api.user_timeline(TL_search_object["name"], count=100, since_id=TL_search_object["TLflag"]["id"]):
 					_download(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
-					hashtag_tmp.append(_hashtag_split(twi.description))
+					_hashtag_split_00(twi)
 					TL_search_object["TLflag"]["id"] = twi.id
 					TL_tweet_get_fault_count = 0
 		except tweepy.RateLimitError as err_description:
@@ -95,6 +115,8 @@ def _TL_search():
 				sleep(60 * 5)
 				_TL_tweet_get()
 
+	tagfile = working_directory + date + '_tag.csv'
+	hashtag_2csv = []
 	for index,TL_search_object in enumerate(json_dict):
 		TL_search_fault_count = 0
 		hashtag_tmp = []
@@ -114,8 +136,13 @@ def _TL_search():
 				json_dict[index]["TLflag"]["id"] = TL_search_object["TLflag"]["id"]
 		if "hashtagflag" in TL_search_object:
 			if TL_search_object["hashtagflag"] == True:
-				for tag_TL in hashtag_tmp:
-					json_dict[index]["Query"].append({tag_TL:{"date":"", "id":""}})
+				#for tag_TL in hashtag_tmp:
+				#       json_dict[index]["Query"].update({tag_TL:{"date":"", "id":""}})
+				hashtag_2csv.extend(hashtag_tmp)
+	if hashtag_2csv:
+		with open(tagfile, 'w') as file:
+			writer = csv.writer(file, lineterminator='\n')
+			writer.writerow(hashtag_2csv)
 
 
 
@@ -123,9 +150,21 @@ def _TL_search():
 
 def _hashtag_split(hashtag_tmp):
 	hashtag_tmp = re.sub(r'#', " #", hashtag_tmp)
+	emoji_pattern = re.compile("["
+		u"\U0001F600-\U0001F64F"
+		u"\U0001F300-\U0001F5FF"
+		u"\U0001F680-\U0001F6FF"
+		u"\U0001F1E0-\U0001F1FF"
+		u"\U0001F201-\U0001F9E6"
+		"]+", flags=re.UNICODE)
+	hashtag_tmp = re.sub(emoji_pattern, " ", hashtag_tmp)
 	pattern = re.compile(r'[\s\[\]\(\)\<\>\（\）\＜\＞\"\']')
 	hashtag_split = re.split(pattern, hashtag_tmp)
 	hashtags = [x for x in hashtag_split if '#' in x]
+	print(hashtags)
+	for x in range(len(hashtags)):
+		hashtags[x] = re.sub(r'#', "", hashtags[x])
+	print(hashtags)
 	return hashtags
 
 
@@ -133,7 +172,7 @@ def _hashtag():
 	profile_description_hashtag_fault_count = 0
 	hashtags = []
 
-	def _profile_description_hashtag():
+	def _profile_description_hashtag(screen_name):
 		nonlocal profile_description_hashtag_fault_count
 		nonlocal hashtags
 		try:
@@ -145,14 +184,15 @@ def _hashtag():
 				err_subject = screen_name + " : Exception_profile_description"
 				_log(err_subject, err_description)
 				sleep(60)
-				_profile_description_hashtag()
+				_profile_description_hashtag(screen_name)
 
-	for hashtag_object in json_dict:
+	for index,hashtag_object in enumerate(json_dict):
 		if "hashtagflag" in hashtag_object:
 			if hashtag_object["hashtagflag"] == True:
-				_profile_description_hashtag()
+				_profile_description_hashtag(hashtag_object["name"])
 				for tag in hashtags:
-					json_dict[hashtag_object.name]["Query"].update({tag:{"date":"", "id":""}})
+					if not tag in  json_dict:
+						json_dict[index]["Query"].update({tag:{"date":"", "id":""}})
 
 
 
@@ -213,7 +253,7 @@ def _profile():
 			if profile_object["Profileflag"] == True:
 				profile_object_name = profile_object["name"]
 				profile_image = _profile_get_url(profile_object_name)
-				
+
 				if hasattr(profile_image, "profile_image_url_https"):
 					profile_icon = profile_image.profile_image_url_https
 					if '_normal' in profile_icon:
@@ -224,7 +264,7 @@ def _profile():
 						profile_icon = profile_icon.replace("_bigger", "")
 					comparison_icon_file = file_path + profile_object_name + "_comparison_icon_" + date + "." + profile_icon.rsplit(".", 1)[1]
 					_profile_get_img(profile_icon, comparison_icon_file)
-					if not glob.glob(file_path + profile_object_name + '_base*'):
+					if not glob.glob(file_path + profile_object_name + '_base_icon*'):
 						base_icon_file = file_path + profile_object_name + "_base_icon." + profile_icon.rsplit(".", 1)[1]
 						shutil.copyfile(comparison_icon_file, base_icon_file)
 						shutil.copyfile(comparison_icon_file, file_path_cap + profile_object_name + "_icon_" + date + "." + profile_icon.rsplit(".", 1)[1])
@@ -241,7 +281,7 @@ def _profile():
 					profile_banner = profile_image.profile_banner_url
 					comparison_banner_file = file_path + profile_object_name + "_comparison_banner_" + date + ".jpg"
 					_profile_get_img(profile_banner, comparison_banner_file)
-					if not glob.glob(file_path + profile_object_name + '_base*'):
+					if not glob.glob(file_path + profile_object_name + '_base_banner*'):
 						base_banner_file = file_path + profile_object_name + "_base_banner.jpg"
 						shutil.copyfile(comparison_banner_file, base_banner_file)
 						shutil.copyfile(comparison_banner_file, file_path_cap + profile_object_name + "_banner_" + date + ".jpg")
@@ -265,7 +305,7 @@ def _profile():
 def _search():
 	search_fault_count = 0
 	search_date_tmp = ""
-	def _search_start():
+	def _search_start(user_object):
 		nonlocal search_fault_count
 		nonlocal sinormax
 		nonlocal search_query
@@ -273,41 +313,45 @@ def _search():
 		try:
 			if sinormax == 'since_search':
 				for twi in api.search(q=search_query, count=100, since_id=search_date["id"]):
-					_download(twi, screen, retweet_enable, gif_enable, video_enable)
+					_download(twi, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
 					search_date["id"] = twi.id
 					search_fault_count = 0
 			else:
 				for twi in api.search(q=search_query, count=100, max_id=search_date["id"]):
-					_download(twi, screen, retweet_enable, gif_enable, video_enable)
+					_download(twi, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
 					search_date["id"] = twi.id
 					search_fault_count = 0
 		except tweepy.RateLimitError as err_description:
 			if search_fault_count < 3:
 				search_fault_count = search_fault_count +1
-				err_subject = screen_name + " : RateLimitError_search_start"
+				err_subject = user_object["name"] + " : RateLimitError_search_start"
 				_log(err_subject, err_description)
 				sleep(60 * 5)
-				_search_start()
+				_search_start(user_object)
 		except Exception as err_description:
 			if search_fault_count < 3:
 				search_fault_count = search_fault_count +1
-				err_subject = screen_name + " : Exception_search_start"
+				err_subject = user_object["name"] + " : Exception_search_start"
 				_log(err_subject, err_description)
 				sleep(10)
-				_search_start()
+				_search_start(user_object)
 	for index,user_object in enumerate(json_dict):
 		if not user_object['Query'] == {}:
-			for search_query,search_date in user_object['Query']:
-				if search_date["id"]:
+			for search_query,search_date in user_object['Query'].items():
+				if search_date['id']:
 					sinormax = 'since_search'
 				else:
 					sinormax = 'max_search'
-					search_date_tmp = api.search(q=search_query)
-					search_date["id"] = search_date_tmp[0].id
+					print(search_query)
+					search_date_tmp = api.search(q=search_query, count=1)
+					print(search_date_tmp[0].id)
+					search_date['id'] = search_date_tmp[0].id
+					print(search_date)
+					sys.exit()
 				for l in range(50):
 					search_fault_count = 0
-					_search_start()
-				json_dict[index]['Query'][search_query]["id"] = search_date["id"]
+					_search_start(user_object)
+				json_dict[index]['Query'][search_query]['id'] = search_date['id']
 
 
 
@@ -394,7 +438,7 @@ def _follow_user_get(my_id):
 				_follow_user_description()
 	_follow_user_list()
 	#for i in range(0, len(my_friends_ids), 100):
-	#	_follow_user_description()
+	#       _follow_user_description()
 	_follow_user_description()
 
 
@@ -465,7 +509,7 @@ def _show():
 ### add query ###
 
 #def _add_query():
-	
+
 
 
 
@@ -516,14 +560,14 @@ def _parser():
 	parser.add_argument("json_file", help="please set DBfile.json.", type=str, nargs=1, metavar="[json-file]")
 	parser.add_argument("--name", help="select object.", type=str, nargs='*', metavar="<object-name>...")
 	parser.add_argument("--show", help="show object-list. if select object, show query.\n\n", action="store_true")
-	
+
 	parser.add_argument("--addf", help="add Screen's follow-user.", action="store_true")
 	parser.add_argument("--addo", help="add new-screen-object or new-search-object.", action="store_true")
 	parser.add_argument("--addq", help="add search-query to object.\n\n", type=str, nargs='*', metavar="<query-name>...")
 
 	#parser.add_argument("--delo", help="del screen-object or search-object.", action="store_true")
 	#parser.add_argument("--delq", help="del search-query object.\n\n", action="store_true")
-	
+
 	parser.add_argument("--profile", help="profile-check.", action="store_true")
 	parser.add_argument("--hashtag", help="hashtag-check(TL, User-Profile).", action="store_true")
 	parser.add_argument("--tl", help="TL-check.", action="store_true")
@@ -533,7 +577,7 @@ def _parser():
 	return parser.parse_args()
 
 
-	
+
 ### main ###
 
 if __name__ == '__main__':
@@ -553,7 +597,7 @@ if __name__ == '__main__':
 	json_dict = json.load(f)
 	f.close()
 	api = tweepy_api()
-	
+
 	if cmd_args.addf or cmd_args.addo or cmd_args.addq is not None or cmd_args.show:
 		if cmd_args.tl == False:
 			add_tl = False
@@ -575,7 +619,7 @@ if __name__ == '__main__':
 			if len(cmd_args.addq) < 1:
 				print("invalid argument '--addq'")
 			#else:
-			#	_add_query()
+			#       _add_query()
 		if cmd_args.show:
 			if not cmd_args.name or len(cmd_args.name) != 1:
 				print("invalid argument '--name'")
@@ -586,10 +630,9 @@ if __name__ == '__main__':
 	if len(json_dict) < 2:
 		print("please add object.")
 		sys.exit()
-	
+
 	_profile()
 	_hashtag()
 	_TL_search()
 	_search()
 	_edit_json()
-	
