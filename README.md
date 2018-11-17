@@ -1,5 +1,9 @@
-# Twitter Media Checker
-twitter TLimg Downloader</br>
+tweepyスクリプト<br/>
+本スクリプトはコンテンツの著作権侵害を助長するものではありません。<br/>
+
+<a hrer=https://help.twitter.com/ja/rules-and-policies/copyright-policy>著作権に関するポリシー</a>
+<a href=https://help.twitter.com/ja/rules-and-policies/twitter-api>TwitterのAPIについて</a>
+
 
 ## 残タスク
 del</br>
