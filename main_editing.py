@@ -44,7 +44,7 @@ def tweepy_api():
 ### TL chech ###
 
 def _TL_search():
-	def _hashtag_split_00(twi):
+	def _TL_hashtag_check(twi):
 		nonlocal hashtag_tmp
 		nonlocal hashtag_2csv
 		if hasattr(twi, "retweeted_status"):
@@ -90,14 +90,14 @@ def _TL_search():
 		try:
 			if search_flag == 'max_search':
 				for twi in api.user_timeline(TL_search_object["name"], count=100, max_id=TL_search_object["TLflag"]["id"]):
-					_download(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
-					_hashtag_split_00(twi)
+					#test#(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
+					_TL_hashtag_check(twi)
 					TL_search_object["TLflag"]["id"] = twi.id
 					TL_tweet_get_fault_count = 0
 			elif search_flag == 'since_search':
 				for twi in api.user_timeline(TL_search_object["name"], count=100, since_id=TL_search_object["TLflag"]["id"]):
-					_download(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
-					_hashtag_split_00(twi)
+					#test#_download(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
+					_TL_hashtag_check(twi)
 					TL_search_object["TLflag"]["id"] = twi.id
 					TL_tweet_get_fault_count = 0
 		except tweepy.RateLimitError as err_description:
@@ -136,8 +136,6 @@ def _TL_search():
 				json_dict[index]["TLflag"]["id"] = TL_search_object["TLflag"]["id"]
 		if "hashtagflag" in TL_search_object:
 			if TL_search_object["hashtagflag"] == True:
-				#for tag_TL in hashtag_tmp:
-				#       json_dict[index]["Query"].update({tag_TL:{"date":"", "id":""}})
 				hashtag_2csv.extend(hashtag_tmp)
 	if hashtag_2csv:
 		with open(tagfile, 'w') as file:
@@ -313,12 +311,12 @@ def _search():
 		try:
 			if sinormax == 'since_search':
 				for twi in api.search(q=search_query, count=100, since_id=search_date["id"]):
-					_download(twi, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
+					#test#_download(twi, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
 					search_date["id"] = twi.id
 					search_fault_count = 0
 			else:
 				for twi in api.search(q=search_query, count=100, max_id=search_date["id"]):
-					_download(twi, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
+					#test#_download(twi, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
 					search_date["id"] = twi.id
 					search_fault_count = 0
 		except tweepy.RateLimitError as err_description:
@@ -487,6 +485,11 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 						dl_filename = dl_media
 					if os.path.exists(working_directory + download_filepath + "/" + os.path.basename(dl_filename)) == False:
 						_download_file()
+					if media["type"] == 'animated_gif' and gif_enable == True:
+						print("gif enc")
+						#gifenc = "ffmpeg -i " + dl_filename + " -r 10 " + os.path.splitext(dl_filename)[0] + ".gif"
+						#subprocess.call(gifenc.split(), shell=False)
+
 
 
 
