@@ -1,7 +1,7 @@
 # tweepy script
 本スクリプトはコンテンツの著作権侵害を助長するものではありません。<br/>
 
-<a hrer=https://help.twitter.com/ja/rules-and-policies/copyright-policy>著作権に関するポリシー</a></br>
+<a href=https://help.twitter.com/ja/rules-and-policies/copyright-policy>著作権に関するポリシー</a></br>
 <a href=https://help.twitter.com/ja/rules-and-policies/twitter-api>TwitterのAPIについて</a></br>
 
 
