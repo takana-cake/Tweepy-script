@@ -50,17 +50,17 @@ def _TL_search():
 		if hasattr(twi, "retweeted_status"):
 			if "hashtags" in twi.retweeted_status.entities:
 				for x in twi.retweeted_status.entities["hashtags"]:
-					if x["text"] not in hashtag_tmp or x["text"] not in hashtag_2csv or x["text"] not in json_dict:
+					if x["text"] not in hashtag_tmp and x["text"] not in hashtag_2csv and x["text"] not in json_dict:
 						hashtag_tmp.append(x["text"])
 		elif hasattr(twi, "quoted_status"):
 			if "hashtags" in twi.quoted_status.entities:
 				for y in twi.quoted_status.entities["hashtags"]:
-					if y["text"] not in hashtag_tmp or y["text"] not in hashtag_2csv or y["text"] not in json_dict:
+					if y["text"] not in hashtag_tmp and y["text"] not in hashtag_2csv and y["text"] not in json_dict:
 						hashtag_tmp.append(y["text"])
 		else:
 			if "hashtags" in twi.entities:
 				for z in twi.entities["hashtags"]:
-					if z["text"] not in hashtag_tmp or z["text"] not in hashtag_2csv or z["text"] not in json_dict:
+					if z["text"] not in hashtag_tmp and z["text"] not in hashtag_2csv and z["text"] not in json_dict:
 						hashtag_tmp.append(z["text"])
 
 	def _get_tweetid():
@@ -134,9 +134,8 @@ def _TL_search():
 				for l in range(50):
 					_TL_tweet_get()
 				json_dict[index]["TLflag"]["id"] = TL_search_object["TLflag"]["id"]
-		if "hashtagflag" in TL_search_object:
-			if TL_search_object["hashtagflag"] == True:
-				hashtag_2csv.extend(hashtag_tmp)
+		if TL_search_object["hashtagflag"] == True:
+			hashtag_2csv.extend(hashtag_tmp)
 	if hashtag_2csv:
 		with open(tagfile, 'w') as file:
 			writer = csv.writer(file, lineterminator='\n')
@@ -159,10 +158,8 @@ def _hashtag_split(hashtag_tmp):
 	pattern = re.compile(r'[\s\[\]\(\)\<\>\（\）\＜\＞\"\']')
 	hashtag_split = re.split(pattern, hashtag_tmp)
 	hashtags = [x for x in hashtag_split if '#' in x]
-	print(hashtags)
 	for x in range(len(hashtags)):
 		hashtags[x] = re.sub(r'#', "", hashtags[x])
-	print(hashtags)
 	return hashtags
 
 
@@ -185,12 +182,11 @@ def _hashtag():
 				_profile_description_hashtag(screen_name)
 
 	for index,hashtag_object in enumerate(json_dict):
-		if "hashtagflag" in hashtag_object:
-			if hashtag_object["hashtagflag"] == True:
-				_profile_description_hashtag(hashtag_object["name"])
-				for tag in hashtags:
-					if not tag in  json_dict:
-						json_dict[index]["Query"].update({tag:{"date":"", "id":""}})
+		if hashtag_object["hashtagflag"] == True:
+			_profile_description_hashtag(hashtag_object["name"])
+			for tag in hashtags:
+				if not tag in  json_dict:
+					json_dict[index]["Query"].update({tag:{"date":"", "id":""}})
 
 
 
@@ -340,12 +336,8 @@ def _search():
 					sinormax = 'since_search'
 				else:
 					sinormax = 'max_search'
-					print(search_query)
 					search_date_tmp = api.search(q=search_query, count=1)
-					print(search_date_tmp[0].id)
 					search_date['id'] = search_date_tmp[0].id
-					print(search_date)
-					sys.exit()
 				for l in range(50):
 					search_fault_count = 0
 					_search_start(user_object)
@@ -532,7 +524,12 @@ def init_start():
 			json_dict.append({
 				"name":"dummy",
 				"TLflag":False,
-				"Query":{}
+				"Query":{},
+				"Profileflag":False,
+				"hashtagflag":False,
+				"RTflag":False,
+				"videoflag":False,
+				"gifflag":False
 			})
 			print("result: " + str(os.path.exists(DB_file)))
 		else:
