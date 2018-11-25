@@ -90,13 +90,13 @@ def _TL_search():
 		try:
 			if search_flag == 'max_search':
 				for twi in api.user_timeline(TL_search_object["name"], count=100, max_id=TL_search_object["TLflag"]["id"]):
-					#test#(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
+					_download(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
 					_TL_hashtag_check(twi)
 					TL_search_object["TLflag"]["id"] = twi.id
 					TL_tweet_get_fault_count = 0
 			elif search_flag == 'since_search':
 				for twi in api.user_timeline(TL_search_object["name"], count=100, since_id=TL_search_object["TLflag"]["id"]):
-					#test#_download(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
+					_download(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
 					_TL_hashtag_check(twi)
 					TL_search_object["TLflag"]["id"] = twi.id
 					TL_tweet_get_fault_count = 0
@@ -290,7 +290,8 @@ def _profile():
 					os.remove(comparison_banner_file)
 				
 				if flag != "0":
-					api.update_status("変わったかも_自動投稿")
+					#api.update_status("変わったかも_自動投稿")
+					print("change")
 
 
 
@@ -308,13 +309,13 @@ def _search():
 			if sinormax == 'since_search':
 				for twi in api.search(q=search_query, count=100, since_id=search_date["id"]):
 					if twi:
-						#test#_download(twi, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
+						_download(twi, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
 						search_date["id"] = twi.id
 						search_fault_count = 0
 			else:
 				for twi in api.search(q=search_query, count=100, max_id=search_date["id"]):
 					if twi:
-						#test#_download(twi, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
+						_download(twi, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
 						search_date["id"] = twi.id
 						search_fault_count = 0
 		except tweepy.RateLimitError as err_description:
@@ -397,7 +398,6 @@ def _follow_user_get(my_id):
 		nonlocal my_friends_ids
 		nonlocal follow_user_fault_count
 		try:
-			#for tmp_user in api.lookup_users(user_ids=my_friends_ids[i:i+100]):
 			for tmp_id in my_friends_ids:
 				tmp_user = api.get_user(tmp_id).screen_name
 				if not tmp_user in json_dict:
@@ -429,8 +429,6 @@ def _follow_user_get(my_id):
 				sleep(60)
 				_follow_user_description()
 	_follow_user_list()
-	#for i in range(0, len(my_friends_ids), 100):
-	#       _follow_user_description()
 	_follow_user_description()
 
 
@@ -481,8 +479,8 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 						_download_file()
 					if media["type"] == 'animated_gif' and gif_enable == True:
 						print("gif enc")
-						#gifenc = "ffmpeg -i " + dl_filename + " -r 10 " + os.path.splitext(dl_filename)[0] + ".gif"
-						#subprocess.call(gifenc.split(), shell=False)
+						gifenc = "ffmpeg -i " + dl_filename + " -r 10 " + os.path.splitext(dl_filename)[0] + ".gif"
+						subprocess.call(gifenc.split(), shell=False)
 
 
 
