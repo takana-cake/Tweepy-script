@@ -323,7 +323,7 @@ def _search():
 				search_fault_count = search_fault_count +1
 				err_subject = user_object["name"] + " : RateLimitError_search_start"
 				_log(err_subject, err_description)
-				sleep(60 * 5)
+				sleep(60 * 15)
 				_search_start(user_object)
 		except Exception as err_description:
 			if search_fault_count < 3:
