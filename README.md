@@ -49,7 +49,12 @@ json = [
 	{
 		"name":"dummy",
 		"TLflag":False,
-		"Query":{}
+		"Query":{},
+		"Profileflag":False,
+		"hashtagflag":False,
+		"RTflag":False,
+		"videoflag":False,
+		"gifflag":False
 	},
 	{
 		"name":&lt;screen or 検索名&gt;,					#作業フォルダ名
