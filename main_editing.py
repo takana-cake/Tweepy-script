@@ -302,11 +302,11 @@ def _search():
 	search_date_tmp = ""
 	def _search_start(user_object):
 		nonlocal search_fault_count
-		nonlocal sinormax
+		nonlocal search_flag
 		nonlocal search_query
 		nonlocal search_date
 		try:
-			if sinormax == 'since_search':
+			if search_flag == 'since_search':
 				for twi in api.search(q=search_query, count=100, since_id=search_date["id"]):
 					if twi:
 						_download(twi, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
@@ -336,11 +336,15 @@ def _search():
 		if not user_object['Query'] == {}:
 			for search_query,search_date in user_object['Query'].items():
 				if search_date['id']:
-					sinormax = 'since_search'
+					if api.search(q=search_query, since_id=search_date['id']):
+						search_flag = 'since_search'
 				else:
-					sinormax = 'max_search'
 					search_date_tmp = api.search(q=search_query, count=1)
-					search_date['id'] = search_date_tmp[0].id
+					if search_date_tmp:
+						search_flag = 'max_search'
+						search_date['id'] = search_date_tmp[0].id
+					else:
+						continue
 				for l in range(50):
 					search_fault_count = 0
 					_search_start(user_object)
