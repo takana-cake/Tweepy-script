@@ -307,14 +307,16 @@ def _search():
 		try:
 			if sinormax == 'since_search':
 				for twi in api.search(q=search_query, count=100, since_id=search_date["id"]):
-					#test#_download(twi, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
-					search_date["id"] = twi.id
-					search_fault_count = 0
+					if twi:
+						#test#_download(twi, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
+						search_date["id"] = twi.id
+						search_fault_count = 0
 			else:
 				for twi in api.search(q=search_query, count=100, max_id=search_date["id"]):
-					#test#_download(twi, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
-					search_date["id"] = twi.id
-					search_fault_count = 0
+					if twi:
+						#test#_download(twi, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
+						search_date["id"] = twi.id
+						search_fault_count = 0
 		except tweepy.RateLimitError as err_description:
 			if search_fault_count < 3:
 				search_fault_count = search_fault_count +1
