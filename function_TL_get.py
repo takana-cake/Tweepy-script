@@ -44,14 +44,14 @@ def _TL_search(api, usr_id, search_id, search_flag):
 		except tweepy.RateLimitError as err_description:
 			if TL_get_fault_count < 2:
 				err_subject = str(usr_id) + " : RateLimitError_tweet_get : " + str(search_id)
-				_log(err_subject, err_description)
+				print(str(datetime.datetime.now()) + " : " + str(err_subject) + " : " + str(err_description))
 				TL_get_fault_count = TL_get_fault_count +1
 				sleep(60 * 15)
 				_TL_get()
 		except Exception as err_description:
 			if TL_get_fault_count < 2:
 				err_subject = str(usr_id) + " : Exception_tweet_get : " + str(search_id)
-				_log(err_subject, err_description)
+				print(str(datetime.datetime.now()) + " : " + str(err_subject) + " : " + str(err_description))
 				TL_get_fault_count = TL_get_fault_count +1
 				sleep(60 * 5)
 				_TL_get()
