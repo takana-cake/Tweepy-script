@@ -33,10 +33,12 @@ def _TL_search(api, usr_id, search_id, search_flag):
 		try:
 			if search_flag == 'max_search':
 				for twi in api.user_timeline(usr_id, count=100, max_id=search_id):
+					#処理
 					search_id = twi.id
 					TL_get_fault_count = 0
 			elif search_flag == 'since_search':
 				for twi in api.user_timeline(usr_id, count=100, since_id=search_id):
+					#処理
 					search_id = twi.id
 					TL_get_fault_count = 0
 		except tweepy.RateLimitError as err_description:
