@@ -12,8 +12,8 @@
 
 ## 残タスク
 del機能</br>
-なぜかsearch出来ない語句がある　→<a href=https://developer.twitter.com/en/docs/tweets/search/overview>Standardは7日前までしか検索できない</a>　</br>
-凍結アカウント処理(現在はスキップするだけ)</br>
+~~なぜかsearch出来ない語句がある~~　→<a href=https://developer.twitter.com/en/docs/tweets/search/overview>Standardは7日前までしか検索できない</a>　</br>
+凍結アカウント処理(現在はスキップするだけ。logから認識)</br>
 認証用トークンデータどうする？</br>
 ~~Tweepy更新されないみたいだしAPIで処理するよう書き直す~~</br>
 
