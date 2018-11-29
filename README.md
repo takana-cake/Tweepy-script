@@ -52,14 +52,19 @@ twitter_conf = {
 </pre>
 
 ### インストール
-- tweepy
+- tweepy</br>
  pip install tweepy
-- ffmpeg
-- wkhtmltoimage
-<a href=https://wkhtmltopdf.org/index.html>wkhtmltopdf</a>
-古いけどaptからでも入る
+- ffmpeg</br>
+- wkhtmltoimage</br>
+<a href=https://wkhtmltopdf.org/index.html>wkhtmltopdf</a></br>
+古いけどaptからでも入る</br>
 
 ### main.py実行
+<pre>
+python3 main.py /home/hoge/db.json
+python3 main.py /home/hoge/db.json -addo --name screen1 screen2 screen3 --tl --gif --video
+nohup python3 main.py /home/hoge/db.json &
+</pre>
 
 ## json
 TLやプロフを収集するユーザのscreenとnameと最終取得日</br>
