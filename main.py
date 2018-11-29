@@ -483,7 +483,7 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 					if os.path.exists(download_filepath + os.path.basename(dl_filename)) == False:
 						_download_file()
 					if media["type"] == 'animated_gif' and gif_enable == True:
-						gifenc = "ffmpeg -i " + download_filepath + os.path.basename(dl_filename) + " -r 10 " + download_filepath + os.path.splitext(os.path.basename(dl_filename))[0] + ".gif"
+						gifenc = "ffmpeg -n -i " + download_filepath + os.path.basename(dl_filename) + " -r 10 " + download_filepath + os.path.splitext(os.path.basename(dl_filename))[0] + ".gif"
 						subprocess.call(gifenc.split(), shell=False)
 
 
