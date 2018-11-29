@@ -4,7 +4,7 @@
 - プロファイルやTL上のハッシュタグを収集する。
 - プロファイルのヘッダやアイコンの変更を検知する。
 
-本スクリプトはコンテンツの著作権侵害を助長するものではありません。<br/>
+尚、本スクリプトはコンテンツの著作権侵害を助長するものではありません。<br/>
 
 <a href=https://help.twitter.com/ja/rules-and-policies/copyright-policy>著作権に関するポリシー</a></br>
 <a href=https://help.twitter.com/ja/rules-and-policies/twitter-api>TwitterのAPIについて</a></br>
