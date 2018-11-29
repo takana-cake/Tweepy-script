@@ -237,7 +237,7 @@ def _profile_get_capture_banner(screen_name, file_path_cap):
 	subprocess.call(cmd_capture_banner.split(), shell=False)
 
 def _profile():
-	file_path = working_directory
+	file_path = download_directory
 	#file_path_cap = "<capture閲覧用>"
 	file_path_cap = "/var/www/html/capture/"
 	flag = "0"
@@ -357,8 +357,8 @@ def _search():
 def _add_new_object():
 	for tmp_user in cmd_args.name:
 		if not tmp_user in json_dict:
-			if os.path.exists(working_directory + tmp_user) == False:
-				os.makedirs(working_directory + tmp_user)
+			if os.path.exists(download_directory + tmp_user) == False:
+				os.makedirs(download_directory + tmp_user)
 			json_dict.append({
 				"name":tmp_user,
 				"Query":{},
@@ -405,8 +405,8 @@ def _follow_user_get(my_id):
 			for tmp_id in my_friends_ids:
 				tmp_user = api.get_user(tmp_id).screen_name
 				if not tmp_user in json_dict:
-					if os.path.exists(working_directory + tmp_user) == False:
-						os.makedirs(working_directory + tmp_user)
+					if os.path.exists(download_directory + tmp_user) == False:
+						os.makedirs(download_directory + tmp_user)
 					json_dict.append({
 						"name":tmp_user,
 						"Query":{},
@@ -515,7 +515,7 @@ def _show():
 ### init ###
 
 def init_start():
-	if os.path.exists(working_directory) == False:
+	if os.path.exists(download_directory) == False:
 		print("directory is not found.")
 		sys.exit()
 	if os.path.exists(DB_file) == False:
