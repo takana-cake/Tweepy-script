@@ -52,9 +52,12 @@ twitter_conf = {
 </pre>
 
 ### インストール
--tweepy
--ffmpeg
--wkhtmltoimage
+- tweepy
+ pip install tweepy
+- ffmpeg
+- wkhtmltoimage
+<a href=https://wkhtmltopdf.org/index.html>wkhtmltopdf</a>
+古いけどaptからでも入る
 
 ### main.py実行
 
