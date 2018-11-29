@@ -441,12 +441,13 @@ def _follow_user_get(my_id):
 
 def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enable):
 	download_fault_count = 0
+	download_filepath = working_directory + download_filepath + "/"
 	def _download_file():
 		nonlocal download_fault_count
 		nonlocal dl_filename
 		nonlocal dl_media
 		try:
-			with open(working_directory + download_filepath + "/" + os.path.basename(dl_filename), 'wb') as f:
+			with open(download_filepath + os.path.basename(dl_filename), 'wb') as f:
 				dl_file = urllib.request.urlopen(dl_media).read()
 				f.write(dl_file)
 		except Exception as err_description:
@@ -479,11 +480,10 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 						if '?tag=' in dl_media:
 							dl_media = dl_media[:-6]
 						dl_filename = dl_media
-					if os.path.exists(working_directory + download_filepath + "/" + os.path.basename(dl_filename)) == False:
+					if os.path.exists(download_filepath + os.path.basename(dl_filename)) == False:
 						_download_file()
 					if media["type"] == 'animated_gif' and gif_enable == True:
-						print("gif enc")
-						gifenc = "ffmpeg -i " + dl_filename + " -r 10 " + os.path.splitext(dl_filename)[0] + ".gif"
+						gifenc = "ffmpeg -i " + download_filepath + os.path.basename(dl_filename) + " -r 10 " + download_filepath + os.path.splitext(os.path.basename(dl_filename))[0] + ".gif"
 						subprocess.call(gifenc.split(), shell=False)
 
 
