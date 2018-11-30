@@ -290,8 +290,8 @@ def _profile():
 					os.remove(comparison_banner_file)
 				
 				if flag != "0":
-					#api.update_status("変わったかも_自動投稿")
-					print("change")
+					twi_str = '変わったかも_{0:%H:%M}'.format(datetime.datetime.now())
+					api.update_status(twi_str)
 
 
 
