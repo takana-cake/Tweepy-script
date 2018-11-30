@@ -591,6 +591,9 @@ if __name__ == '__main__':
 		working_directory = os.path.dirname(cmd_args.json_file[0]) + "/"
 	else:
 		working_directory = os.getcwd() +"/"
+	if not os.path.exists(working_directory + "download"):
+		os.makedirs(working_directory + "download")
+	download_directory = working_directory + "download/"
 	DB_file = working_directory + os.path.basename(cmd_args.json_file[0])
 	date = datetime.datetime.today().strftime("%Y%m%d_%H%M_%S")
 	LOGFILE = working_directory + date + "_log.txt"
