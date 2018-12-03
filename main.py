@@ -441,7 +441,7 @@ def _follow_user_get(my_id):
 
 def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enable):
 	download_fault_count = 0
-	download_filepath = working_directory + download_filepath + "/"
+	download_filepath = download_directory + download_filepath + "/"
 	def _download_file():
 		nonlocal download_fault_count
 		nonlocal dl_filename
