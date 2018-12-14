@@ -98,6 +98,9 @@ json = [
 </pre>
 
 ## 参考にさせていただいたサイト</br>
+自動化ルール</br>
+https://help.twitter.com/ja/rules-and-policies/twitter-automation</br></br>
+
 PythonでTwitter API を利用していろいろ遊んでみる</br>
 https://qiita.com/bakira/items/00743d10ec42993f85eb</br>
 Python で Twitter API にアクセス</br>
