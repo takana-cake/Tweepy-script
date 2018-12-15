@@ -61,8 +61,12 @@ twitter_conf = {
 
 ### main.py実行
 <pre>
+# dbつくって
 python3 main.py /home/hoge/db.json
-python3 main.py /home/hoge/db.json -addo --name screen1 screen2 screen3 --tl --gif --video
+# オブジェクト入れて
+python3 main.py /home/hoge/db.json -addo --name <screen1> <screen2> <screen3> --tl --gif --video
+python3 main.py /home/hoge/db.json -addf --name <user> --tl --gif --video
+# バックグラウンドで実行
 nohup python3 main.py /home/hoge/db.json &
 </pre>
 
