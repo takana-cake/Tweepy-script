@@ -63,8 +63,9 @@ twitter_conf = {
 <pre>
 # dbつくって
 python3 main.py /home/hoge/db.json
-# オブジェクト入れて
+# オブジェクト入(手動)
 python3 main.py /home/hoge/db.json -addo --name &lt;screen1&gt; &lt;screen2&gt; &lt;screen3&gt; --tl --gif --video
+# オブジェクト入(フォローしているユーザー)
 python3 main.py /home/hoge/db.json -addf --name &lt;user&gt; --tl --gif --video
 # バックグラウンドで実行
 nohup python3 main.py /home/hoge/db.json &
