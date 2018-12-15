@@ -192,23 +192,23 @@ def _hashtag():
 
 ### profile ###
 
-def _profile_get_url(screen_name):
+def _user_profile_get(screen_name):
 	profile_get_url_fault_count = 0
-	img = ""
-	def _get_url():
+	userobject = ""
+	def _profile_get():
 		nonlocal profile_get_url_fault_count
-		nonlocal img
+		nonlocal userobject
 		try:
-			img = api.get_user(screen_name)
+			userobject = api.get_user(screen_name)
 		except Exception as err:
 			if profile_get_url_fault_count < 2:
 				profile_get_url_fault_count = profile_get_url_fault_count + 1
 				err_subject = screen_name + " : Exception_profile_get"
 				_log(err_subject, err_description)
 				sleep(60)
-				_get_url()
-	_get_url()
-	return img
+				_profile_get()
+	_profile_get()
+	return userobject
 
 def _profile_get_img(url, file_name):
 	profile_get_img_fault_count = 0
@@ -236,20 +236,37 @@ def _profile_get_capture_banner(screen_name, file_path_cap):
 	cmd_capture_banner = "wkhtmltoimage --crop-h 380 --crop-w 1023 --crop-x 1 --crop-y 40 " + url_user + " " + capture_banner_file
 	subprocess.call(cmd_capture_banner.split(), shell=False)
 
+### test
+def _follow_counter_cap(screen_name, counter, file_path_cap):
+	for kiri in [1000000, 100000, 10000, 1000, 100]:
+		if counter % kiri ==0:
+			url_user = "https://twitter.com/" + screen_name
+			capture_banner_file = file_path_cap + screen_name + "_" + kiri + "_" + date + ".jpg"
+			cmd_capture_banner = "wkhtmltoimage --crop-h 380 --crop-w 1023 --crop-x 1 --crop-y 40 " + url_user + " " + capture_banner_file
+			subprocess.call(cmd_capture_banner.split(), shell=False)
+			break
+		else:
+			pass
+###
+		
 def _profile():
 	file_path = download_directory
 	#file_path_cap = "<capture閲覧用>"
 	file_path_cap = "/var/www/html/capture/"
-	flag = "0"
+	prof_flag = "0"
 
 	for profile_object in json_dict:
 		if "Profileflag" in profile_object:
 			if profile_object["Profileflag"] == True:
 				profile_object_name = profile_object["name"]
-				profile_image = _profile_get_url(profile_object_name)
+				profile_object = _user_profile_get(profile_object_name)
 
-				if hasattr(profile_image, "profile_image_url_https"):
-					profile_icon = profile_image.profile_image_url_https
+				### test
+				_follow_counter_cap(profile_object_name, profile_object.followers_count, file_path_cap)
+				###
+		
+				if hasattr(profile_object, "profile_image_url_https"):
+					profile_icon = profile_object.profile_image_url_https
 					if '_normal' in profile_icon:
 						profile_icon = profile_icon.replace("_normal", "")
 					elif '_mini' in profile_icon:
@@ -269,10 +286,10 @@ def _profile():
 						shutil.copyfile(comparison_icon_file, base_icon_file)
 						_profile_get_capture_icon(profile_object_name, file_path_cap)
 						#api.update_with_media(filename=capture_file)
-						flag = "1"
+						prof_flag = "1"
 					os.remove(comparison_icon_file)
-				if hasattr(profile_image, "profile_banner_url"):
-					profile_banner = profile_image.profile_banner_url
+				if hasattr(profile_object, "profile_banner_url"):
+					profile_banner = profile_object.profile_banner_url
 					comparison_banner_file = file_path + profile_object_name + "_comparison_banner_" + date + ".jpg"
 					_profile_get_img(profile_banner, comparison_banner_file)
 					if not glob.glob(file_path + profile_object_name + '_base_banner*'):
@@ -286,10 +303,10 @@ def _profile():
 						shutil.copyfile(comparison_banner_file, base_banner_file)
 						_profile_get_capture_banner(profile_object_name, file_path_cap)
 						#api.update_with_media(filename=capture_file)
-						flag = "1"
+						prof_flag = "1"
 					os.remove(comparison_banner_file)
 				
-				if flag != "0":
+				if prof_flag != "0":
 					twi_str = '変わったかも_{0:%H:%M}'.format(datetime.datetime.now())
 					api.update_status(twi_str)
 
