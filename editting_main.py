@@ -19,6 +19,57 @@ import csv
 
 
 
+### 整理中
+
+def _twitter_userobject_get(USER):
+	errcount = 0
+	USER_OBJECT = ""
+	def _get_description():
+		nonlocal errcount
+		nonlocal USER_OBJECT
+		try:
+			USER_OBJECT = api.get_user(USER["user_name"])
+		except Exception as err:
+			if errcount < 2:
+				errcount = errcount + 1
+				err_subject = USER["user_name"] + " : _twitter_userobject_get"
+				_log(err_subject, err)
+				sleep(60)
+				_get_description()
+	_get_description()
+	return USER_OBJECT
+
+def _description_split(USER_DESCRIPTION):
+	pattern = re.compile("http[!-~]+")
+	DESCRIPTION = re.findall(pattern, USER_DESCRIPTION)
+	CHANNEL_ID = ""
+	for x in DESCRIPTION:
+		link = urllib.request.urlopen(x)
+		fullURL = link.url
+		if "channel" in fullURL:
+			CHANNEL_ID = fullURL.rsplit("/channel/")[1]
+	return CHANNEL_ID
+
+'''
+if __name__ == '__main__':
+	for i, USER in enumerate(USERS):
+		USER_OBJECT = _twitter_userobject_get(USER)
+		USER_URL = USER_OBJECT.entities
+		USER_DESCRIPTION = USER_OBJECT.description
+		CHANNEL_ID = ""
+		if "url" in USER_URL:
+			if "channel" in USER_URL["url"]["urls"][0]["expanded_url"]:
+				CHANNEL_ID = USER_URL["url"]["urls"][0]["expanded_url"].rsplit("/channel/")[1]
+			else:
+				CHANNEL_ID = _description_split(USER_DESCRIPTION)
+		else:
+			CHANNEL_ID = _description_split(USER_DESCRIPTION)
+		USERS[i]["channel_id"] = CHANNEL_ID
+'''
+
+###
+
+
 # 認証
 def tweepy_api():
 	twitter_conf = {
