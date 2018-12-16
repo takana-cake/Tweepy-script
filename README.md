@@ -97,6 +97,7 @@ json = [
 		"RTflag":&lt;False or True&gt;,					#TL保存の時にRTを含めるか
 		"videoflag":&lt;False or True&gt;,					#動画を保存するか
 		"gifflag":&lt;False or True&gt;					#gifを保存するか
+		"url":[&lt;url, url, ...&gt]					#URLリスト
 	},
 	...
 ]
