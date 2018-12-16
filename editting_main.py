@@ -357,9 +357,9 @@ def _profile():
 						prof_flag = "1"
 					os.remove(comparison_banner_file)
 				
-				if prof_flag != "0":
-					twi_str = '変わったかも_{0:%H:%M}'.format(datetime.datetime.now())
-					api.update_status(twi_str)
+	if prof_flag != "0":
+		twi_str = '変わったかも_{0:%H:%M}'.format(datetime.datetime.now())
+		api.update_status(twi_str)
 
 
 
