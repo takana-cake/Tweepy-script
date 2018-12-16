@@ -165,6 +165,8 @@ Twitterのつぶやきにある2つ以上の#(ハッシュタグ)にリンクを
 https://e-yota.com/webservice/post-2441/<br>
 pythonで正規表現を使ってみる - すこしふしぎ．<br>
 http://ism1000ch.hatenablog.com/entry/2014/03/15/154533<br>
+Pythonでの正規表現の使い方 - Qiita<br>
+https://qiita.com/wanwanland/items/ce272419dde2f95cdabc<br>
 ### 絵文字<br>
 EmojiRemove.py<br>
 https://gist.github.com/silverskyvicto/73bc1fb870e0c36b4ab6e1fca7cccd24<br>
