@@ -83,22 +83,22 @@ def _url_get():
 ### TL chech ###
 
 def _TL_search():
-	def _TL_hashtag_check(twi):
+	def _TL_hashtag_check(TWEET_OBJECT):
 		nonlocal hashtag_tmp
 		nonlocal hashtag_2csv
-		if hasattr(twi, "retweeted_status"):
-			if "hashtags" in twi.retweeted_status.entities:
-				for x in twi.retweeted_status.entities["hashtags"]:
+		if hasattr(TWEET_OBJECT, "retweeted_status"):
+			if "hashtags" in TWEET_OBJECT.retweeted_status.entities:
+				for x in TWEET_OBJECT.retweeted_status.entities["hashtags"]:
 					if x["text"] not in hashtag_tmp and x["text"] not in hashtag_2csv and x["text"] not in json_dict:
 						hashtag_tmp.append(x["text"])
-		elif hasattr(twi, "quoted_status"):
-			if "hashtags" in twi.quoted_status.entities:
-				for y in twi.quoted_status.entities["hashtags"]:
+		elif hasattr(TWEET_OBJECT, "quoted_status"):
+			if "hashtags" in TWEET_OBJECT.quoted_status.entities:
+				for y in TWEET_OBJECT.quoted_status.entities["hashtags"]:
 					if y["text"] not in hashtag_tmp and y["text"] not in hashtag_2csv and y["text"] not in json_dict:
 						hashtag_tmp.append(y["text"])
 		else:
-			if "hashtags" in twi.entities:
-				for z in twi.entities["hashtags"]:
+			if "hashtags" in TWEET_OBJECT.entities:
+				for z in TWEET_OBJECT.entities["hashtags"]:
 					if z["text"] not in hashtag_tmp and z["text"] not in hashtag_2csv and z["text"] not in json_dict:
 						hashtag_tmp.append(z["text"])
 
@@ -128,16 +128,16 @@ def _TL_search():
 
 		try:
 			if search_flag == 'max_search':
-				for twi in api.user_timeline(TL_search_object["name"], count=100, max_id=TL_search_object["TLflag"]["id"]):
-					_download(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
-					_TL_hashtag_check(twi)
-					TL_search_object["TLflag"]["id"] = twi.id
+				for TWEET_OBJECT in api.user_timeline(TL_search_object["name"], count=100, max_id=TL_search_object["TLflag"]["id"]):
+					_download(TWEET_OBJECT, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
+					_TL_hashtag_check(TWEET_OBJECT)
+					TL_search_object["TLflag"]["id"] = TWEET_OBJECT.id
 					TL_tweet_get_fault_count = 0
 			elif search_flag == 'since_search':
-				for twi in api.user_timeline(TL_search_object["name"], count=100, since_id=TL_search_object["TLflag"]["id"]):
-					_download(twi, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
-					_TL_hashtag_check(twi)
-					TL_search_object["TLflag"]["id"] = twi.id
+				for TWEET_OBJECT in api.user_timeline(TL_search_object["name"], count=100, since_id=TL_search_object["TLflag"]["id"]):
+					_download(TWEET_OBJECT, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
+					_TL_hashtag_check(TWEET_OBJECT)
+					TL_search_object["TLflag"]["id"] = TWEET_OBJECT.id
 					TL_tweet_get_fault_count = 0
 		except tweepy.RateLimitError as err_description:
 			if TL_tweet_get_fault_count < 2:
@@ -210,7 +210,7 @@ def _hashtag():
 		nonlocal profile_description_hashtag_fault_count
 		nonlocal hashtags
 		try:
-			hashtag_tmp = api.get_user(screen_name).description
+			USER_DESCRIPTION = api.get_user(screen_name).description
 			hashtags = _hashtag_split(hashtag_tmp)
 		except Exception as err_description:
 			if profile_description_hashtag_fault_count < 2:
@@ -238,7 +238,7 @@ def _user_profile_get(screen_name):
 		nonlocal profile_get_url_fault_count
 		nonlocal userobject
 		try:
-			userobject = api.get_user(screen_name)
+			USER_OBJECT = api.get_user(screen_name)
 		except Exception as err:
 			if profile_get_url_fault_count < 2:
 				profile_get_url_fault_count = profile_get_url_fault_count + 1
@@ -363,16 +363,16 @@ def _search():
 		nonlocal search_date
 		try:
 			if search_flag == 'since_search':
-				for twi in api.search(q=search_query, count=100, since_id=search_date["id"]):
-					if twi:
-						_download(twi, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
-						search_date["id"] = twi.id
+				for TWEET_OBJECT in api.search(q=search_query, count=100, since_id=search_date["id"]):
+					if TWEET_OBJECT:
+						_download(TWEET_OBJECT, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
+						search_date["id"] = TWEET_OBJECT.id
 						search_fault_count = 0
 			else:
-				for twi in api.search(q=search_query, count=100, max_id=search_date["id"]):
-					if twi:
-						_download(twi, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
-						search_date["id"] = twi.id
+				for TWEET_OBJECT in api.search(q=search_query, count=100, max_id=search_date["id"]):
+					if TWEET_OBJECT:
+						_download(TWEET_OBJECT, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
+						search_date["id"] = TWEET_OBJECT.id
 						search_fault_count = 0
 		except tweepy.RateLimitError as err_description:
 			if search_fault_count < 3:
@@ -430,14 +430,14 @@ def _add_new_object():
 
 ### follow user get ###
 
-def _follow_user_get(my_id):
+def _follow_user_get(SCREEN_NAME):
 	my_friends_ids = []
 	follow_user_fault_count = 0
 	follow_user_list_fault_count = 0
 	def _follow_user_list():
 		nonlocal follow_user_list_fault_count
 		try:
-			for tmp_id in tweepy.Cursor(api.friends_ids, id=my_id).items():
+			for tmp_id in tweepy.Cursor(api.friends_ids, id=SCREEN_NAME).items():
 				my_friends_ids.append(tmp_id)
 				follow_user_list_fault_count = 0
 		except tweepy.RateLimitError as err_description:
@@ -459,12 +459,12 @@ def _follow_user_get(my_id):
 		nonlocal follow_user_fault_count
 		try:
 			for tmp_id in my_friends_ids:
-				tmp_user = api.get_user(tmp_id).screen_name
-				if not tmp_user in json_dict:
-					if os.path.exists(download_directory + tmp_user) == False:
-						os.makedirs(download_directory + tmp_user)
+				SCREEN_NAME = api.get_user(tmp_id).screen_name
+				if not SCREEN_NAME in json_dict:
+					if os.path.exists(download_directory + SCREEN_NAME) == False:
+						os.makedirs(download_directory + SCREEN_NAME)
 					json_dict.append({
-						"name":tmp_user,
+						"name":SCREEN_NAME,
 						"Query":{},
 						"Profileflag":cmd_args.profile,
 						"hashtagflag":cmd_args.hashtag,
@@ -495,13 +495,14 @@ def _follow_user_get(my_id):
 
 ### download ###
 
-def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enable):
+def _download(TWEET_OBJECT, download_filepath, retweet_enable, gif_enable, video_enable):
 	errcount = 0
 	download_filepath = download_directory + download_filepath + "/"
-	def _download_file(type, gif_enable):
+	def _download_file():
 		nonlocal errcount
 		nonlocal DL_FILENAME
 		nonlocal DL_URL
+		nonlocal media
 		try:
 			with open(download_filepath + DL_FILENAME, 'wb') as f:
 				dl_file = urllib.request.urlopen(DL_URL).read()
@@ -515,21 +516,20 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 				_download_file(type, gif_enable)
 			else:
 				errcount = 0
-		if type == 'animated_gif' and gif_enable == True:
-			#gifenc = "ffmpeg -n -i " + download_filepath + DL_FILENAME + " -r 30 " + download_filepath + os.path.splitext(DL_FILENAME)[0] + ".gif"
+		if media["type"] == 'animated_gif' and gif_enable == True:
 			gifenc1 = "ffmpeg -i " + download_filepath + DL_FILENAME + " -vf fps=20,palettegen=stats_mode=diff -y " + download_filepath + "palette.png"
 			gifenc2 = "ffmpeg -i " + download_filepath + DL_FILENAME + " -i palette.png -lavfi fps=20,paletteuse -y " + download_filepath + os.path.splitext(DL_FILENAME)[0] + ".gif"
 			subprocess.call(gifenc1.split(), shell=False)
 			subprocess.call(gifenc2.split(), shell=False)
 			
 	# リツイート判断
-	if hasattr(twi_def, 'retweeted_status') == True and retweet_enable == False:
+	if hasattr(TWEET_OBJECT, 'retweeted_status') == True and retweet_enable == False:
 		pass
 	else:
 		# メディア判断
-		if hasattr(twi_def, "extended_entities"):
-			if 'media' in twi_def.extended_entities:
-				for media in twi_def.extended_entities["media"]:
+		if hasattr(TWEET_OBJECT, "extended_entities"):
+			if 'media' in TWEET_OBJECT.extended_entities:
+				for media in TWEET_OBJECT.extended_entities["media"]:
 					if media["type"] == 'photo':
 						DL_FILENAME = media["media_url"]
 						FILE_CHECK = os.path.basename(DL_FILENAME)
@@ -547,7 +547,7 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 						DL_FILENAME = os.path.basename(DL_URL)
 						FILE_CHECK = DL_FILENAME
 					if os.path.exists(download_filepath + FILE_CHECK) == False:
-						_download_file(media["type"], gif_enable)
+						_download_file()
 
 
 
