@@ -19,7 +19,30 @@ import csv
 
 
 
-### 整理中
+# 認証
+def tweepy_api():
+	twitter_conf = {
+		'consumer' : {
+			'key'   : "",
+			'secret' : ""
+		},
+		'access'   : {
+			'key'   : "",
+			'secret' : ""
+		}
+	}
+	auth = tweepy.OAuthHandler(
+		twitter_conf['consumer']['key'],
+		twitter_conf['consumer']['secret'])
+	auth.set_access_token(
+		twitter_conf['access']['key'],
+		twitter_conf['access']['secret'])
+	tweepy_auth = tweepy.API(auth)
+	return(tweepy_auth)
+
+
+
+### URL get ###
 
 def _twitter_userobject_get(SCREEN_NAME):
 	errcount = 0
@@ -46,39 +69,15 @@ def _description_split(USER_DESCRIPTION):
 
 def _url_get():
 	for i, USER in enumerate(json_dict):
-		USER_OBJECT = _twitter_userobject_get(USER)
+		USER_OBJECT = _twitter_userobject_get(USER["name"])
 		USER_URL = USER_OBJECT.entities
 		USER_DESCRIPTION = USER_OBJECT.description
 		CHANNEL_ID = ""
 		if "url" in USER_URL:
 			URLS.extend(USER_URL["url"]["urls"][0]["expanded_url"])
-		else:
-			URLS.extend(_description_split(USER_DESCRIPTION))
+		URLS.extend(_description_split(USER_DESCRIPTION))
 		json_dict[i]["urls"] = URLS
 
-###
-
-
-# 認証
-def tweepy_api():
-	twitter_conf = {
-		'consumer' : {
-			'key'   : "",
-			'secret' : ""
-		},
-		'access'   : {
-			'key'   : "",
-			'secret' : ""
-		}
-	}
-	auth = tweepy.OAuthHandler(
-		twitter_conf['consumer']['key'],
-		twitter_conf['consumer']['secret'])
-	auth.set_access_token(
-		twitter_conf['access']['key'],
-		twitter_conf['access']['secret'])
-	tweepy_auth = tweepy.API(auth)
-	return(tweepy_auth)
 
 
 ### TL chech ###
@@ -612,8 +611,9 @@ def _edit_json():
 
 def _parser():
 	parser = argparse.ArgumentParser(
-		usage=' python3 main.py [json-file]\n\
-	python3 main.py [json-file] [OPTION]...\n\
+		usage=' python3 main.py [json-file]\n\\n\
+	python3 main.py [json-file] --addf --name user --tl --gif --video\n\
+	python3 main.py [json-file] --addo --name user1 user2 user3 --tl --gif --video\n\\n\
 	nohup python3 main.py [json-file] &',
 		add_help=True,
 		formatter_class=argparse.RawTextHelpFormatter
@@ -699,4 +699,5 @@ if __name__ == '__main__':
 	_hashtag()
 	_TL_search()
 	_search()
+	_url_get()
 	_edit_json()
