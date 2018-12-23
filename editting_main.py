@@ -531,9 +531,10 @@ def _download(TWEET_OBJECT, download_filepath, retweet_enable, gif_enable, video
 			if 'media' in TWEET_OBJECT.extended_entities:
 				for media in TWEET_OBJECT.extended_entities["media"]:
 					if media["type"] == 'photo':
-						DL_FILENAME = media["media_url"]
-						FILE_CHECK = os.path.basename(DL_FILENAME)
-						DL_URL = DL_FILENAME + ":orig"
+						DL_URL = media["media_url"]
+						DL_FILENAME = os.path.basename(DL_URL)
+						FILE_CHECK = DL_FILENAME
+						DL_URL = DL_URL + ":orig"
 					if media["type"] == 'animated_gif' and gif_enable == True:
 						DL_URL = media["video_info"]["variants"][0]["url"]
 						DL_FILENAME = os.path.basename(DL_URL)
