@@ -496,25 +496,25 @@ def _follow_user_get(my_id):
 ### download ###
 
 def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enable):
-	download_fault_count = 0
+	errcount = 0
 	download_filepath = download_directory + download_filepath + "/"
 	def _download_file():
-		nonlocal download_fault_count
-		nonlocal dl_filename
-		nonlocal dl_media
+		nonlocal errcount
+		nonlocal DL_FILENAME
+		nonlocal DL_URL
 		try:
-			with open(download_filepath + os.path.basename(dl_filename), 'wb') as f:
-				dl_file = urllib.request.urlopen(dl_media).read()
+			with open(download_filepath + os.path.basename(DL_FILENAME), 'wb') as f:
+				dl_file = urllib.request.urlopen(DL_URL).read()
 				f.write(dl_file)
 		except Exception as err_description:
-			if download_fault_count < 2:
-				download_fault_count = download_fault_count +1
-				err_subject = "Exception_download : " + dl_media
+			if errcount < 2:
+				errcount = errcount +1
+				err_subject = "Exception_download : " + DL_URL
 				_log(err_subject, err_description)
 				sleep(60)
 				_download_file()
 			else:
-				download_fault_count = 0
+				errcount = 0
 	# リツイート判断
 	if hasattr(twi_def, 'retweeted_status') == True and retweet_enable == False:
 		pass
@@ -524,24 +524,24 @@ def _download(twi_def, download_filepath, retweet_enable, gif_enable, video_enab
 			if 'media' in twi_def.extended_entities:
 				for media in twi_def.extended_entities["media"]:
 					if media["type"] == 'photo':
-						dl_filename = media["media_url"]
-						dl_media = dl_filename + ":orig"
+						DL_FILENAME = media["media_url"]
+						DL_URL = DL_FILENAME + ":orig"
 					if media["type"] == 'animated_gif' and gif_enable == True:
-						dl_media = media["video_info"]["variants"][0]["url"]
-						dl_filename = dl_media
+						DL_URL = media["video_info"]["variants"][0]["url"]
+						DL_FILENAME = re.split("[./]", DL_URL)[-2] + ".gif"
 					if media["type"] == 'video' and video_enable == True:
-						dl_media = media["video_info"]["variants"][0]["url"]
-						if '.m3u8' in dl_media:
-							dl_media = media["video_info"]["variants"][1]["url"]
-						if '?tag=' in dl_media:
-							dl_media = dl_media[:-6]
-						dl_filename = dl_media
-					if os.path.exists(download_filepath + os.path.basename(dl_filename)) == False:
+						DL_URL = media["video_info"]["variants"][0]["url"]
+						if '.m3u8' in DL_URL:
+							DL_URL = media["video_info"]["variants"][1]["url"]
+						if '?tag=' in DL_URL:
+							DL_URL = DL_URL[:-6]
+						DL_FILENAME = DL_URL
+					if os.path.exists(download_filepath + os.path.basename(DL_FILENAME)) == False:
 						_download_file()
 					if media["type"] == 'animated_gif' and gif_enable == True:
-						gifenc = "ffmpeg -n -i " + download_filepath + os.path.basename(dl_filename) + " -r 30 " + download_filepath + os.path.splitext(os.path.basename(dl_filename))[0] + ".gif"
+						#gifenc = "ffmpeg -n -i " + download_filepath + os.path.basename(DL_FILENAME) + " -r 30 " + download_filepath + os.path.splitext(os.path.basename(DL_FILENAME))[0] + ".gif"
+						gifenc = "ffmpeg -n -i " + download_filepath + os.path.basename(DL_FILENAME) + " -r 20 " + download_filepath + os.path.basename(DL_FILENAME)
 						subprocess.call(gifenc.split(), shell=False)
-
 
 
 
