@@ -19,7 +19,7 @@ import csv
 
 
 
-# 認証
+### 認証 ###
 def tweepy_api():
 	twitter_conf = {
 		'consumer' : {
@@ -42,7 +42,7 @@ def tweepy_api():
 
 
 
-### URL get ###
+### user object ###
 
 def _twitter_userobject_get(SCREEN_NAME):
 	errcount = 0
@@ -61,6 +61,10 @@ def _twitter_userobject_get(SCREEN_NAME):
 				_get_description()
 	_get_description()
 	return USER_OBJECT
+
+
+
+### URL get ###
 
 def _description_split(USER_DESCRIPTION):
 	pattern = re.compile("http[!-~]+")
@@ -83,22 +87,22 @@ def _url_get():
 ### TL chech ###
 
 def _TL_search():
-	def _TL_hashtag_check(TWEET_OBJECT):
+	def _TL_hashtag_check(hashcheck_object):
 		nonlocal hashtag_tmp
 		nonlocal hashtag_2csv
-		if hasattr(TWEET_OBJECT, "retweeted_status"):
-			if "hashtags" in TWEET_OBJECT.retweeted_status.entities:
-				for x in TWEET_OBJECT.retweeted_status.entities["hashtags"]:
+		if hasattr(hashcheck_object, "retweeted_status"):
+			if "hashtags" in hashcheck_object.retweeted_status.entities:
+				for x in hashcheck_object.retweeted_status.entities["hashtags"]:
 					if x["text"] not in hashtag_tmp and x["text"] not in hashtag_2csv and x["text"] not in json_dict:
 						hashtag_tmp.append(x["text"])
-		elif hasattr(TWEET_OBJECT, "quoted_status"):
-			if "hashtags" in TWEET_OBJECT.quoted_status.entities:
-				for y in TWEET_OBJECT.quoted_status.entities["hashtags"]:
+		elif hasattr(hashcheck_object, "quoted_status"):
+			if "hashtags" in hashcheck_object.quoted_status.entities:
+				for y in hashcheck_object.quoted_status.entities["hashtags"]:
 					if y["text"] not in hashtag_tmp and y["text"] not in hashtag_2csv and y["text"] not in json_dict:
 						hashtag_tmp.append(y["text"])
 		else:
-			if "hashtags" in TWEET_OBJECT.entities:
-				for z in TWEET_OBJECT.entities["hashtags"]:
+			if "hashtags" in hashcheck_object.entities:
+				for z in hashcheck_object.entities["hashtags"]:
 					if z["text"] not in hashtag_tmp and z["text"] not in hashtag_2csv and z["text"] not in json_dict:
 						hashtag_tmp.append(z["text"])
 
@@ -128,16 +132,16 @@ def _TL_search():
 
 		try:
 			if search_flag == 'max_search':
-				for TWEET_OBJECT in api.user_timeline(TL_search_object["name"], count=100, max_id=TL_search_object["TLflag"]["id"]):
-					_download(TWEET_OBJECT, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
-					_TL_hashtag_check(TWEET_OBJECT)
-					TL_search_object["TLflag"]["id"] = TWEET_OBJECT.id
+				for tl_object in api.user_timeline(TL_search_object["name"], count=100, max_id=TL_search_object["TLflag"]["id"]):
+					_download(tl_object, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
+					_TL_hashtag_check(tl_object)
+					TL_search_object["TLflag"]["id"] = tl_object.id
 					TL_tweet_get_fault_count = 0
 			elif search_flag == 'since_search':
-				for TWEET_OBJECT in api.user_timeline(TL_search_object["name"], count=100, since_id=TL_search_object["TLflag"]["id"]):
-					_download(TWEET_OBJECT, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
-					_TL_hashtag_check(TWEET_OBJECT)
-					TL_search_object["TLflag"]["id"] = TWEET_OBJECT.id
+				for tl_object in api.user_timeline(TL_search_object["name"], count=100, since_id=TL_search_object["TLflag"]["id"]):
+					_download(tl_object, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
+					_TL_hashtag_check(tl_object)
+					TL_search_object["TLflag"]["id"] = tl_object.id
 					TL_tweet_get_fault_count = 0
 		except tweepy.RateLimitError as err_description:
 			if TL_tweet_get_fault_count < 2:
@@ -206,20 +210,26 @@ def _hashtag():
 	profile_description_hashtag_fault_count = 0
 	hashtags = []
 
-	def _profile_description_hashtag(screen_name):
+	def _profile_description_hashtag(SCREEN_NAME):
 		nonlocal profile_description_hashtag_fault_count
 		nonlocal hashtags
 		try:
-			USER_DESCRIPTION = api.get_user(screen_name).description
+			USER_DESCRIPTION = api.get_user(SCREEN_NAME).description
 			hashtags = _hashtag_split(hashtag_tmp)
 		except Exception as err_description:
 			if profile_description_hashtag_fault_count < 2:
 				profile_description_hashtag_fault_count = profile_description_hashtag_fault_count + 1
-				err_subject = screen_name + " : Exception_profile_description"
+				err_subject = SCREEN_NAME + " : Exception_profile_description"
 				_log(err_subject, err_description)
 				sleep(60)
-				_profile_description_hashtag(screen_name)
-
+				_profile_description_hashtag(SCREEN_NAME)
+'''
+	if USER["hashtagflag"] == True:
+		_profile_description_hashtag(USER["name"])
+		for tag in hashtags:
+			if not tag in  json_dict:
+				json_dict[index]["Query"].update({tag:{"date":"", "id":""}})
+'''
 	for index,hashtag_object in enumerate(json_dict):
 		if hashtag_object["hashtagflag"] == True:
 			_profile_description_hashtag(hashtag_object["name"])
@@ -230,24 +240,6 @@ def _hashtag():
 
 
 ### profile ###
-
-def _user_profile_get(screen_name):
-	profile_get_url_fault_count = 0
-	userobject = ""
-	def _profile_get():
-		nonlocal profile_get_url_fault_count
-		nonlocal userobject
-		try:
-			USER_OBJECT = api.get_user(screen_name)
-		except Exception as err:
-			if profile_get_url_fault_count < 2:
-				profile_get_url_fault_count = profile_get_url_fault_count + 1
-				err_subject = screen_name + " : Exception_profile_get"
-				_log(err_subject, err_description)
-				sleep(60)
-				_profile_get()
-	_profile_get()
-	return userobject
 
 def _profile_get_img(url, file_name):
 	profile_get_img_fault_count = 0
@@ -298,7 +290,7 @@ def _profile():
 		if "Profileflag" in profile_object:
 			if profile_object["Profileflag"] == True:
 				profile_object_name = profile_object["name"]
-				profile_object = _user_profile_get(profile_object_name)
+				profile_object = _twitter_userobject_get(SCREEN_NAME)
 
 				### test
 				_follow_counter_cap(profile_object_name, profile_object.followers_count, file_path_cap)
@@ -363,16 +355,16 @@ def _search():
 		nonlocal search_date
 		try:
 			if search_flag == 'since_search':
-				for TWEET_OBJECT in api.search(q=search_query, count=100, since_id=search_date["id"]):
-					if TWEET_OBJECT:
-						_download(TWEET_OBJECT, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
-						search_date["id"] = TWEET_OBJECT.id
+				for search_object in api.search(q=search_query, count=100, since_id=search_date["id"]):
+					if search_object:
+						_download(search_object, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
+						search_date["id"] = search_object.id
 						search_fault_count = 0
 			else:
-				for TWEET_OBJECT in api.search(q=search_query, count=100, max_id=search_date["id"]):
-					if TWEET_OBJECT:
-						_download(TWEET_OBJECT, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
-						search_date["id"] = TWEET_OBJECT.id
+				for search_object in api.search(q=search_query, count=100, max_id=search_date["id"]):
+					if search_object:
+						_download(search_object, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
+						search_date["id"] = search_object.id
 						search_fault_count = 0
 		except tweepy.RateLimitError as err_description:
 			if search_fault_count < 3:
@@ -495,7 +487,7 @@ def _follow_user_get(SCREEN_NAME):
 
 ### download ###
 
-def _download(TWEET_OBJECT, download_filepath, retweet_enable, gif_enable, video_enable):
+def _download(dl_object, download_filepath, retweet_enable, gif_enable, video_enable):
 	errcount = 0
 	download_filepath = download_directory + download_filepath + "/"
 	def _download_file():
@@ -523,13 +515,13 @@ def _download(TWEET_OBJECT, download_filepath, retweet_enable, gif_enable, video
 			subprocess.call(gifenc2.split(), shell=False)
 			
 	# リツイート判断
-	if hasattr(TWEET_OBJECT, 'retweeted_status') == True and retweet_enable == False:
+	if hasattr(dl_object, 'retweeted_status') == True and retweet_enable == False:
 		pass
 	else:
 		# メディア判断
-		if hasattr(TWEET_OBJECT, "extended_entities"):
-			if 'media' in TWEET_OBJECT.extended_entities:
-				for media in TWEET_OBJECT.extended_entities["media"]:
+		if hasattr(dl_object, "extended_entities"):
+			if 'media' in dl_object.extended_entities:
+				for media in dl_object.extended_entities["media"]:
 					if media["type"] == 'photo':
 						DL_URL = media["media_url"]
 						DL_FILENAME = os.path.basename(DL_URL)
