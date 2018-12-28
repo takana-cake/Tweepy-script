@@ -66,18 +66,22 @@ def _twitter_userobject_get(SCREEN_NAME):
 
 ### URL get ###
 
-def _description_urls(USER_DESCRIPTION):
+def _split_urls(USER_DESCRIPTION):
 	DESCURLS = []
-	pattern = re.compile("http[!-~]+")
-	SHORTURL = re.findall(pattern, USER_DESCRIPTION)
-	for d in SHORTURL:
+	SHORTURLS = []
+	URL_PATTERN = re.compile(".http[!-~]+")
+	SHORTURLS = re.findall(URL_PATTERN, USER_DESCRIPTION)
+	for d in SHORTURLS:
+		if d[0] in ["[", "("]:
+			d = d[:-1]
+		d = d[1:]
 		try:
 			DESCURL = (urllib.request.urlopen(d,timeout=3).geturl())
-			DESCURLS.extend(DESCURL)
+			DESCURLS.append(DESCURL)
 		except Exception as err:
-			err_subject = DESCURL + " : "
+			err_subject = d + " : "
 			_log(err_subject, err)
-			DESCURLS.extend(d)
+			DESCURLS.append(d)
 			sleep(30)
 	return DESCURLS
 
@@ -87,10 +91,9 @@ def _url_get():
 		USER_OBJECT = _twitter_userobject_get(USER["name"])
 		USER_URL = USER_OBJECT.entities
 		USER_DESCRIPTION = USER_OBJECT.description
-		CHANNEL_ID = ""
 		if "url" in USER_URL:
-			URLS.extend(USER_URL["url"]["urls"][0]["expanded_url"])
-		URLS.extend(_description_urls(USER_DESCRIPTION))
+			URLS.append(USER_URL["url"]["urls"][0]["expanded_url"])
+		URLS.extend(_split_urls(USER_DESCRIPTION))
 		json_dict[i]["urls"] = URLS
 
 
