@@ -652,12 +652,12 @@ if __name__ == '__main__':
 		os.makedirs(working_directory + "download")
 	download_directory = working_directory + "download/"
 	DB_file = working_directory + os.path.basename(cmd_args.json_file[0])
-	shutil.copyfile(DB_file, DB_file + "_bak")
 	date = datetime.datetime.today().strftime("%Y%m%d_%H%M_%S")
 	LOGFILE = working_directory + date + "_log.txt"
 	if not os.path.exists(DB_file):
 		init_start()
 		_edit_json()
+	shutil.copyfile(DB_file, DB_file + "_bak")
 	f = open(DB_file,'r')
 	json_dict = json.load(f)
 	f.close()
