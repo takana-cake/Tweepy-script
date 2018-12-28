@@ -73,6 +73,7 @@ def _description_split(USER_DESCRIPTION):
 
 def _url_get():
 	for i, USER in enumerate(json_dict):
+		URLS = []
 		USER_OBJECT = _twitter_userobject_get(USER["name"])
 		USER_URL = USER_OBJECT.entities
 		USER_DESCRIPTION = USER_OBJECT.description
@@ -223,6 +224,12 @@ def _hashtag():
 				_log(err_subject, err_description)
 				sleep(60)
 				_profile_description_hashtag(SCREEN_NAME)
+	for index,hashtag_object in enumerate(json_dict):
+		if hashtag_object["hashtagflag"] == True:
+			_profile_description_hashtag(hashtag_object["name"])
+			for tag in hashtags:
+				if not tag in  json_dict:
+					json_dict[index]["Query"].update({tag:{"date":"", "id":""}})
 '''
 	if USER["hashtagflag"] == True:
 		_profile_description_hashtag(USER["name"])
@@ -230,12 +237,6 @@ def _hashtag():
 			if not tag in  json_dict:
 				json_dict[index]["Query"].update({tag:{"date":"", "id":""}})
 '''
-	for index,hashtag_object in enumerate(json_dict):
-		if hashtag_object["hashtagflag"] == True:
-			_profile_description_hashtag(hashtag_object["name"])
-			for tag in hashtags:
-				if not tag in  json_dict:
-					json_dict[index]["Query"].update({tag:{"date":"", "id":""}})
 
 
 
