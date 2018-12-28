@@ -7,7 +7,6 @@ import filecmp
 import glob
 import json
 import os
-import requests
 import shutil
 import subprocess
 import sys
