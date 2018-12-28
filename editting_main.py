@@ -259,14 +259,15 @@ def _profile_get_img(url, file_name):
 	profile_get_img_fault_count = 0
 	def _get_img(url, file_name):
 		nonlocal profile_get_img_fault_count
-		res = requests.get(url=url)
-		if res.status_code == 200:
-			f = open(file_name, 'wb')
-			f.write(res.content)
-			f.close()
-		elif profile_get_img_fault_count < 2:
-			profile_get_img_fault_count = profile_get_img_fault_count + 1
-			_get_img(url, file_name)
+		try:
+			urllib.request.urlretrieve(url, file_name)
+		except Exception as err_description:
+			if profile_get_img_fault_count < 2:
+				profile_get_img_fault_count = profile_get_img_fault_count + 1
+				err_subject = url + " : _profile_get_img"
+				_log(err_subject, err_description)
+				sleep(60)
+				_get_img(url, file_name)
 	_get_img(url, file_name)
 
 def _profile_get_capture_icon(screen_name, file_path_cap):
