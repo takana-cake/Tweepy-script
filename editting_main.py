@@ -71,7 +71,7 @@ def _split_urls(USER_DESCRIPTION):
 	URL_PATTERN = re.compile(".http[!-~]+")
 	SHORTURLS = re.findall(URL_PATTERN, USER_DESCRIPTION)
 	for d in SHORTURLS:
-		if d[0] in ["[", "("]:
+		if d[0] in ["[", "("] and d[-1] in ["]", ")"]:
 			d = d[:-1]
 		d = d[1:]
 		try:
