@@ -149,7 +149,7 @@ def _twitter_profile_hashtag(SCREEN_NAME):
 
 ### TL chech ###
 
-def _TL_search(SCREEN_NAME, TWEET_ID):
+def _TL_search(SCREEN_NAME, TWEET_ID, FILEPATH, retweet_enable, gif_enable, video_enable):
 	def _get_tweetid(SCREEN_NAME):
 		nonlocal TL_search_fault_count
 		try:
@@ -167,33 +167,33 @@ def _TL_search(SCREEN_NAME, TWEET_ID):
 				_log(err_subject, err_description)
 				sleep(60)
 				_get_tweetid(SCREEN_NAME)
-	def _TL_tweet_get(SCREEN_NAME, TL_ID, search_flag):
+	def _TL_tweet_get(SCREEN_NAME, TWEET_ID, search_flag):
 		nonlocal TL_tweet_get_fault_count
 		try:
 			if search_flag == 'max_search':
-				for tl_object in api.user_timeline(SCREEN_NAME, count=100, max_id=TL_ID):
-					_download(tl_object, SCREEN)
+				for tl_object in api.user_timeline(SCREEN_NAME, count=100, max_id=TWEET_ID):
+					_download_check(FILEPATH, tl_object, retweet_enable, gif_enable, video_enable)
 					#_TL_hashtag_check(tl_object)
-					TL_ID = tl_object.id
+					TWEET_ID = tl_object.id
 					TL_tweet_get_fault_count = 0
 			elif search_flag == 'since_search':
-				for tl_object in api.user_timeline(SCREEN_NAME, count=100, since_id=TL_ID):
-					_download(tl_object, SCREEN)
+				for tl_object in api.user_timeline(SCREEN_NAME, count=100, since_id=TWEET_ID):
+					_download_check(FILEPATH, tl_object, retweet_enable, gif_enable, video_enable)
 					#_TL_hashtag_check(tl_object)
-					TL_ID = tl_object.id
+					TWEET_ID = tl_object.id
 					TL_tweet_get_fault_count = 0
 		except tweepy.RateLimitError as err_description:
-			err_subject = str(SCREEN_NAME) + " : RateLimitError_tweet_get : " + str(TL_ID)
+			err_subject = str(SCREEN_NAME) + " : RateLimitError_tweet_get : " + str(TWEET_ID)
 			_log(err_subject, err_description)
 			sleep(60 * 15)
-			_TL_tweet_get(SCREEN_NAME)
+			_TL_tweet_get(SCREEN_NAME, TWEET_ID, search_flag)
 		except Exception as err_description:
 			if TL_tweet_get_fault_count < 2:
-				err_subject = str(SCREEN_NAME) + " : Exception_tweet_get : " + str(TL_ID)
+				err_subject = str(SCREEN_NAME) + " : Exception_tweet_get : " + str(TWEET_ID)
 				_log(err_subject, err_description)
 				TL_tweet_get_fault_count = TL_tweet_get_fault_count +1
 				sleep(60 * 5)
-				_TL_tweet_get(SCREEN_NAME)
+				_TL_tweet_get(SCREEN_NAME, TWEET_ID, search_flag)
 	if TWEET_ID == "":
 		TWEET_ID = _get_tweetid(SCREEN_NAME)
 		search_flag = 'max_search'
@@ -204,8 +204,8 @@ def _TL_search(SCREEN_NAME, TWEET_ID):
 		while_count = 0
 		while while_count < 50:
 			while_count += 1
-			_TL_tweet_get()
-	return TL_ID
+			_TL_tweet_get(SCREEN_NAME, TWEET_ID, search_flag)
+	return TWEET_ID
 
 
 
@@ -303,51 +303,78 @@ def _profile(SCREEN_NAME):
 
 ### search ###
 
-def _search(SCREEN, QUERY, GET_DATE, GET_ID):
+def _search(FILEPATH, QUERY, GET_DATE, TWEET_ID, gif_enable, video_enable):
 	search_fault_count = 0
-	search_date_tmp = ""
-	def _search_start(SCREEN, QUERY, search_flag):
+	tmp_id = ""
+	
+	def _id_search(QUERY, TWEET_ID):
 		nonlocal search_fault_count
-		nonlocal GET_ID
 		try:
-			if search_flag == 'since_search':
-				for search_object in api.search(q=search_query, count=100, since_id=GET_ID):
-					if search_object:
-						_download(search_object, SCREEN)
-						search_date["id"] = search_object.id
-						search_fault_count = 0
-			else:
-				for search_object in api.search(q=search_query, count=100, max_id=GET_ID):
-					if search_object:
-						_download(search_object, SCREEN)
-						search_date["id"] = search_object.id
-						search_fault_count = 0
+			if TWEET_ID:
+				search_result = api.search(q=QUERY, since_id=TWEET_ID)
+			if search_result = "":
+				search_result = api.search(q=QUERY, count=1)
 		except tweepy.RateLimitError as err_description:
-			err_subject = str(SCREEN) + " : RateLimitError_search_start"
+			err_subject = str(QUERY) + " : RateLimitError_id_search"
 			_log(err_subject, err_description)
 			sleep(60 * 15)
-			_search_start(SCREEN, QUERY, search_flag)
+			_id_search(QUERY, TWEET_ID)
 		except Exception as err_description:
 			if search_fault_count < 3:
 				search_fault_count = search_fault_count +1
-				err_subject = str(SCREEN) + " : Exception_search_start"
+				err_subject = str(QUERY) + " : Exception_id_search"
 				_log(err_subject, err_description)
 				sleep(10)
-				_search_start(SCREEN, QUERY, search_flag)
+				_id_search(QUERY, TWEET_ID)
+		return search_result
+		
+	def _search_start(QUERY, search_flag, FILEPATH, gif_enable, video_enable):
+		nonlocal search_fault_count
+		nonlocal tmp_id
+		try:
+			if search_flag == 'since_search':
+				for search_object in api.search(q=search_query, count=100, since_id=tmp_id):
+					if search_object:
+						_download_check(FILEPATH, search_object, False, gif_enable, video_enable)
+						tmp_id = search_object.id
+						search_fault_count = 0
+			else:
+				for search_object in api.search(q=search_query, count=100, max_id=tmp_id):
+					if search_object:
+						_download_check(FILEPATH, search_object, False, gif_enable, video_enable)
+						tmp_id = search_object.id
+						search_fault_count = 0
+		except tweepy.RateLimitError as err_description:
+			err_subject = str(QUERY) + " : RateLimitError_search_start"
+			_log(err_subject, err_description)
+			sleep(60 * 15)
+			_search_start(QUERY, search_flag, FILEPATH, gif_enable, video_enable)
+		except Exception as err_description:
+			if search_fault_count < 3:
+				search_fault_count = search_fault_count +1
+				err_subject = str(QUERY) + " : Exception_search_start"
+				_log(err_subject, err_description)
+				sleep(10)
+				_search_start(QUERY, search_flag, FILEPATH, gif_enable, video_enable)
+	
 	while_count = 0
-	if GET_ID:
-		if api.search(q=QUERY, since_id=GET_ID):
-			search_flag = 'since_search'
+	search_date_tmp = _id_search(QUERY, TWEET_ID)
+	if search_date_tmp = "":
+		err_description = ""
+		err_subject = str(QUERY) + " : search result None"
+		_log(err_subject, err_description)
+		return ""
+	if TWEET_ID:
+		search_flag = 'since_search'
+		tmp_id = TWEET_ID
 	else:
-		search_date_tmp = api.search(q=QUERY, count=1)
-		if search_date_tmp:
-			search_flag = 'max_search'
-			GET_ID = search_date_tmp[0].id
+		search_flag = 'max_search'
+		tmp_id = search_date_tmp[0].id
 	while while_count < 50:
 		search_fault_count = 0
 		while_count += 1
-		_search_start(SCREEN, QUERY, search_flag)
-	return GET_ID
+		_search_start(QUERY, search_flag, FILEPATH, gif_enable, video_enable)
+	return tmp_id
 
 '''
 	json_dict[index]['Query'][search_query]['id'] = search_date['id']
@@ -398,65 +425,30 @@ def _add_new_object():
 ### follow user get ###
 
 def _follow_user_get(SCREEN_NAME):
-	my_friends_ids = []
+	my_friends_list = []
 	follow_user_fault_count = 0
 	follow_user_list_fault_count = 0
-	def _follow_user_list():
+	def _follow_user_list(SCREEN_NAME):
 		nonlocal follow_user_list_fault_count
+		nonlocal my_friends_list
 		try:
 			for tmp_id in tweepy.Cursor(api.friends_ids, id=SCREEN_NAME).items():
-				my_friends_ids.append(tmp_id)
+				my_friends_list.append(tmp_id)
 				follow_user_list_fault_count = 0
 		except tweepy.RateLimitError as err_description:
-			if follow_user_list_fault_count < 2:
-				follow_user_list_fault_count = follow_user_list_fault_count + 1
-				err_subject = "RateLimitError_follow_user_get_1"
-				_log(err_subject, err_description)
-				sleep(60 * 15)
-				_follow_user_list()
+			err_subject = "RateLimitError_follow_user_get"
+			_log(err_subject, err_description)
+			sleep(60 * 15)
+			_follow_user_list(SCREEN_NAME)
 		except Exception as err_description:
 			if follow_user_list_fault_count < 2:
 				follow_user_list_fault_count = follow_user_list_fault_count + 1
-				err_subject = "Exception_follow_user_get_1"
+				err_subject = "Exception_follow_user_get"
 				_log(err_subject, err_description)
 				sleep(60)
-				_follow_user_list()
-	def _follow_user_description():
-		nonlocal my_friends_ids
-		nonlocal follow_user_fault_count
-		try:
-			for tmp_id in my_friends_ids:
-				SCREEN_NAME = api.get_user(tmp_id).screen_name
-				if not SCREEN_NAME in json_dict:
-					if os.path.exists(download_directory + SCREEN_NAME) == False:
-						os.makedirs(download_directory + SCREEN_NAME)
-					json_dict.append({
-						"name":SCREEN_NAME,
-						"Query":{},
-						"Profileflag":cmd_args.profile,
-						"hashtagflag":cmd_args.hashtag,
-						"TLflag":add_tl,
-						"RTflag":cmd_args.rt,
-						"videoflag":cmd_args.video,
-						"gifflag":cmd_args.gif
-					})
-				follow_user_fault_count = 0
-		except tweepy.RateLimitError as err_description:
-			if follow_user_fault_count < 2:
-				follow_user_fault_count = follow_user_fault_count + 1
-				err_subject = "RateLimitError_follow_user_get_2"
-				_log(err_subject, err_description)
-				sleep(60 * 15)
-				_follow_user_description()
-		except Exception as err_description:
-			if follow_user_fault_count < 2:
-				follow_user_fault_count = follow_user_fault_count + 1
-				err_subject = "Exception_follow_user_get_2"
-				_log(err_subject, err_description)
-				sleep(60)
-				_follow_user_description()
-	_follow_user_list()
-	_follow_user_description()
+				_follow_user_list(SCREEN_NAME)
+	_follow_user_list(SCREEN_NAME)
+	return my_friends_list
 
 
 
@@ -479,7 +471,6 @@ def _download_media(DL_URL, FILEPATH, FILENAME):
 				_download_file(type, gif_enable)
 			else:
 				errcount = 0
-		#if media["type"] == 'animated_gif' and gif_enable == True:
 		if FILENAME[-3:] == 'gif'
 			gifenc1 = "ffmpeg -i " + FILEPATH + FILENAME + " -vf fps=20,palettegen=stats_mode=diff -y " + FILEPATH + "palette.png"
 			gifenc2 = "ffmpeg -i " + FILEPATH + FILENAME + " -i palette.png -lavfi fps=20,paletteuse -y " + FILEPATH + os.path.splitext(FILENAME)[0] + ".gif"
@@ -515,7 +506,8 @@ def _download_check(FILEPATH, dl_object, retweet_enable, gif_enable, video_enabl
 						FILENAME = os.path.basename(DL_URL)
 						FILE_CHECK = FILENAME
 					if os.path.exists(FILEPATH + FILE_CHECK) == False:
-						_download_file(DL_URL, FILEPATH, FILENAME)
+						#_download_file(DL_URL, FILEPATH, FILENAME)
+						_download_media(DL_URL, FILEPATH, FILENAME)
 
 
 
@@ -646,7 +638,22 @@ if __name__ == '__main__':
 			if not cmd_args.name or len(cmd_args.name) != 1:
 				print("invalid argument '--name'")
 			else:
-				_follow_user_get(cmd_args.name[0])
+				my_friends_ids = _follow_user_get(cmd_args.name[0])
+				for tmp_id in my_friends_ids:
+					SCREEN_NAME = _twitter_userobject_get(tmp_id).screen_name
+					if not SCREEN_NAME in json_dict:
+						if os.path.exists(download_directory + SCREEN_NAME) == False:
+							os.makedirs(download_directory + SCREEN_NAME)
+						json_dict.append({
+							"name":SCREEN_NAME,
+							"Query":{},
+							"Profileflag":cmd_args.profile,
+							"hashtagflag":cmd_args.hashtag,
+							"TLflag":add_tl,
+							"RTflag":cmd_args.rt,
+							"videoflag":cmd_args.video,
+							"gifflag":cmd_args.gif
+						})
 		if cmd_args.addo:
 			if not cmd_args.name:
 				print("invalid argument '--name'")
@@ -670,10 +677,21 @@ if __name__ == '__main__':
 		print("please add object.")
 		sys.exit()
 
-	for USER_JSON in json_dict:
-		_profile(USER_JSON["name"])
-		_twitter_profile_hashtag(USER_JSON["name"])
-	_TL_search()
-	_search()
+	for index,USER_JSON in enumerate(json_dict):
+		SCREEN_NAME = USER_JSON["name"]
+		FILEPATH = download_directory + SCREEN_NAME
+		# Profile
+		_profile(SCREEN_NAME)
+		_twitter_profile_hashtag(SCREEN_NAME)
+		# TL Search
+		SEARCH_ID = USER_JSON["TLflag"]["id"]
+		_TL_search(SCREEN_NAME, SEARCH_ID, FILEPATH, retweet_enable, gif_enable, video_enable)
+		# Query Search
+		if not USER_JSON['Query'] == {}:
+			for QUERY,search_date in user_object['Query'].items():
+				for l in range(50):
+					search_fault_count = 0
+					_search(FILEPATH, QUERY, GET_DATE, TWEET_ID, gif_enable, video_enable)
+				###jsonを更新する処理
 	_url_get()
 	_edit_json()
