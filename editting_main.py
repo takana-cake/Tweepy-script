@@ -37,7 +37,7 @@ def tweepy_api():
 		twitter_conf['access']['key'],
 		twitter_conf['access']['secret'])
 	tweepy_auth = tweepy.API(auth)
-	return(tweepy_auth)
+	return tweepy_auth
 
 
 
@@ -46,162 +46,82 @@ def tweepy_api():
 def _twitter_userobject_get(SCREEN_NAME):
 	errcount = 0
 	USER_OBJECT = ""
-	def _get_description():
+	def _get_description(SCREEN_NAME):
 		nonlocal errcount
 		nonlocal USER_OBJECT
 		try:
 			USER_OBJECT = api.get_user(SCREEN_NAME)
+		except tweepy.RateLimitError as err_description:
+			err_subject = SCREEN_NAME + " : RateLimitError_twitter_userobject_get"
+			_log(err_subject, err_description)
+			sleep(60 * 15)
+			_get_description(SCREEN_NAME)
 		except Exception as err:
 			if errcount < 2:
 				errcount = errcount + 1
 				err_subject = SCREEN_NAME + " : _twitter_userobject_get"
 				_log(err_subject, err)
 				sleep(60)
-				_get_description()
-	_get_description()
+				_get_description(SCREEN_NAME)
+	_get_description(SCREEN_NAME)
 	return USER_OBJECT
 
 
 
 ### URL get ###
 
-def _split_urls(USER_DESCRIPTION):
+def _split_urls(SPLIT_TXT):
 	DESCURLS = []
 	SHORTURLS = []
-	URL_PATTERN = re.compile(".http[!-~]+")
-	SHORTURLS = re.findall(URL_PATTERN, USER_DESCRIPTION)
-	for d in SHORTURLS:
-		if d[0] in ["[", "("] and d[-1] in ["]", ")"]:
-			d = d[:-1]
-		d = d[1:]
+	URL_PATTERN = re.compile("http[!-~]+")
+	SHORTURLS = re.findall(URL_PATTERN, SPLIT_TXT)
+	for j in SHORTURLS:
+		if j[-1] in ["]", ")"]:
+			j = j[:-1]
 		try:
-			DESCURL = (urllib.request.urlopen(d,timeout=3).geturl())
+			DESCURL = (urllib.request.urlopen(j,timeout=3).geturl())
 			DESCURLS.append(DESCURL)
 		except Exception as err:
-			err_subject = d + " : "
+			err_subject = j + " : "
 			_log(err_subject, err)
-			DESCURLS.append(d)
+			DESCURLS.append(j)
 			sleep(30)
 	return DESCURLS
 
-def _url_get():
+def _url_get(SCREEN_NAME):
 	for i, USER in enumerate(json_dict):
 		URLS = []
-		USER_OBJECT = _twitter_userobject_get(USER["name"])
-		USER_URL = USER_OBJECT.entities
-		USER_DESCRIPTION = USER_OBJECT.description
-		if "url" in USER_URL:
-			URLS.append(USER_URL["url"]["urls"][0]["expanded_url"])
-		URLS.extend(_split_urls(USER_DESCRIPTION))
-		json_dict[i]["urls"] = URLS
+	USER_OBJECT = _twitter_userobject_get(SCREEN_NAME)
+	USER_URL = USER_OBJECT.entities
+	USER_DESCRIPTION = USER_OBJECT.description
+	if "url" in USER_URL:
+		URLS.append(USER_URL["url"]["urls"][0]["expanded_url"])
+	URLS.extend(_split_urls(USER_DESCRIPTION))
+	return URLS
 
 
 
-### TL chech ###
+### hashtag check ###
 
-def _TL_search():
-	def _TL_hashtag_check(hashcheck_object):
-		nonlocal hashtag_tmp
-		nonlocal hashtag_2csv
-		if hasattr(hashcheck_object, "retweeted_status"):
-			if "hashtags" in hashcheck_object.retweeted_status.entities:
-				for x in hashcheck_object.retweeted_status.entities["hashtags"]:
-					if x["text"] not in hashtag_tmp and x["text"] not in hashtag_2csv and x["text"] not in json_dict:
-						hashtag_tmp.append(x["text"])
-		elif hasattr(hashcheck_object, "quoted_status"):
-			if "hashtags" in hashcheck_object.quoted_status.entities:
-				for y in hashcheck_object.quoted_status.entities["hashtags"]:
-					if y["text"] not in hashtag_tmp and y["text"] not in hashtag_2csv and y["text"] not in json_dict:
-						hashtag_tmp.append(y["text"])
-		else:
-			if "hashtags" in hashcheck_object.entities:
-				for z in hashcheck_object.entities["hashtags"]:
-					if z["text"] not in hashtag_tmp and z["text"] not in hashtag_2csv and z["text"] not in json_dict:
-						hashtag_tmp.append(z["text"])
+def _TL_hashtag_check(TWEET_OBJECT):
+	hashtag_list = []
+	if hasattr(TWEET_OBJECT, "retweeted_status"):
+		if "hashtags" in TWEET_OBJECT.retweeted_status.entities:
+			for x in TWEET_OBJECT.retweeted_status.entities["hashtags"]:
+				hashtag_list.append(x["text"])
+	elif hasattr(TWEET_OBJECT, "quoted_status"):
+		if "hashtags" in TWEET_OBJECT.quoted_status.entities:
+			for y in TWEET_OBJECT.quoted_status.entities["hashtags"]:
+				hashtag_list.append(y["text"])
+	else:
+		if "hashtags" in TWEET_OBJECT.entities:
+			for z in TWEET_OBJECT.entities["hashtags"]:
+				hashtag_list.append(z["text"])
+	return hashtag_list
 
-	def _get_tweetid():
-		nonlocal TL_search_fault_count
-		try:
-			get_id = api.user_timeline(TL_search_object["name"]).max_id
-			return get_id
-		except tweepy.RateLimitError as err_description:
-			if TL_search_fault_count < 2:
-				TL_search_fault_count = TL_search_fault_count + 1
-				err_subject = TL_search_object["name"] + " : RateLimitError_TL_search"
-				_log(err_subject, err_description)
-				sleep(60 * 15)
-				_get_tweetid()
-		except Exception as err_description:
-			if TL_search_fault_count < 2:
-				TL_search_fault_count = TL_search_fault_count + 1
-				err_subject = TL_search_object["name"] + " : Exception_TL_search"
-				_log(err_subject, err_description)
-				sleep(60)
-				_get_tweetid()
-	def _TL_tweet_get():
-		nonlocal TL_tweet_get_fault_count
-		nonlocal TL_search_object
-		nonlocal search_flag
-
-		try:
-			if search_flag == 'max_search':
-				for tl_object in api.user_timeline(TL_search_object["name"], count=100, max_id=TL_search_object["TLflag"]["id"]):
-					_download(tl_object, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
-					_TL_hashtag_check(tl_object)
-					TL_search_object["TLflag"]["id"] = tl_object.id
-					TL_tweet_get_fault_count = 0
-			elif search_flag == 'since_search':
-				for tl_object in api.user_timeline(TL_search_object["name"], count=100, since_id=TL_search_object["TLflag"]["id"]):
-					_download(tl_object, TL_search_object["name"], TL_search_object["RTflag"], TL_search_object["gifflag"], TL_search_object["videoflag"])
-					_TL_hashtag_check(tl_object)
-					TL_search_object["TLflag"]["id"] = tl_object.id
-					TL_tweet_get_fault_count = 0
-		except tweepy.RateLimitError as err_description:
-			if TL_tweet_get_fault_count < 2:
-				err_subject = str(TL_search_object["name"]) + " : RateLimitError_tweet_get : " + str(TL_search_object["TLflag"]["id"])
-				_log(err_subject, err_description)
-				TL_tweet_get_fault_count = TL_tweet_get_fault_count +1
-				sleep(60 * 15)
-				_TL_tweet_get()
-		except Exception as err_description:
-			if TL_tweet_get_fault_count < 2:
-				err_subject = str(TL_search_object["name"]) + " : Exception_tweet_get : " + str(TL_search_object["TLflag"]["id"])
-				_log(err_subject, err_description)
-				TL_tweet_get_fault_count = TL_tweet_get_fault_count +1
-				sleep(60 * 5)
-				_TL_tweet_get()
-
-	tagfile = working_directory + date + '_tag.csv'
-	hashtag_2csv = []
-	for index,TL_search_object in enumerate(json_dict):
-		TL_search_fault_count = 0
-		hashtag_tmp = []
-		if not TL_search_object["TLflag"] == False:
-			if TL_search_object["TLflag"]["id"] == "":
-				start_id_and_date = _get_tweetid()
-				TL_search_object["TLflag"]["id"] = _get_tweetid()
-				TL_search_object["TLflag"]["date"] = date
-				search_flag = 'max_search'
-			else:
-				search_flag = 'since_search'
-			if not TL_search_object["TLflag"]["id"] == None:
-				TL_tweet_get_fault_count = 0
-				DL_or_hash = 0
-				for l in range(50):
-					_TL_tweet_get()
-				json_dict[index]["TLflag"]["id"] = TL_search_object["TLflag"]["id"]
-		if TL_search_object["hashtagflag"] == True:
-			hashtag_2csv.extend(hashtag_tmp)
-	if hashtag_2csv:
-		with open(tagfile, 'w') as file:
-			writer = csv.writer(file, lineterminator='\n')
-			writer.writerow(hashtag_2csv)
-
-
-
-### hash tag ###
 
 def _hashtag_split(hashtag_tmp):
+	hashtags = []
 	hashtag_tmp = re.sub(r'#', " #", hashtag_tmp)
 	emoji_pattern = re.compile("["
 		u"\U0001F600-\U0001F64F"
@@ -219,36 +139,73 @@ def _hashtag_split(hashtag_tmp):
 	return hashtags
 
 
-def _hashtag():
-	profile_description_hashtag_fault_count = 0
+def _twitter_profile_hashtag(SCREEN_NAME):
 	hashtags = []
+	hashtag_tmp = _twitter_userobject_get(SCREEN_NAME).description
+	hashtags = _hashtag_split(hashtag_tmp)
+	return hashtags
 
-	def _profile_description_hashtag(SCREEN_NAME):
-		nonlocal profile_description_hashtag_fault_count
-		nonlocal hashtags
+
+
+### TL chech ###
+
+def _TL_search(SCREEN_NAME, TWEET_ID):
+	def _get_tweetid(SCREEN_NAME):
+		nonlocal TL_search_fault_count
 		try:
-			USER_DESCRIPTION = api.get_user(SCREEN_NAME).description
-			hashtags = _hashtag_split(hashtag_tmp)
+			get_id = api.user_timeline(SCREEN_NAME).max_id
+			return get_id
+		except tweepy.RateLimitError as err_description:
+			err_subject = SCREEN_NAME + " : RateLimitError_TL_search"
+			_log(err_subject, err_description)
+			sleep(60 * 15)
+			_get_tweetid(SCREEN_NAME)
 		except Exception as err_description:
-			if profile_description_hashtag_fault_count < 2:
-				profile_description_hashtag_fault_count = profile_description_hashtag_fault_count + 1
-				err_subject = SCREEN_NAME + " : Exception_profile_description"
+			if TL_search_fault_count < 2:
+				TL_search_fault_count = TL_search_fault_count + 1
+				err_subject = SCREEN_NAME + " : Exception_TL_search"
 				_log(err_subject, err_description)
 				sleep(60)
-				_profile_description_hashtag(SCREEN_NAME)
-	for index,hashtag_object in enumerate(json_dict):
-		if hashtag_object["hashtagflag"] == True:
-			_profile_description_hashtag(hashtag_object["name"])
-			for tag in hashtags:
-				if not tag in  json_dict:
-					json_dict[index]["Query"].update({tag:{"date":"", "id":""}})
-'''
-	if USER["hashtagflag"] == True:
-		_profile_description_hashtag(USER["name"])
-		for tag in hashtags:
-			if not tag in  json_dict:
-				json_dict[index]["Query"].update({tag:{"date":"", "id":""}})
-'''
+				_get_tweetid(SCREEN_NAME)
+	def _TL_tweet_get(SCREEN_NAME, TL_ID, search_flag):
+		nonlocal TL_tweet_get_fault_count
+		try:
+			if search_flag == 'max_search':
+				for tl_object in api.user_timeline(SCREEN_NAME, count=100, max_id=TL_ID):
+					_download(tl_object, SCREEN)
+					#_TL_hashtag_check(tl_object)
+					TL_ID = tl_object.id
+					TL_tweet_get_fault_count = 0
+			elif search_flag == 'since_search':
+				for tl_object in api.user_timeline(SCREEN_NAME, count=100, since_id=TL_ID):
+					_download(tl_object, SCREEN)
+					#_TL_hashtag_check(tl_object)
+					TL_ID = tl_object.id
+					TL_tweet_get_fault_count = 0
+		except tweepy.RateLimitError as err_description:
+			err_subject = str(SCREEN_NAME) + " : RateLimitError_tweet_get : " + str(TL_ID)
+			_log(err_subject, err_description)
+			sleep(60 * 15)
+			_TL_tweet_get(SCREEN_NAME)
+		except Exception as err_description:
+			if TL_tweet_get_fault_count < 2:
+				err_subject = str(SCREEN_NAME) + " : Exception_tweet_get : " + str(TL_ID)
+				_log(err_subject, err_description)
+				TL_tweet_get_fault_count = TL_tweet_get_fault_count +1
+				sleep(60 * 5)
+				_TL_tweet_get(SCREEN_NAME)
+	if TWEET_ID == "":
+		TWEET_ID = _get_tweetid(SCREEN_NAME)
+		search_flag = 'max_search'
+	else:
+		search_flag = 'since_search'
+	if not TWEET_ID == None:
+		TL_tweet_get_fault_count = 0
+		while_count = 0
+		while while_count < 50:
+			while_count += 1
+			_TL_tweet_get()
+	return TL_ID
 
 
 
@@ -281,20 +238,7 @@ def _profile_get_capture_banner(screen_name, file_path_cap):
 	cmd_capture_banner = "wkhtmltoimage --crop-h 380 --crop-w 1023 --crop-x 1 --crop-y 40 " + url_user + " " + capture_banner_file
 	subprocess.call(cmd_capture_banner.split(), shell=False)
 
-### test
-def _follow_counter_cap(screen_name, counter, file_path_cap):
-	for kiri in [1000000, 100000, 10000, 1000, 100]:
-		if counter % kiri ==0:
-			url_user = "https://twitter.com/" + screen_name
-			capture_banner_file = file_path_cap + screen_name + "_" + kiri + "_" + date + ".jpg"
-			cmd_capture_banner = "wkhtmltoimage --crop-h 380 --crop-w 1023 --crop-x 1 --crop-y 40 " + url_user + " " + capture_banner_file
-			subprocess.call(cmd_capture_banner.split(), shell=False)
-			break
-		else:
-			pass
-###
-		
-def _profile():
+def _profile(SCREEN_NAME):
 	file_path = download_directory
 	#file_path_cap = "<capture閲覧用>"
 	file_path_cap = "/var/www/html/capture/"
@@ -359,42 +303,57 @@ def _profile():
 
 ### search ###
 
-def _search():
+def _search(SCREEN, QUERY, GET_DATE, GET_ID):
 	search_fault_count = 0
 	search_date_tmp = ""
-	def _search_start(user_object):
+	def _search_start(SCREEN, QUERY, search_flag):
 		nonlocal search_fault_count
-		nonlocal search_flag
-		nonlocal search_query
-		nonlocal search_date
+		nonlocal GET_ID
 		try:
 			if search_flag == 'since_search':
-				for search_object in api.search(q=search_query, count=100, since_id=search_date["id"]):
+				for search_object in api.search(q=search_query, count=100, since_id=GET_ID):
 					if search_object:
-						_download(search_object, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
+						_download(search_object, SCREEN)
 						search_date["id"] = search_object.id
 						search_fault_count = 0
 			else:
-				for search_object in api.search(q=search_query, count=100, max_id=search_date["id"]):
+				for search_object in api.search(q=search_query, count=100, max_id=GET_ID):
 					if search_object:
-						_download(search_object, user_object["name"], user_object["RTflag"], user_object["gifflag"], user_object["videoflag"])
+						_download(search_object, SCREEN)
 						search_date["id"] = search_object.id
 						search_fault_count = 0
 		except tweepy.RateLimitError as err_description:
-			if search_fault_count < 3:
-				search_fault_count = search_fault_count +1
-				err_subject = user_object["name"] + " : RateLimitError_search_start"
-				_log(err_subject, err_description)
-				sleep(60 * 15)
-				_search_start(user_object)
+			err_subject = str(SCREEN) + " : RateLimitError_search_start"
+			_log(err_subject, err_description)
+			sleep(60 * 15)
+			_search_start(SCREEN, QUERY, search_flag)
 		except Exception as err_description:
 			if search_fault_count < 3:
 				search_fault_count = search_fault_count +1
-				err_subject = user_object["name"] + " : Exception_search_start"
+				err_subject = str(SCREEN) + " : Exception_search_start"
 				_log(err_subject, err_description)
 				sleep(10)
-				_search_start(user_object)
+				_search_start(SCREEN, QUERY, search_flag)
+	while_count = 0
+	if GET_ID:
+		if api.search(q=QUERY, since_id=GET_ID):
+			search_flag = 'since_search'
+	else:
+		search_date_tmp = api.search(q=QUERY, count=1)
+		if search_date_tmp:
+			search_flag = 'max_search'
+			GET_ID = search_date_tmp[0].id
+	while while_count < 50:
+		search_fault_count = 0
+		while_count += 1
+		_search_start(SCREEN, QUERY, search_flag)
+	return GET_ID
+
+'''
+	json_dict[index]['Query'][search_query]['id'] = search_date['id']
+
 	for index,user_object in enumerate(json_dict):
+		while_count = 0
 		if not user_object['Query'] == {}:
 			for search_query,search_date in user_object['Query'].items():
 				if search_date['id']:
@@ -407,10 +366,12 @@ def _search():
 						search_date['id'] = search_date_tmp[0].id
 					else:
 						continue
-				for l in range(50):
+				while while_count < 50:
 					search_fault_count = 0
+					while_count += 1
 					_search_start(user_object)
 				json_dict[index]['Query'][search_query]['id'] = search_date['id']
+'''
 
 
 
@@ -709,8 +670,9 @@ if __name__ == '__main__':
 		print("please add object.")
 		sys.exit()
 
-	_profile()
-	_hashtag()
+	for USER_JSON in json_dict:
+		_profile(USER_JSON["name"])
+		_twitter_profile_hashtag(USER_JSON["name"])
 	_TL_search()
 	_search()
 	_url_get()
