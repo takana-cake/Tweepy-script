@@ -1,4 +1,8 @@
 # tweepy script
+
+*汎用化</br>
+https://github.com/takana303/YouTuber_channel_twitter-script/blob/master/main_editing.py
+
 主な目的は3つ
 - TLやクエリ検索でメディアをチェックしアーカイブする。
 - プロファイルやTL上のハッシュタグを収集する。
