@@ -1,7 +1,7 @@
 # tweepy script
 
 *汎用化</br>*
-*https://github.com/takana303/YouTuber_channel_twitter-script/blob/master/main_editing.py*
+*https://github.com/takana-cake/YouTuber_channel_twitter-script*
 
 ---
 
