@@ -695,3 +695,4 @@ if __name__ == '__main__':
 				###jsonを更新する処理
 	_url_get()
 	_edit_json()
+	_log("Done.", "")
