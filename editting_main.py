@@ -533,9 +533,9 @@ if __name__ == '__main__':
 		working_directory = os.path.dirname(cmd_args.json_file[0]) + "/"
 	else:
 		working_directory = os.getcwd() +"/"
-	#if not os.path.exists(working_directory + "download"):
-	#       os.makedirs(working_directory + "download")
-	#download_directory = working_directory + "download/"
+	if not os.path.exists(working_directory + "download"):
+		os.makedirs(working_directory + "download")
+	download_directory = working_directory + "download/"
 	DB_file = working_directory + os.path.basename(cmd_args.json_file[0])
 	DATE = datetime.datetime.today().strftime("%Y%m%d_%H%M_%S")
 	LOGFILE = working_directory + DATE + "_log.txt"
@@ -581,8 +581,8 @@ if __name__ == '__main__':
 					for index,channel in enumerate(channels):
 						subscript,videos,title = _youtube_info(channel["channel"])
 						channels[index].update(title=title, subscript=subscript, videos=videos)
-				if os.path.exists(working_directory + SCREEN_NAME) == False:
-					os.makedirs(working_directory + SCREEN_NAME)
+				if os.path.exists(download_directory + SCREEN_NAME) == False:
+					os.makedirs(download_directory + SCREEN_NAME)
 					if not SCREEN_NAME in json_dict:
 						json_dict.append({
 							"name":SCREEN_NAME,
@@ -619,7 +619,7 @@ if __name__ == '__main__':
 
 	for index,USER_JSON in enumerate(json_dict):
 		SCREEN_NAME = USER_JSON["screen"]
-		FILEPATH = working_directory + SCREEN_NAME
+		FILEPATH = download_directory + SCREEN_NAME + "/"
 		
 		USER_OBJECT = _twitter_userobject_get(SCREEN_NAME)
 		if USER_OBJECT is "err":
@@ -634,7 +634,6 @@ if __name__ == '__main__':
 		# Profile
 		if USER_JSON["Profileflag"] == True:
 			_profile(SCREEN_NAME, USER_OBJECT)
-		#HASHTAG_CSV.extend(_twitter_profile_hashtag(SCREEN_NAME, USER_OBJECT))
 		urls = _twiprofurl_get(SCREEN_NAME, USER_OBJECT)
 		json_dict[index]["urls"].append(urls)
 
@@ -651,12 +650,6 @@ if __name__ == '__main__':
 				for l in range(50):
 					search_fault_count = 0
 					_search(FILEPATH, QUERY, GET_DATE, TWEET_ID, GIF_FLAG, VIDEO_FLAG)
-
-
-		# tags
-		#with open(working_directory + SCREEN_NAME + "/" + DATE + "_" + SCREEN_NAME + "_tags.csv", "w") as f:
-		#	w = csv.writer(f, lineterminator='\n')
-		#	w.writerow(HASHTAG_CSV)
 
 		_edit_json()
 	
